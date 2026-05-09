@@ -71,7 +71,10 @@ int32_t OnPaint(const void *a1, void *a2) {
     fprintf(stderr, "[Screen] glClear to blue...\n"); fflush(stderr);
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    fprintf(stderr, "[Screen] glClear done\n"); fflush(stderr);
+    GLenum clearErr = glGetError();
+    fprintf(stderr, "[Screen] glClear done, err=%d\n", (int)clearErr); fflush(stderr);
+    // Clear any accumulated GL errors before terrain
+    while (glGetError() != GL_NO_ERROR) {}
 
     // Render terrain before UI layers
     TerrainRenderer *terrain = CWorld::GetTerrain();
@@ -86,8 +89,8 @@ int32_t OnPaint(const void *a1, void *a2) {
             CRect projRect = {0.0f, 0.0f, w, h};
 
             CCamera camera;
-            camera.m_position.Set(C3Vector(150.0f, 120.0f, 150.0f));
-            camera.m_target.Set(C3Vector(128.0f, 0.0f, 128.0f));
+            camera.m_position.Set(C3Vector(150.0f, 150.0f, 100.0f));
+            camera.m_target.Set(C3Vector(128.0f, 128.0f, 20.0f));
             camera.m_distance.Set(1.0f);
             camera.m_fov.Set(0.8f);
             camera.m_zFar.Set(2000.0f);
@@ -101,8 +104,9 @@ int32_t OnPaint(const void *a1, void *a2) {
         }
     }
 
-    fprintf(stderr, "[Screen] Layer loop, presentDisable=%d\n", Screen::s_presentDisable); fflush(stderr);
+    fprintf(stderr, "[Screen] Layer loop SKIPPED for testing, presentDisable=%d\n", Screen::s_presentDisable); fflush(stderr);
 
+#if 0  // Disable UI layer rendering for terrain debug
     // Walk the layer list forward (lowest z-order to highest) to paint visible layers
     for (auto layer = s_zOrderList.Head(); layer; layer = layer->zorderlink.Next()) {
         if (layer->visible.right > layer->visible.left && layer->visible.top > layer->visible.bottom) {
@@ -151,6 +155,7 @@ int32_t OnPaint(const void *a1, void *a2) {
             );
         }
     }
+#endif  // Disable UI layer rendering for terrain debug
 
     // Restore viewport
     GxXformSetViewport(minX, maxX, minY, maxY, minZ, maxZ);

@@ -1669,6 +1669,7 @@ const GLStates::VertexArrayObject &GLDevice::GetVertexArrayStates() {
 
 void GLDevice::GLLDraw(GLEnum mode, uint32_t start, uint32_t end, uint32_t a5, uint32_t a6, uint32_t count) {
     BLIZZARD_ASSERT(this->m_Context->IsCurrentContext());
+    LOG("[GLLDraw] entry mode=%u start=%u end=%u count=%u", mode, start, end, count);
 
     this->CheckDepthTarget();
 
@@ -1676,8 +1677,6 @@ void GLDevice::GLLDraw(GLEnum mode, uint32_t start, uint32_t end, uint32_t a5, u
         if (this->m_Context->m_MTGLEnabled) {
             glFlush();
         }
-
-        // GLFence::TestFences();
     }
 
     this->m_DrawCount++;
@@ -1685,14 +1684,14 @@ void GLDevice::GLLDraw(GLEnum mode, uint32_t start, uint32_t end, uint32_t a5, u
     this->RestoreTextures();
 
     this->m_DefaultVertexArrayObject.m_Properties.m_VertexBase = a5;
+    LOG("[GLLDraw] calling FindVertexArray...");
     GLVertexArray::FindVertexArray(this, this->m_DefaultVertexArrayObject);
+    LOG("[GLLDraw] FindVertexArray done, err=%d", (int)glGetError());
 
     auto vs = this->m_VertexShader;
     auto ps = this->m_PixelShader;
 
     if (ps) {
-        // TODO
-        // this->Sub30440();
     }
 
     if (this->m_TexWorker && !this->m_TexWorker->m_UnkA1) {
@@ -1702,7 +1701,9 @@ void GLDevice::GLLDraw(GLEnum mode, uint32_t start, uint32_t end, uint32_t a5, u
     if (vs) {
         this->SetShader(GLShader::eVertexShader, vs);
     } else {
+        LOG("[GLLDraw] calling ApplyTransforms...");
         this->ApplyTransforms();
+        LOG("[GLLDraw] ApplyTransforms done, err=%d", (int)glGetError());
     }
 
     if (ps) {
@@ -1721,10 +1722,14 @@ void GLDevice::GLLDraw(GLEnum mode, uint32_t start, uint32_t end, uint32_t a5, u
 
     if (count) {
         GLBuffer *buffer = this->m_VertexArrayObject->m_Properties.m_IndexBuffer;
+        LOG("[GLLDraw] IndexBuffer=%p m_Data=%p m_BufferID=%u m_IndexFormat=%d UsingVBO=%d",
+            (void*)buffer, buffer ? (void*)buffer->m_Data : 0, buffer ? buffer->m_BufferID : 0,
+            buffer ? (int)buffer->m_IndexFormat : -1, (int)GLBuffer::m_UsingVBO);
+        fflush(stderr);
+
         GLEnum format = buffer->m_IndexFormat;
 
         uint32_t v18;
-
         if (format == GL_UNSIGNED_SHORT) {
             v18 = 1;
         } else if (format == GL_UNSIGNED_INT) {
@@ -1737,7 +1742,16 @@ void GLDevice::GLLDraw(GLEnum mode, uint32_t start, uint32_t end, uint32_t a5, u
                         ? reinterpret_cast<void *>(a6 << v18)
                         : buffer->m_Data + (a6 << v18);
 
+        LOG("[GLLDraw] glDrawRangeElements(mode=%u, start=%u, end=%u, count=%u, fmt=%d, indices=%p)",
+            mode, start, end, count, (int)buffer->m_IndexFormat, indices);
+        fflush(stderr);
+
+        // Check GL errors before draw
+        GLenum preDrawErr = glGetError();
+        if (preDrawErr) LOG("[GLLDraw] WARN: GL error before draw: %d", (int)preDrawErr);
+
         glDrawRangeElements(mode, start, end, count, buffer->m_IndexFormat, indices);
+        LOG("[GLLDraw] glDrawRangeElements done, err=%d", (int)glGetError());
     } else {
         glDrawArrays(mode, start, end - start);
     }

@@ -254,9 +254,11 @@ void GLContext::SetWindow(GLAbstractWindow *pWindow, bool show) {
 }
 
 void GLContext::Swap() {
-    LOG("[GLContext] Swap: window=%p context=%p isValid=%d",
+    GLenum err = glGetError();
+    LOG("[GLContext] Swap: window=%p context=%p isValid=%d preGLErr=%d",
         (void*)this->m_Window, (void*)this->m_Context->context,
-        this->m_Context->context ? (int)this->m_Context->context->isValid() : 0);
+        this->m_Context->context ? (int)this->m_Context->context->isValid() : 0, (int)err);
+    fflush(stderr);
     this->m_Context->context->swapBuffers(this->m_Window);
     LOG("[GLContext] Swap completed");
 }

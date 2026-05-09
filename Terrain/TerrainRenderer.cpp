@@ -71,9 +71,10 @@ bool TerrainRenderer::CreateBuffers() {
             uint32_t idx = z * g + x;
             float h = m_heightmap[idx];
 
+            // Engine uses Z-up coordinate system
             verts[idx].px = static_cast<float>(x) * step;
-            verts[idx].py = h;
-            verts[idx].pz = static_cast<float>(z) * step;
+            verts[idx].py = static_cast<float>(z) * step;
+            verts[idx].pz = h;
 
             float hL = (x > 0)     ? m_heightmap[z * g + (x - 1)] : h;
             float hR = (x < g - 1) ? m_heightmap[z * g + (x + 1)] : h;
@@ -81,8 +82,8 @@ bool TerrainRenderer::CreateBuffers() {
             float hU = (z < g - 1) ? m_heightmap[(z + 1) * g + x] : h;
 
             float nx = -(hR - hL) / (2.0f * step);
-            float nz = -(hU - hD) / (2.0f * step);
-            float ny = 1.0f;
+            float ny = -(hU - hD) / (2.0f * step);
+            float nz = 1.0f;
             float len = sqrtf(nx * nx + ny * ny + nz * nz);
             float invLen = 1.0f / (len + 0.00001f);
             verts[idx].nx = nx * invLen;
@@ -191,8 +192,10 @@ void TerrainRenderer::Render() {
     device->SetIndexBuffer(m_ibo);
 
     LOG("[Terrain] GLLDraw: vertices=%u indices=%u", m_vertexCount, m_indexCount);
+    GLenum preErr = glGetError();
     device->GLLDraw(GL_TRIANGLES, 0, m_vertexCount - 1, 0, 0, m_indexCount);
-    LOG("[Terrain] GLLDraw done");
+    GLenum postErr = glGetError();
+    LOG("[Terrain] GLLDraw done preErr=%d postErr=%d", (int)preErr, (int)postErr);
 
     device->SetDepthTestEnable(savedDepthTest);
     device->SetDepthWriteMask(savedDepthWrite);
