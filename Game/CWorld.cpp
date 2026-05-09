@@ -10,6 +10,7 @@
 uint32_t CWorld::s_enables;
 uint32_t CWorld::s_enables2;
 TerrainRenderer *CWorld::s_terrain = nullptr;
+static HOBJECT s_terrainLayer = nullptr;
 
 static void TerrainLayerPaint(void *param, const RECTF *rect, const RECTF *visible, float elapsedSec) {
     TerrainRenderer *terrain = static_cast<TerrainRenderer *>(param);
@@ -75,7 +76,7 @@ void CWorld::Initialize() {
     }
 
     RECTF terrainRect = {0.0f, 0.0f, 1.0f, 1.0f};
-    ScrnLayerCreate(&terrainRect, 0.0f, 0x4, s_terrain, &TerrainLayerPaint, nullptr);
+    ScrnLayerCreate(&terrainRect, 0.0f, 0x4, s_terrain, &TerrainLayerPaint, &s_terrainLayer);
 
     // TODO
 }
