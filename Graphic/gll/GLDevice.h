@@ -204,7 +204,7 @@ public:
 
     void GLLDraw(GLEnum mode, uint32_t start, uint32_t end, uint32_t a5, uint32_t a6, uint32_t count);
 
-    void Init(GLWindow *a2, const char *a3, uint32_t a4, GLTextureFormat a5);
+    void Init(GLAbstractWindow *a2, const char *a3, uint32_t a4, GLTextureFormat a5);
 
     void LoadDefaultStates();
 

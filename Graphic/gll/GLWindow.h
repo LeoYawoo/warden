@@ -23,7 +23,7 @@ class GLWindow : public GLAbstractWindow {
 public:
     GLWindow(GLWindowCallbacks *);//QScreen *primaryScreen,
 
-//    QOpenGLContext *m_Context = nullptr;
+    GLContext *m_Context = nullptr;
     GLAbstractWindow *m_FullscreenWindow = nullptr;
     GLWindowCallbacks *m_Callbacks;
     GLWindowCallbacks *m_ActiveCallbacks;

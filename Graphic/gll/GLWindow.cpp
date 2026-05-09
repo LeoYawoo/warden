@@ -82,17 +82,17 @@ void GLWindow::SetOpenGLContext(GLContext *context) {
     this->setFormat(fmt);
 
     m_Context = context;
-    m_Context->setFormat(fmt);
-
-    m_Context->create();
-
-    if (!m_Context->isValid()) {
-        qCritical() << "The OpenGL context is invalid!"; //I allways get this message
-    }
-
-    qDebug() << "Window format version is: " << this->format().majorVersion() << "." << this->format().minorVersion();
-    qDebug() << "Context format version is: " << m_Context->format().majorVersion() << "."
-             << m_Context->format().minorVersion();
+//    m_Context->SetContextFormat(fmt, 24);
+//
+//    m_Context->create();
+//
+//    if (!m_Context->isValid()) {
+//        qCritical() << "The OpenGL context is invalid!"; //I allways get this message
+//    }
+//
+//    qDebug() << "Window format version is: " << this->format().majorVersion() << "." << this->format().minorVersion();
+//    qDebug() << "Context format version is: " << m_Context->format().majorVersion() << "."
+//             << m_Context->format().minorVersion();
 }
 
 int32_t GLWindow::GetWidth(void) {
