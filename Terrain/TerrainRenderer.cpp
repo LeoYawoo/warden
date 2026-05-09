@@ -162,10 +162,18 @@ bool TerrainRenderer::CreateBuffers() {
 }
 
 void TerrainRenderer::Render() {
+    static int renderCount = 0;
+    renderCount++;
+    LOG("[Terrain] Render frame=%d", renderCount);
     if (!IsValid()) { LOG("[Terrain] Render: not valid, skipping"); return; }
 
     GLDevice *device = GLDevice::Get();
     if (!device) { LOG("[Terrain] Render: no device, skipping"); return; }
+
+    if (renderCount > 1) {
+        LOG("[Terrain] Render: skipping draw on frame %d (debug)", renderCount);
+        return;
+    }
 
     LOG("[Terrain] Render: saving state, setting FFP...");
 

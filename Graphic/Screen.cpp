@@ -31,7 +31,9 @@ int32_t OnIdle(const EVENT_DATA_IDLE *data, void *a2) {
 }
 
 int32_t OnPaint(const void *a1, void *a2) {
-    fprintf(stderr, "[Screen] OnPaint START\n"); fflush(stderr);
+    static int paintCount = 0;
+    paintCount++;
+    fprintf(stderr, "[Screen] OnPaint START frame=%d\n", paintCount); fflush(stderr);
 
     // TODO
     // if (!g_theGxDevicePtr || !g_theGxDevicePtr->CapsHasContext(-1) || !g_theGxDevicePtr->CapsIsWindowVisible(-1)) {

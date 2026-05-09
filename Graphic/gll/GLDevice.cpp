@@ -1750,6 +1750,11 @@ void GLDevice::GLLDraw(GLEnum mode, uint32_t start, uint32_t end, uint32_t a5, u
         GLenum preDrawErr = glGetError();
         if (preDrawErr) LOG("[GLLDraw] WARN: GL error before draw: %d", (int)preDrawErr);
 
+        // Force re-bind VBO and IBO before draw (bypass state cache)
+        GLBuffer *vb0 = this->m_VertexArrayObject->m_Properties.m_VertexBuffer[0];
+        if (vb0) glBindBuffer(GL_ARRAY_BUFFER, vb0->m_BufferID);
+        if (buffer) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->m_BufferID);
+
         glDrawRangeElements(mode, start, end, count, buffer->m_IndexFormat, indices);
         LOG("[GLLDraw] glDrawRangeElements done, err=%d", (int)glGetError());
     } else {
