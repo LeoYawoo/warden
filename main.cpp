@@ -1,5 +1,6 @@
 #include <iostream>
 #include <QGuiApplication>
+#include <QSurfaceFormat>
 #include "Event/Event.h"
 #include "Storm/StormInit.h"
 #include "Game/Client.h"
@@ -7,6 +8,10 @@
 
 
 int main(int argc, char **argv) {
+    QSurfaceFormat fmt;
+    fmt.setSwapInterval(0);
+    QSurfaceFormat::setDefaultFormat(fmt);
+
     QGuiApplication app(argc, argv);
     StormInitialize();
 
