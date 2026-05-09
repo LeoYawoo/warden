@@ -38,19 +38,20 @@ CRect GLWindow::GetRect(void) {
 }
 
 void GLWindow::Show(void) {
-
+    this->create();
+    this->QWindow::show();
 }
 
-void GLWindow::Resize(uint32_t uint32, uint32_t uint321) {
-
+void GLWindow::Resize(uint32_t width, uint32_t height) {
+    this->QWindow::resize(width, height);
 }
 
 void GLWindow::SetTitle(const char *string) {
-
+    this->QWindow::setTitle(QString::fromUtf8(string));
 }
 
 void GLWindow::CreateView(void) {
-
+    this->create();
 }
 
 HWND GLWindow::GetNSView(void) {
@@ -75,9 +76,9 @@ void GLWindow::SetOpenGLContext(GLContext *context) {
     setSurfaceType(OpenGLSurface);
 
     QSurfaceFormat fmt;
-    fmt.setMajorVersion(4);
-    fmt.setMinorVersion(2);
-    fmt.setProfile(QSurfaceFormat::CoreProfile); //whatever this is
+    fmt.setVersion(2, 1);
+    fmt.setProfile(QSurfaceFormat::CompatibilityProfile);
+    fmt.setOption(QSurfaceFormat::DeprecatedFunctions);
 
     this->setFormat(fmt);
 
@@ -96,19 +97,19 @@ void GLWindow::SetOpenGLContext(GLContext *context) {
 }
 
 int32_t GLWindow::GetWidth(void) {
-    return 0;
+    return this->QWindow::width();
 }
 
 int32_t GLWindow::GetHeight(void) {
-    return 0;
+    return this->QWindow::height();
 }
 
 int32_t GLWindow::GetBackingWidth() {
-    return 0;
+    return this->QWindow::width() * this->devicePixelRatio();
 }
 
 int32_t GLWindow::GetBackingHeight() {
-    return 0;
+    return this->QWindow::height() * this->devicePixelRatio();
 }
 
 

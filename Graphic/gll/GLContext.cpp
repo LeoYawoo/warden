@@ -3,10 +3,20 @@
 #include "Storm/Debug.h"
 #include "glad/glad.h"
 
-GLContext *GLContext::s_MainContext;
-Blizzard::Thread::TLSSlot GLContext::s_CurrentContext;
-Blizzard::Thread::TLSSlot GLContext::s_CurrentGLContext;
+QOpenGLContext *GLContext::s_MainContext;
+QOpenGLContext *GLContext::s_CurrentContext;
+GLContext *GLContext::s_CurrentGLContext;
+
+static void *QtGLADLoadFunc(const char *name) {
+    auto ctx = QOpenGLContext::currentContext();
+    if (!ctx) return nullptr;
+    return reinterpret_cast<void *>(ctx->getProcAddress(QByteArray(name)));
+}
 int GLContext::s_DesktopMode;
+
+GLContext::Context::~Context() {
+    delete context;
+}
 
 // https://github.com/bkaradzic/bgfx/blob/932302d8f460e514b933deba8c0e575a00f0bcd6/src/glcontext_wgl.cpp
 // https://github.com/CrossVR/dolphin/blob/90500ed90ee4d0fa7937442f8273314d15d33799/Source/Core/Common/GL/GLInterface/WGL.cpp
@@ -99,6 +109,20 @@ void GLContext::MakeCurrent(bool a2) {
         GLContext::SetCurrentContext(this->m_Context->context);
         GLContext::SetCurrentGLContext(this);
 
+        if (!gladLoadGLLoader(&QtGLADLoadFunc)) {
+            BLIZZARD_ASSERT(!"Failed to initialize glad");
+        }
+
+        if (device) {
+            device->glBindProgramARB = reinterpret_cast<PFNGLBINDPROGRAMARBPROC>(
+                m_Context->context->getProcAddress("glBindProgramARB"));
+            device->glGenProgramsARB = reinterpret_cast<PFNGLGENPROGRAMSARBPROC>(
+                m_Context->context->getProcAddress("glGenProgramsARB"));
+            device->glProgramStringARB = reinterpret_cast<PFNGLPROGRAMSTRINGARBPROC>(
+                m_Context->context->getProcAddress("glProgramStringARB"));
+            device->glProgramEnvParameters4fvEXT = reinterpret_cast<PFNGLPROGRAMENVPARAMETERS4FVEXTPROC>(
+                m_Context->context->getProcAddress("glProgramEnvParameters4fvEXT"));
+        }
 
         if (device) {
             device->ApplyGLStates(device->m_States, 1);
@@ -121,9 +145,10 @@ void GLContext::SetContextFormat(GLTextureFormat textureFormat, uint32_t sampleC
 
         // 配置 QSurfaceFormat
         QSurfaceFormat format;
-        format.setVersion(4, 5); // 设置 OpenGL 版本
-        format.setProfile(QSurfaceFormat::CoreProfile);
-        format.setSwapInterval(0); // 设置 V-sync 等参数
+        format.setVersion(2, 1);
+        format.setProfile(QSurfaceFormat::CompatibilityProfile);
+        format.setSwapInterval(0);
+        format.setOption(QSurfaceFormat::DeprecatedFunctions);
 
         // 根据 GLTextureFormat 设置深度和模板缓冲区大小
         switch (textureFormat) {
@@ -201,6 +226,10 @@ void GLContext::SetWindow(GLAbstractWindow *pWindow, bool show) {
             this->m_Window->SetOpenGLContext(this);
             return;
         }
+    } else {
+        this->m_Window = pWindow;
+        this->m_Window->SetOpenGLContext(this);
+        pWindow->create();
     }
 }
 

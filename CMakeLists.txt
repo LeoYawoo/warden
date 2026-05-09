@@ -49,6 +49,8 @@ file(GLOB_RECURSE dir_src
         "Game/*.cpp"
         "Sound/*.h"
         "Sound/*.cpp"
+        "Terrain/*.h"
+        "Terrain/*.cpp"
 )
 
 link_directories(${CMAKE_SOURCE_DIR}/build/Debug/)

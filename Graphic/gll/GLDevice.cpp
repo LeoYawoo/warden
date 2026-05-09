@@ -1261,8 +1261,8 @@ void GLDevice::BlitFramebuffer(GLMipmap *src, const GLRect *srcRect, GLMipmap *d
     } else {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        width = GLContext::GetCurrentContext()->GetBackingWidth();
-        height = GLContext::GetCurrentContext()->GetBackingHeight();
+        width = GLContext::GetCurrentGLContext()->GetBackingWidth();
+        height = GLContext::GetCurrentGLContext()->GetBackingHeight();
     }
 
     if (
@@ -1735,23 +1735,10 @@ void GLDevice::GLLDraw(GLEnum mode, uint32_t start, uint32_t end, uint32_t a5, u
 }
 
 
-void GLDevice::Init(GLWindow *a2, const char *a3, uint32_t a4, GLTextureFormat a5) {
+void GLDevice::Init(GLAbstractWindow *a2, const char *a3, uint32_t a4, GLTextureFormat a5) {
     if (this->m_Init) {
         return;
     }
-    this->m_Context->MakeCurrent(true);
-    // initializeOpenGLFunctions();
-
-// 使用 QOpenGLContext 获取函数指针
-//    glBindProgramARB =
-//            (PFNGLBINDPROGRAMARBPROC) QOpenGLContext::currentContext()->getProcAddress("glBindProgramARB");
-//    glGenProgramsARB =
-//            (PFNGLGENPROGRAMSARBPROC) QOpenGLContext::currentContext()->getProcAddress("glGenProgramsARB");
-//    glProgramStringARB =
-//            (PFNGLPROGRAMSTRINGARBPROC) QOpenGLContext::currentContext()->getProcAddress("glProgramStringARB");
-//    glProgramEnvParameters4fvEXT =
-//            reinterpret_cast<PFNGLPROGRAMENVPARAMETERS4FVEXTPROC>(
-//                    QOpenGLContext::currentContext()->getProcAddress("glProgramEnvParameters4fvEXT"));
 
     System_Autorelease::ScopedPool autorelease;
 
@@ -1771,8 +1758,10 @@ void GLDevice::Init(GLWindow *a2, const char *a3, uint32_t a4, GLTextureFormat a
         v6 = a5;
     }
 
-    this->m_Context->SetContextFormat(v6, 1);
     this->m_Context->SetWindow(a2, false);
+    this->m_Context->SetContextFormat(v6, 1);
+
+    this->m_Context->MakeCurrent(true);
 
     // TODO
     // if (dword_10329E4 == dword_10329E0)

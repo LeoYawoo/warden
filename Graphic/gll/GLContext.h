@@ -39,8 +39,8 @@ public:
 
     // Static variables
     static QOpenGLContext *s_MainContext;
-    static Blizzard::Thread::TLSSlot s_CurrentContext;
-    static Blizzard::Thread::TLSSlot s_CurrentGLContext;
+    static QOpenGLContext *s_CurrentContext;
+    static GLContext *s_CurrentGLContext;
     static int s_DesktopMode;
     int sampleCount;
 
