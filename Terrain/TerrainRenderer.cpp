@@ -180,6 +180,9 @@ void TerrainRenderer::Render() {
     device->SetShader(GLShader::eVertexShader, nullptr);
     device->SetShader(GLShader::ePixelShader, nullptr);
 
+    float worldIdentity[16] = {1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1};
+    device->SetTransform(0x57524C44 /*'WRLD'*/, worldIdentity);
+
     device->SetVertexBuffer(0, m_vbo, 0, sizeof(TerrainVertex));
     device->SetVertexFormat(&m_vertexFormat);
     device->SetIndexBuffer(m_ibo);

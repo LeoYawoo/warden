@@ -13,6 +13,7 @@
 #include "Graphic/Gx.h"
 #include "Graphic/CCamera.h"
 #include "Graphic/gll/GLDevice.h"
+#include "glad/glad.h"
 
 
 int32_t Screen::s_captureScreen = 0;
@@ -62,6 +63,10 @@ int32_t OnPaint(const void *a1, void *a2) {
     // Save viewport
     float minX, maxX, minY, maxY, minZ, maxZ;
     GxXformViewport(minX, maxX, minY, maxY, minZ, maxZ);
+
+    // Test clear to verify GL context works
+    glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render terrain before UI layers
     TerrainRenderer *terrain = CWorld::GetTerrain();

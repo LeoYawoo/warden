@@ -803,7 +803,7 @@ void GLDevice::ApplyGLStates(const GLStates &states, bool force) {
     }
 
     if (this->m_States.shader.vertexShaderEnable != states.shader.vertexShaderEnable || force) {
-        if (states.shader.vertexShaderEnable) {
+        if (states.shader.vertexShaderEnable && this->glBindProgramARB) {
             glEnable(GL_VERTEX_PROGRAM_ARB);
         } else {
             glDisable(GL_VERTEX_PROGRAM_ARB);
@@ -816,7 +816,7 @@ void GLDevice::ApplyGLStates(const GLStates &states, bool force) {
     }
 
     if (this->m_States.shader.pixelShaderEnable != states.shader.pixelShaderEnable || force) {
-        if (states.shader.pixelShaderEnable) {
+        if (states.shader.pixelShaderEnable && this->glBindProgramARB) {
             glEnable(GL_FRAGMENT_PROGRAM_ARB);
         } else {
             glDisable(GL_FRAGMENT_PROGRAM_ARB);
@@ -1794,10 +1794,11 @@ void GLDevice::Init(GLAbstractWindow *a2, const char *a3, uint32_t a4, GLTexture
 
     ++GLDevice::m_StaticResourcesRefCount;
 
-    if (!this->m_WorkerDevice) {
-        GLWorker *v11 = new GLWorker(this);
-        this->m_TexWorker = v11;
-    }
+    // TODO: GLWorker crashes DrvPresentBuffers with Mesa llvmpipe
+    // if (!this->m_WorkerDevice) {
+    //     GLWorker *v11 = new GLWorker(this);
+    //     this->m_TexWorker = v11;
+    // }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -2530,7 +2531,7 @@ void GLDevice::SetShader(GLShader::ShaderType shaderType, GLShader *shader) {
 
     if (shaderType == GLShader::eVertexShader) {
         if (this->m_States.shader.vertexShaderEnable != enable) {
-            if (enable) {
+            if (enable && this->glBindProgramARB) {
                 glEnable(GL_VERTEX_PROGRAM_ARB);
             } else {
                 glDisable(GL_VERTEX_PROGRAM_ARB);
@@ -2542,7 +2543,7 @@ void GLDevice::SetShader(GLShader::ShaderType shaderType, GLShader *shader) {
         this->m_VertexShader = shader;
     } else if (shaderType == GLShader::ePixelShader) {
         if (this->m_States.shader.pixelShaderEnable != enable) {
-            if (enable) {
+            if (enable && this->glBindProgramARB) {
                 glEnable(GL_FRAGMENT_PROGRAM_ARB);
             } else {
                 glDisable(GL_FRAGMENT_PROGRAM_ARB);

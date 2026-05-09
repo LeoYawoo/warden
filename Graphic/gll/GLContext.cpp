@@ -150,11 +150,9 @@ void GLContext::SetContextFormat(GLTextureFormat textureFormat, uint32_t sampleC
         auto &contextInfo = m_Contexts[key];
         contextInfo.sampleCount = sampleCount;
 
-        // 配置 QSurfaceFormat
-        QSurfaceFormat format = QSurfaceFormat::defaultFormat();
-        format.setProfile(QSurfaceFormat::CompatibilityProfile);
+        // 配置 QSurfaceFormat - minimal settings for Mesa/llvmpipe compat
+        QSurfaceFormat format;
         format.setSwapInterval(0);
-        format.setOption(QSurfaceFormat::DeprecatedFunctions);
 
         // 根据 GLTextureFormat 设置深度和模板缓冲区大小
         switch (textureFormat) {
