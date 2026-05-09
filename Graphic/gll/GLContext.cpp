@@ -2,6 +2,7 @@
 #include "Graphic/gll/GLDevice.h"
 #include "Storm/Debug.h"
 #include "glad/glad.h"
+#include "Common/DebugOut.h"
 
 QOpenGLContext *GLContext::s_MainContext;
 QOpenGLContext *GLContext::s_CurrentContext;
@@ -99,6 +100,7 @@ void GLContext::MakeCurrent(bool a2) {
     }
 
     if (this->m_Context->context != GLContext::GetCurrentContext()) {
+        LOG("[GLContext] MakeCurrent: switching context, window=%p a2=%d", (void*)this->m_Window, (int)a2);
         int32_t mtglEnabled = 0;
         GLDevice *device = GLDevice::Get();
         if (GLContext::GetCurrentContext() && device) {
@@ -106,6 +108,7 @@ void GLContext::MakeCurrent(bool a2) {
             glFlush();
         }
         bool madeCurrent = this->m_Context->context->makeCurrent(this->m_Window);
+        LOG("[GLContext] makeCurrent() returned %d", (int)madeCurrent);
         if (!madeCurrent) {
             BLIZZARD_ASSERT(!"Failed to make QOpenGLContext current");
         }
@@ -114,10 +117,14 @@ void GLContext::MakeCurrent(bool a2) {
         GLContext::SetCurrentGLContext(this);
 
         if (!s_gladInitialized) {
-            if (!gladLoadGLLoader(&QtGLADLoadFunc)) {
+            LOG("[GLContext] Initializing glad...");
+            bool gladOk = gladLoadGLLoader(&QtGLADLoadFunc);
+            LOG("[GLContext] gladLoadGLLoader returned %d", (int)gladOk);
+            if (!gladOk) {
                 BLIZZARD_ASSERT(!"Failed to initialize glad");
             }
             s_gladInitialized = true;
+            LOG("[GLContext] glad initialized, GL_VERSION=%s", (const char*)glGetString(GL_VERSION));
         }
 
         if (device) {
@@ -129,13 +136,20 @@ void GLContext::MakeCurrent(bool a2) {
                 m_Context->context->getProcAddress("glProgramStringARB"));
             device->glProgramEnvParameters4fvEXT = reinterpret_cast<PFNGLPROGRAMENVPARAMETERS4FVEXTPROC>(
                 m_Context->context->getProcAddress("glProgramEnvParameters4fvEXT"));
+            LOG("[GLContext] ARB: Bind=%p Gen=%p String=%p EnvParams=%p",
+                (void*)device->glBindProgramARB, (void*)device->glGenProgramsARB,
+                (void*)device->glProgramStringARB, (void*)device->glProgramEnvParameters4fvEXT);
         }
 
         if (device) {
+            LOG("[GLContext] Applying GL states...");
             device->ApplyGLStates(device->m_States, 1);
             device->ApplyGLBindings(device->m_States, 1);
             device->m_DefaultVertexArrayObject.ApplyGLStates(device->m_DefaultVertexArrayObject.m_GLStates);
+            LOG("[GLContext] GL states applied.");
         }
+    } else {
+        LOG("[GLContext] MakeCurrent: context already current, skipped");
     }
 }
 
@@ -152,8 +166,10 @@ void GLContext::SetContextFormat(GLTextureFormat textureFormat, uint32_t sampleC
 
         // 配置 QSurfaceFormat - use global default
         QSurfaceFormat format = QSurfaceFormat::defaultFormat();
-
-        // 根据 GLTextureFormat 设置深度和模板缓冲区大小
+        LOG("[GLContext] SetContextFormat: ver=%d.%d profile=%d opts=%d depth=%d stencil=%d samples=%d swapInterval=%d texFmt=%d",
+            format.majorVersion(), format.minorVersion(), (int)format.profile(), (int)format.options(),
+            format.depthBufferSize(), format.stencilBufferSize(), format.samples(), format.swapInterval(),
+            (int)textureFormat);
         switch (textureFormat) {
             case GLTF_INVALID:
                 // 不设置深度和模板缓冲区
@@ -187,6 +203,7 @@ void GLContext::SetContextFormat(GLTextureFormat textureFormat, uint32_t sampleC
         // 如果需要共享上下文，可以指定共享的上下文
         contextInfo.context->setShareContext(s_MainContext);
         bool createOk = contextInfo.context->create();
+        LOG("[GLContext] QOpenGLContext::create() returned %d", (int)createOk);
         if (!createOk) {
             BLIZZARD_ASSERT(!"Failed to create QOpenGLContext");
         }
@@ -237,7 +254,11 @@ void GLContext::SetWindow(GLAbstractWindow *pWindow, bool show) {
 }
 
 void GLContext::Swap() {
+    LOG("[GLContext] Swap: window=%p context=%p isValid=%d",
+        (void*)this->m_Window, (void*)this->m_Context->context,
+        this->m_Context->context ? (int)this->m_Context->context->isValid() : 0);
     this->m_Context->context->swapBuffers(this->m_Window);
+    LOG("[GLContext] Swap completed");
 }
 
 void GLContext::Update() {

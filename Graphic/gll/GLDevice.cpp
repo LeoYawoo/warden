@@ -8,6 +8,7 @@
 #include <cstring>
 #include <type_traits>
 #include <iostream>
+#include "Common/DebugOut.h"
 
 
 #define GL_MAX_STREAM 4
@@ -1744,7 +1745,9 @@ void GLDevice::GLLDraw(GLEnum mode, uint32_t start, uint32_t end, uint32_t a5, u
 
 
 void GLDevice::Init(GLAbstractWindow *a2, const char *a3, uint32_t a4, GLTextureFormat a5) {
+    LOG("[GLDevice] Init START: name=%s window=%p", a3, (void*)a2);
     if (this->m_Init) {
+        LOG("[GLDevice] Init: already initialized, returning");
         return;
     }
 

@@ -5,6 +5,7 @@
 #include "Graphic/Types.h"
 #include <cmath>
 #include <algorithm>
+#include "Common/DebugOut.h"
 
 TerrainRenderer::TerrainRenderer() = default;
 
@@ -160,10 +161,12 @@ bool TerrainRenderer::CreateBuffers() {
 }
 
 void TerrainRenderer::Render() {
-    if (!IsValid()) return;
+    if (!IsValid()) { LOG("[Terrain] Render: not valid, skipping"); return; }
 
     GLDevice *device = GLDevice::Get();
-    if (!device) return;
+    if (!device) { LOG("[Terrain] Render: no device, skipping"); return; }
+
+    LOG("[Terrain] Render: saving state, setting FFP...");
 
     bool savedDepthTest    = device->m_States.depth.testEnable;
     bool savedDepthWrite   = device->m_States.depth.writeMask;
@@ -187,13 +190,17 @@ void TerrainRenderer::Render() {
     device->SetVertexFormat(&m_vertexFormat);
     device->SetIndexBuffer(m_ibo);
 
+    LOG("[Terrain] GLLDraw: vertices=%u indices=%u", m_vertexCount, m_indexCount);
     device->GLLDraw(GL_TRIANGLES, 0, m_vertexCount - 1, 0, 0, m_indexCount);
+    LOG("[Terrain] GLLDraw done");
 
     device->SetDepthTestEnable(savedDepthTest);
     device->SetDepthWriteMask(savedDepthWrite);
     device->SetDepthTestFunc(savedDepthFunc);
     device->SetLightingEnable(savedLighting);
     device->SetCullMode(savedCullMode);
+
+    LOG("[Terrain] State restored, marking dirty");
 
     if (g_theGxDevicePtr) {
         g_theGxDevicePtr->IRsDirty(GxRs_DepthTest);

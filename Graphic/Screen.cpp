@@ -14,6 +14,7 @@
 #include "Graphic/CCamera.h"
 #include "Graphic/gll/GLDevice.h"
 #include "glad/glad.h"
+#include <cstdio>
 
 
 int32_t Screen::s_captureScreen = 0;
@@ -30,6 +31,8 @@ int32_t OnIdle(const EVENT_DATA_IDLE *data, void *a2) {
 }
 
 int32_t OnPaint(const void *a1, void *a2) {
+    fprintf(stderr, "[Screen] OnPaint START\n"); fflush(stderr);
+
     // TODO
     // if (!g_theGxDevicePtr || !g_theGxDevicePtr->CapsHasContext(-1) || !g_theGxDevicePtr->CapsIsWindowVisible(-1)) {
     //     // TODO
@@ -65,16 +68,20 @@ int32_t OnPaint(const void *a1, void *a2) {
     GxXformViewport(minX, maxX, minY, maxY, minZ, maxZ);
 
     // Test clear to verify GL context works
+    fprintf(stderr, "[Screen] glClear to blue...\n"); fflush(stderr);
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    fprintf(stderr, "[Screen] glClear done\n"); fflush(stderr);
 
     // Render terrain before UI layers
     TerrainRenderer *terrain = CWorld::GetTerrain();
+    fprintf(stderr, "[Screen] TerrainRenderer=%p valid=%d\n", (void*)terrain, terrain ? terrain->IsValid() : 0); fflush(stderr);
     if (terrain && terrain->IsValid()) {
         CRect windowSize;
         GxCapsWindowSize(windowSize);
         float w = windowSize.maxX - windowSize.minX;
         float h = windowSize.maxY - windowSize.minY;
+        fprintf(stderr, "[Screen] window size: %.0f x %.0f\n", w, h); fflush(stderr);
         if (w > 0 && h > 0) {
             CRect projRect = {0.0f, 0.0f, w, h};
 
@@ -85,11 +92,16 @@ int32_t OnPaint(const void *a1, void *a2) {
             camera.m_fov.Set(0.8f);
             camera.m_zFar.Set(2000.0f);
             camera.m_zNear.Set(1.0f);
+            fprintf(stderr, "[Screen] Setting up camera...\n"); fflush(stderr);
             camera.SetupWorldProjection(projRect, 0);
 
+            fprintf(stderr, "[Screen] Calling terrain->Render()...\n"); fflush(stderr);
             terrain->Render();
+            fprintf(stderr, "[Screen] terrain->Render() done\n"); fflush(stderr);
         }
     }
+
+    fprintf(stderr, "[Screen] Layer loop, presentDisable=%d\n", Screen::s_presentDisable); fflush(stderr);
 
     // Walk the layer list forward (lowest z-order to highest) to paint visible layers
     for (auto layer = s_zOrderList.Head(); layer; layer = layer->zorderlink.Next()) {
@@ -156,11 +168,14 @@ int32_t OnPaint(const void *a1, void *a2) {
             return 1;
         }
 
+        fprintf(stderr, "[Screen] Calling GxSub682A00...\n"); fflush(stderr);
         GxSub682A00();
+        fprintf(stderr, "[Screen] GxSub682A00 done\n"); fflush(stderr);
     }
 
     Screen::s_elapsedSec = 0.0f;
 
+    fprintf(stderr, "[Screen] OnPaint END\n"); fflush(stderr);
     return 1;
 }
 
