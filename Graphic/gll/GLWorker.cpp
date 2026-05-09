@@ -57,7 +57,7 @@ void *GLWorker::Worker(void *userArg) {
 
 DWORD WINAPI SetupThreadFunction(LPVOID lpParameter) {
     GLWorker *worker = static_cast<GLWorker *>(lpParameter);
-    worker->Worker(nullptr);
+    worker->Worker(worker);
     return 0;
 }
 

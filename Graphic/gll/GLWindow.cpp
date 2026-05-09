@@ -75,8 +75,7 @@ void GLWindow::SetCallbacks(GLWindowCallbacks *callbacks) {
 void GLWindow::SetOpenGLContext(GLContext *context) {
     setSurfaceType(OpenGLSurface);
 
-    QSurfaceFormat fmt;
-    fmt.setVersion(2, 1);
+    QSurfaceFormat fmt = QSurfaceFormat::defaultFormat();
     fmt.setProfile(QSurfaceFormat::CompatibilityProfile);
     fmt.setOption(QSurfaceFormat::DeprecatedFunctions);
 

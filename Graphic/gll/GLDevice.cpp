@@ -297,11 +297,15 @@ void GLDevice::ApplyGLBindings(const GLStates &states, bool a3) {
     }
 
     if (this->m_States.binding.vertexProgram != states.binding.vertexProgram || a3) {
-        glBindProgramARB(GL_VERTEX_PROGRAM_ARB, states.binding.vertexProgram);
+        if (this->glBindProgramARB) {
+            this->glBindProgramARB(GL_VERTEX_PROGRAM_ARB, states.binding.vertexProgram);
+        }
     }
 
     if (this->m_States.binding.pixelProgram != states.binding.pixelProgram || a3) {
-        glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, states.binding.pixelProgram);
+        if (this->glBindProgramARB) {
+            this->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, states.binding.pixelProgram);
+        }
     }
 
     if (this->m_States.binding.glslProgram != states.binding.glslProgram || a3) {
@@ -806,8 +810,10 @@ void GLDevice::ApplyGLStates(const GLStates &states, bool force) {
         }
     }
 
-    glProgramEnvParameters4fvEXT(GL_VERTEX_PROGRAM_ARB, 0, 256,
-                                       (GLfloat *) states.shader.vertexShaderConst);
+    if (this->glProgramEnvParameters4fvEXT) {
+        this->glProgramEnvParameters4fvEXT(GL_VERTEX_PROGRAM_ARB, 0, 256,
+                                           (GLfloat *) states.shader.vertexShaderConst);
+    }
 
     if (this->m_States.shader.pixelShaderEnable != states.shader.pixelShaderEnable || force) {
         if (states.shader.pixelShaderEnable) {
@@ -817,8 +823,10 @@ void GLDevice::ApplyGLStates(const GLStates &states, bool force) {
         }
     }
 
-    glProgramEnvParameters4fvEXT(GL_FRAGMENT_PROGRAM_ARB, 0, 64,
-                                       (GLfloat *) states.shader.pixelShaderConst);
+    if (this->glProgramEnvParameters4fvEXT) {
+        this->glProgramEnvParameters4fvEXT(GL_FRAGMENT_PROGRAM_ARB, 0, 64,
+                                           (GLfloat *) states.shader.pixelShaderConst);
+    }
 
     if (memcmp(&this->m_States.clear.clearColor, &states.clear.clearColor, sizeof(GLColor4f)) || force) {
         glClearColor(
@@ -919,8 +927,8 @@ void GLDevice::ApplyShaderConstants() {
             auto start = this->m_DirtyVertexShaderConsts.start;
             auto end = this->m_DirtyVertexShaderConsts.end;
 
-            if (start != end) {
-                glProgramEnvParameters4fvEXT(
+            if (start != end && this->glProgramEnvParameters4fvEXT) {
+                this->glProgramEnvParameters4fvEXT(
                         GL_VERTEX_PROGRAM_ARB,
                         start,
                         end - start,
@@ -942,8 +950,8 @@ void GLDevice::ApplyShaderConstants() {
             auto start = this->m_DirtyPixelShaderConsts.start;
             auto end = this->m_DirtyPixelShaderConsts.end;
 
-            if (start != end) {
-                glProgramEnvParameters4fvEXT(
+            if (start != end && this->glProgramEnvParameters4fvEXT) {
+                this->glProgramEnvParameters4fvEXT(
                         GL_FRAGMENT_PROGRAM_ARB,
                         start,
                         end - start,
@@ -1075,13 +1083,13 @@ void GLDevice::BindShader(GLShader *shader) {
     BLIZZARD_ASSERT(shader);
 
     if (shader->var5 == GL_FRAGMENT_PROGRAM_ARB) {
-        if (this->m_States.binding.pixelProgram != shader->m_ShaderID) {
-            glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, shader->m_ShaderID);
+        if (this->m_States.binding.pixelProgram != shader->m_ShaderID && this->glBindProgramARB) {
+            this->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, shader->m_ShaderID);
             this->m_States.binding.pixelProgram = shader->m_ShaderID;
         }
     } else if (shader->var5 == GL_VERTEX_PROGRAM_ARB) {
-        if (this->m_States.binding.vertexProgram != shader->m_ShaderID) {
-            glBindProgramARB(GL_VERTEX_PROGRAM_ARB, shader->m_ShaderID);
+        if (this->m_States.binding.vertexProgram != shader->m_ShaderID && this->glBindProgramARB) {
+            this->glBindProgramARB(GL_VERTEX_PROGRAM_ARB, shader->m_ShaderID);
             this->m_States.binding.vertexProgram = shader->m_ShaderID;
         }
     } else {

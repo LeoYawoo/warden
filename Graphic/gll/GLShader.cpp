@@ -100,14 +100,16 @@ void GLShader::ImmediateCompile(GLShaderLogInfo *logInfo) {
             }
         }
 
-        this->m_Device->BindShader(this);
+        if (this->m_Device->glProgramStringARB) {
+            this->m_Device->BindShader(this);
 
-        const char *arbCode = this->GetCode().c_str();
-        size_t arbLen = strlen(arbCode);
+            const char *arbCode = this->GetCode().c_str();
+            size_t arbLen = strlen(arbCode);
 
-        this->m_Device->glProgramStringARB(this->var5, GL_PROGRAM_FORMAT_ASCII_ARB, arbLen, arbCode);
+            this->m_Device->glProgramStringARB(this->var5, GL_PROGRAM_FORMAT_ASCII_ARB, arbLen, arbCode);
 
-        BLIZZARD_ASSERT(this->CheckErrorsARB(logInfo));
+            BLIZZARD_ASSERT(this->CheckErrorsARB(logInfo));
+        }
     } else {
         // TODO
         // - handle GLSL shaders

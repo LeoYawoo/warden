@@ -13,6 +13,7 @@ static void *QtGLADLoadFunc(const char *name) {
     return reinterpret_cast<void *>(ctx->getProcAddress(QByteArray(name)));
 }
 int GLContext::s_DesktopMode;
+static bool s_gladInitialized = false;
 
 GLContext::Context::~Context() {
     delete context;
@@ -104,13 +105,19 @@ void GLContext::MakeCurrent(bool a2) {
             mtglEnabled = this->m_MTGLEnabled;
             glFlush();
         }
-        this->m_Context->context->makeCurrent(this->m_Window);
+        bool madeCurrent = this->m_Context->context->makeCurrent(this->m_Window);
+        if (!madeCurrent) {
+            BLIZZARD_ASSERT(!"Failed to make QOpenGLContext current");
+        }
 
         GLContext::SetCurrentContext(this->m_Context->context);
         GLContext::SetCurrentGLContext(this);
 
-        if (!gladLoadGLLoader(&QtGLADLoadFunc)) {
-            BLIZZARD_ASSERT(!"Failed to initialize glad");
+        if (!s_gladInitialized) {
+            if (!gladLoadGLLoader(&QtGLADLoadFunc)) {
+                BLIZZARD_ASSERT(!"Failed to initialize glad");
+            }
+            s_gladInitialized = true;
         }
 
         if (device) {
@@ -144,8 +151,7 @@ void GLContext::SetContextFormat(GLTextureFormat textureFormat, uint32_t sampleC
         contextInfo.sampleCount = sampleCount;
 
         // 配置 QSurfaceFormat
-        QSurfaceFormat format;
-        format.setVersion(2, 1);
+        QSurfaceFormat format = QSurfaceFormat::defaultFormat();
         format.setProfile(QSurfaceFormat::CompatibilityProfile);
         format.setSwapInterval(0);
         format.setOption(QSurfaceFormat::DeprecatedFunctions);
@@ -183,9 +189,9 @@ void GLContext::SetContextFormat(GLTextureFormat textureFormat, uint32_t sampleC
         contextInfo.context->setFormat(format);
         // 如果需要共享上下文，可以指定共享的上下文
         contextInfo.context->setShareContext(s_MainContext);
-        bool createContext = contextInfo.context->create();
-        if (!createContext) {
-            // 处理创建失败的情况
+        bool createOk = contextInfo.context->create();
+        if (!createOk) {
+            BLIZZARD_ASSERT(!"Failed to create QOpenGLContext");
         }
 
         // 将创建好的上下文信息保存
