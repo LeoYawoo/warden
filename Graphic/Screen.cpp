@@ -8,6 +8,11 @@
 #include "Storm/Filesystem.h"
 #include "Common/Region.h"
 #include <storm/String.h>
+#include "Game/CWorld.h"
+#include "Terrain/TerrainRenderer.h"
+#include "Graphic/Gx.h"
+#include "Graphic/CCamera.h"
+#include "Graphic/gll/GLDevice.h"
 
 
 int32_t Screen::s_captureScreen = 0;
@@ -57,6 +62,29 @@ int32_t OnPaint(const void *a1, void *a2) {
     // Save viewport
     float minX, maxX, minY, maxY, minZ, maxZ;
     GxXformViewport(minX, maxX, minY, maxY, minZ, maxZ);
+
+    // Render terrain before UI layers
+    TerrainRenderer *terrain = CWorld::GetTerrain();
+    if (terrain && terrain->IsValid()) {
+        CRect windowSize;
+        GxCapsWindowSize(windowSize);
+        float w = windowSize.maxX - windowSize.minX;
+        float h = windowSize.maxY - windowSize.minY;
+        if (w > 0 && h > 0) {
+            CRect projRect = {0.0f, 0.0f, w, h};
+
+            CCamera camera;
+            camera.m_position.Set(C3Vector(150.0f, 120.0f, 150.0f));
+            camera.m_target.Set(C3Vector(128.0f, 0.0f, 128.0f));
+            camera.m_distance.Set(1.0f);
+            camera.m_fov.Set(0.8f);
+            camera.m_zFar.Set(2000.0f);
+            camera.m_zNear.Set(1.0f);
+            camera.SetupWorldProjection(projRect, 0);
+
+            terrain->Render();
+        }
+    }
 
     // Walk the layer list forward (lowest z-order to highest) to paint visible layers
     for (auto layer = s_zOrderList.Head(); layer; layer = layer->zorderlink.Next()) {
