@@ -33,6 +33,8 @@ int32_t OnIdle(const EVENT_DATA_IDLE *data, void *a2) {
 int32_t OnPaint(const void *a1, void *a2) {
     static int paintCount = 0;
     paintCount++;
+    FILE *plog = fopen("D:/dev_qt/w3/warden/build/debug_gll.log", "a");
+    fprintf(plog, "[OnPaint] frame=%d\n", paintCount); fclose(plog);
 
     // TODO
     // if (!g_theGxDevicePtr || !g_theGxDevicePtr->CapsHasContext(-1) || !g_theGxDevicePtr->CapsIsWindowVisible(-1)) {
@@ -91,6 +93,18 @@ int32_t OnPaint(const void *a1, void *a2) {
             camera.SetupWorldProjection(projRect, 0);
 
             terrain->Render();
+
+            // Diagnostic: read back center pixel to verify terrain rendered
+            glFinish();
+            unsigned char pixel[4] = {0,0,0,0};
+            glReadPixels(w/2, h/2, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+            FILE *dlog = fopen("D:/dev_qt/w3/warden/build/debug_gll.log", "a");
+            fprintf(dlog, "[OnPaint] after terrain: pixel at center=(%d,%d,%d,%d) GLerr=%d viewport=%d,%d,%d,%d\n",
+                pixel[0], pixel[1], pixel[2], pixel[3], (int)glGetError(),
+                (int)(1024*w/1024), 0, (int)w, (int)h);
+            GLint curFBO = 0; glGetIntegerv(GL_FRAMEBUFFER_BINDING, &curFBO);
+            fprintf(dlog, "[OnPaint] current FBO binding=%d\n", curFBO);
+            fflush(dlog); fclose(dlog);
         }
     }
 
