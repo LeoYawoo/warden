@@ -18,6 +18,8 @@ int main(int argc, char **argv) {
 
     QSurfaceFormat fmt;
     fmt.setSwapInterval(0);
+    fmt.setVersion(4, 6);
+    fmt.setProfile(QSurfaceFormat::CompatibilityProfile);
     QSurfaceFormat::setDefaultFormat(fmt);
 
     QGuiApplication app(argc, argv);

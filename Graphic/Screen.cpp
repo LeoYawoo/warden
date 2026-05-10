@@ -73,40 +73,26 @@ int32_t OnPaint(const void *a1, void *a2) {
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Render terrain
-    TerrainRenderer *terrain = CWorld::GetTerrain();
-    if (terrain && terrain->IsValid()) {
-        CRect windowSize;
-        GxCapsWindowSize(windowSize);
-        float w = windowSize.maxX - windowSize.minX;
-        float h = windowSize.maxY - windowSize.minY;
-        if (w > 0 && h > 0) {
-            CRect projRect = {0.0f, 0.0f, w, h};
-
-            CCamera camera;
-            camera.m_position.Set(C3Vector(128.0f, -50.0f, 200.0f));
-            camera.m_target.Set(C3Vector(128.0f, 128.0f, 0.0f));
-            camera.m_distance.Set(1.0f);
-            camera.m_fov.Set(1.2f);
-            camera.m_zFar.Set(2000.0f);
-            camera.m_zNear.Set(1.0f);
-            camera.SetupWorldProjection(projRect, 0);
-
-            terrain->Render();
-
-            // Diagnostic: read back center pixel to verify terrain rendered
-            glFinish();
-            unsigned char pixel[4] = {0,0,0,0};
-            glReadPixels(w/2, h/2, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
-            FILE *dlog = fopen("D:/dev_qt/w3/warden/build/debug_gll.log", "a");
-            fprintf(dlog, "[OnPaint] after terrain: pixel at center=(%d,%d,%d,%d) GLerr=%d viewport=%d,%d,%d,%d\n",
-                pixel[0], pixel[1], pixel[2], pixel[3], (int)glGetError(),
-                (int)(1024*w/1024), 0, (int)w, (int)h);
-            GLint curFBO = 0; glGetIntegerv(GL_FRAMEBUFFER_BINDING, &curFBO);
-            fprintf(dlog, "[OnPaint] current FBO binding=%d\n", curFBO);
-            fflush(dlog); fclose(dlog);
-        }
-    }
+    // STEP 1: Verify FFP immediate mode works - draw a big red triangle
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glBegin(GL_TRIANGLES);
+    glColor3f(1.0f, 0.0f, 0.0f); glVertex2f(-0.8f, -0.8f);
+    glColor3f(0.0f, 1.0f, 0.0f); glVertex2f( 0.8f, -0.8f);
+    glColor3f(0.0f, 0.0f, 1.0f); glVertex2f( 0.0f,  0.8f);
+    glEnd();
+    glFinish();
+    unsigned char px[4];
+    glReadPixels(512, 384, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, px);
+    GLenum triErr = glGetError();
+    FILE *dlog = fopen("D:/dev_qt/w3/warden/build/debug_gll.log", "a");
+    fprintf(dlog, "[OnPaint] triangle err=%d center_pixel=(%d,%d,%d,%d)\n",
+        (int)triErr, px[0], px[1], px[2], px[3]);
+    fflush(dlog); fclose(dlog);
 
 #if 0  // Disable UI layer rendering for terrain debug
     // Walk the layer list forward (lowest z-order to highest) to paint visible layers
