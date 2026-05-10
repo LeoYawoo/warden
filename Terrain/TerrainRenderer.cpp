@@ -170,11 +170,6 @@ void TerrainRenderer::Render() {
     GLDevice *device = GLDevice::Get();
     if (!device) { LOG("[Terrain] Render: no device, skipping"); return; }
 
-    if (renderCount > 1) {
-        LOG("[Terrain] Render: skipping draw on frame %d (debug)", renderCount);
-        return;
-    }
-
     LOG("[Terrain] Render: saving state, setting FFP...");
 
     bool savedDepthTest    = device->m_States.depth.testEnable;

@@ -43,7 +43,11 @@ void CCamera::SetupWorldProjection(const CRect &projectionRect, uint32_t flags) 
     GxXformSetProjection(projMat);
 
     C44Matrix viewMat;
-    C3Vector cameraPos = {0.0f, 0.0f, 0.0f};
+    C3Vector cameraPos = {
+            this->m_position.m_data.x,
+            this->m_position.m_data.y,
+            this->m_position.m_data.z
+    };
     C3Vector cameraVec = {
             this->m_target.m_data.x - this->m_position.m_data.x,
             this->m_target.m_data.y - this->m_position.m_data.y,

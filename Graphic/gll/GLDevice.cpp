@@ -1742,21 +1742,31 @@ void GLDevice::GLLDraw(GLEnum mode, uint32_t start, uint32_t end, uint32_t a5, u
                         ? reinterpret_cast<void *>(a6 << v18)
                         : buffer->m_Data + (a6 << v18);
 
-        LOG("[GLLDraw] glDrawRangeElements(mode=%u, start=%u, end=%u, count=%u, fmt=%d, indices=%p)",
-            mode, start, end, count, (int)buffer->m_IndexFormat, indices);
-        fflush(stderr);
-
-        // Check GL errors before draw
-        GLenum preDrawErr = glGetError();
-        if (preDrawErr) LOG("[GLLDraw] WARN: GL error before draw: %d", (int)preDrawErr);
-
-        // Force re-bind VBO and IBO before draw (bypass state cache)
         GLBuffer *vb0 = this->m_VertexArrayObject->m_Properties.m_VertexBuffer[0];
-        if (vb0) glBindBuffer(GL_ARRAY_BUFFER, vb0->m_BufferID);
-        if (buffer) glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->m_BufferID);
+        FILE *flog = fopen("D:/dev_qt/w3/warden/build/debug_gll.log", "a");
+        fprintf(flog, "[GLLDraw] GL_VERSION=%s GL_RENDERER=%s\n",
+            (const char*)glGetString(GL_VERSION), (const char*)glGetString(GL_RENDERER));
+        fprintf(flog, "[GLLDraw] glDrawElements fn_ptr=%p mode=%u count=%u fmt=0x%x indices=%p\n",
+            (void*)glad_glDrawElements, mode, count, (int)buffer->m_IndexFormat, indices);
+        fprintf(flog, "[GLLDraw] VBO: id=%u size=%u ptr=%p  IBO: id=%u size=%u ptr=%p UsingVBO=%d\n",
+            vb0 ? vb0->m_BufferID : 0, vb0 ? vb0->m_Size : 0, (void*)vb0,
+            buffer ? buffer->m_BufferID : 0, buffer ? buffer->m_Size : 0, (void*)buffer,
+            (int)GLBuffer::m_UsingVBO);
+        fprintf(flog, "[GLLDraw] VAO vertexAttribs: pos.enable=%d norm.enable=%d col0.enable=%d\n",
+            (int)this->m_DefaultVertexArrayObject.m_GLStates.position.enable,
+            (int)this->m_DefaultVertexArrayObject.m_GLStates.normal.enable,
+            (int)this->m_DefaultVertexArrayObject.m_GLStates.color0.enable);
+        fprintf(flog, "[GLLDraw] GL error codes: pre=");
+        while (1) { GLenum e = glGetError(); fprintf(flog, "%d ", (int)e); if (!e) break; }
+        fprintf(flog, "\n");
+        fflush(flog);
 
-        glDrawRangeElements(mode, start, end, count, buffer->m_IndexFormat, indices);
-        LOG("[GLLDraw] glDrawRangeElements done, err=%d", (int)glGetError());
+        glDrawElements(mode, count, buffer->m_IndexFormat, indices);
+
+        fprintf(flog, "[GLLDraw] glDrawElements returned\n");
+        fprintf(flog, "[GLLDraw] post-draw glGetError=%d\n", (int)glGetError());
+        fflush(flog);
+        fclose(flog);
     } else {
         glDrawArrays(mode, start, end - start);
     }
