@@ -162,15 +162,10 @@ bool TerrainRenderer::CreateBuffers() {
 }
 
 void TerrainRenderer::Render() {
-    static int renderCount = 0;
-    renderCount++;
-    LOG("[Terrain] Render frame=%d", renderCount);
-    if (!IsValid()) { LOG("[Terrain] Render: not valid, skipping"); return; }
+    if (!IsValid()) return;
 
     GLDevice *device = GLDevice::Get();
-    if (!device) { LOG("[Terrain] Render: no device, skipping"); return; }
-
-    LOG("[Terrain] Render: saving state, setting FFP...");
+    if (!device) return;
 
     bool savedDepthTest    = device->m_States.depth.testEnable;
     bool savedDepthWrite   = device->m_States.depth.writeMask;
@@ -194,19 +189,13 @@ void TerrainRenderer::Render() {
     device->SetVertexFormat(&m_vertexFormat);
     device->SetIndexBuffer(m_ibo);
 
-    LOG("[Terrain] GLLDraw: vertices=%u indices=%u", m_vertexCount, m_indexCount);
-    GLenum preErr = glGetError();
     device->GLLDraw(GL_TRIANGLES, 0, m_vertexCount - 1, 0, 0, m_indexCount);
-    GLenum postErr = glGetError();
-    LOG("[Terrain] GLLDraw done preErr=%d postErr=%d", (int)preErr, (int)postErr);
 
     device->SetDepthTestEnable(savedDepthTest);
     device->SetDepthWriteMask(savedDepthWrite);
     device->SetDepthTestFunc(savedDepthFunc);
     device->SetLightingEnable(savedLighting);
     device->SetCullMode(savedCullMode);
-
-    LOG("[Terrain] State restored, marking dirty");
 
     if (g_theGxDevicePtr) {
         g_theGxDevicePtr->IRsDirty(GxRs_DepthTest);

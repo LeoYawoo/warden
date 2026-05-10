@@ -33,7 +33,6 @@ int32_t OnIdle(const EVENT_DATA_IDLE *data, void *a2) {
 int32_t OnPaint(const void *a1, void *a2) {
     static int paintCount = 0;
     paintCount++;
-    fprintf(stderr, "[Screen] OnPaint START frame=%d\n", paintCount); fflush(stderr);
 
     // TODO
     // if (!g_theGxDevicePtr || !g_theGxDevicePtr->CapsHasContext(-1) || !g_theGxDevicePtr->CapsIsWindowVisible(-1)) {
@@ -69,44 +68,31 @@ int32_t OnPaint(const void *a1, void *a2) {
     float minX, maxX, minY, maxY, minZ, maxZ;
     GxXformViewport(minX, maxX, minY, maxY, minZ, maxZ);
 
-    // Test clear to verify GL context works
-    fprintf(stderr, "[Screen] glClear to blue...\n"); fflush(stderr);
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    GLenum clearErr = glGetError();
-    fprintf(stderr, "[Screen] glClear done, err=%d\n", (int)clearErr); fflush(stderr);
-    // Clear any accumulated GL errors before terrain
-    while (glGetError() != GL_NO_ERROR) {}
 
-    // Render terrain before UI layers
+    // Render terrain
     TerrainRenderer *terrain = CWorld::GetTerrain();
-    fprintf(stderr, "[Screen] TerrainRenderer=%p valid=%d\n", (void*)terrain, terrain ? terrain->IsValid() : 0); fflush(stderr);
     if (terrain && terrain->IsValid()) {
         CRect windowSize;
         GxCapsWindowSize(windowSize);
         float w = windowSize.maxX - windowSize.minX;
         float h = windowSize.maxY - windowSize.minY;
-        fprintf(stderr, "[Screen] window size: %.0f x %.0f\n", w, h); fflush(stderr);
         if (w > 0 && h > 0) {
             CRect projRect = {0.0f, 0.0f, w, h};
 
             CCamera camera;
-            camera.m_position.Set(C3Vector(150.0f, 150.0f, 100.0f));
-            camera.m_target.Set(C3Vector(128.0f, 128.0f, 20.0f));
+            camera.m_position.Set(C3Vector(128.0f, -50.0f, 200.0f));
+            camera.m_target.Set(C3Vector(128.0f, 128.0f, 0.0f));
             camera.m_distance.Set(1.0f);
-            camera.m_fov.Set(0.8f);
+            camera.m_fov.Set(1.2f);
             camera.m_zFar.Set(2000.0f);
             camera.m_zNear.Set(1.0f);
-            fprintf(stderr, "[Screen] Setting up camera...\n"); fflush(stderr);
             camera.SetupWorldProjection(projRect, 0);
 
-            fprintf(stderr, "[Screen] Calling terrain->Render()...\n"); fflush(stderr);
             terrain->Render();
-            fprintf(stderr, "[Screen] terrain->Render() done\n"); fflush(stderr);
         }
     }
-
-    fprintf(stderr, "[Screen] Layer loop SKIPPED for testing, presentDisable=%d\n", Screen::s_presentDisable); fflush(stderr);
 
 #if 0  // Disable UI layer rendering for terrain debug
     // Walk the layer list forward (lowest z-order to highest) to paint visible layers
@@ -175,14 +161,11 @@ int32_t OnPaint(const void *a1, void *a2) {
             return 1;
         }
 
-        fprintf(stderr, "[Screen] Calling GxSub682A00...\n"); fflush(stderr);
         GxSub682A00();
-        fprintf(stderr, "[Screen] GxSub682A00 done\n"); fflush(stderr);
     }
 
     Screen::s_elapsedSec = 0.0f;
 
-    fprintf(stderr, "[Screen] OnPaint END\n"); fflush(stderr);
     return 1;
 }
 
