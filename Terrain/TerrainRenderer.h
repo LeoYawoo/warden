@@ -23,12 +23,13 @@ public:
 private:
     void GenerateHeightmap();
     bool CreateBuffers();
+    bool CompileShaders();
 
 #pragma pack(push, 1)
     struct TerrainVertex {
-        float px, py, pz;       // slot 0: position  (glVertexPointer)
-        float nx, ny, nz;       // slot 3: normal    (glNormalPointer)
-        uint8_t r, g, b, a;     // slot 4: color     (glColorPointer)
+        float px, py, pz;       // slot 0: position
+        float nx, ny, nz;       // slot 1: normal
+        uint8_t r, g, b, a;     // slot 2: color
     };
 #pragma pack(pop)
 
@@ -44,4 +45,9 @@ private:
     GLBuffer *m_vbo = nullptr;
     GLBuffer *m_ibo = nullptr;
     GLVertexFormat m_vertexFormat;
+
+    // GLSL shader for core profile
+    uint32_t m_glslProgram = 0;
+    uint32_t m_vao = 0;
+    int32_t m_uniformMVP = -1;
 };

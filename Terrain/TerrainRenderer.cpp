@@ -3,8 +3,10 @@
 #include "Graphic/gll/GLVertexArray.h"
 #include "Graphic/Device.h"
 #include "Graphic/Types.h"
+#include "glad/glad.h"
 #include <cmath>
 #include <algorithm>
+#include <cstdio>
 #include "Common/DebugOut.h"
 
 TerrainRenderer::TerrainRenderer() = default;
@@ -158,50 +160,138 @@ bool TerrainRenderer::CreateBuffers() {
     m_vertexFormat.m_Attribs[1] = {0, 3, GLVT_FLOAT3, offsetof(TerrainVertex, nx)};
     m_vertexFormat.m_Attribs[2] = {0, 4, GLVT_UBYTE4N, offsetof(TerrainVertex, r)};
 
+    // Create VAO and set up vertex attributes (core profile)
+    glGenVertexArrays(1, &m_vao);
+    glBindVertexArray(m_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo->m_BufferID);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo->m_BufferID);
+
+    // position: location=0, 3 floats
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(TerrainVertex), (void*)0);
+    glEnableVertexAttribArray(0);
+    // normal: location=1, 3 floats
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(TerrainVertex), (void*)offsetof(TerrainVertex, nx));
+    glEnableVertexAttribArray(1);
+    // color: location=2, 4 unsigned bytes, normalized
+    glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(TerrainVertex), (void*)offsetof(TerrainVertex, r));
+    glEnableVertexAttribArray(2);
+
+    glBindVertexArray(0);
+
+    if (!CompileShaders()) {
+        Destroy();
+        return false;
+    }
+
     return true;
 }
 
+bool TerrainRenderer::CompileShaders() {
+    const char *vsSrc = R"(#version 330
+        layout(location = 0) in vec3 aPos;
+        layout(location = 1) in vec3 aNormal;
+        layout(location = 2) in vec4 aColor;
+        uniform mat4 uMVP;
+        out vec3 vNormal;
+        out vec4 vColor;
+        void main() {
+            gl_Position = uMVP * vec4(aPos, 1.0);
+            vNormal = aNormal;
+            vColor = aColor;
+        })";
+
+    const char *fsSrc = R"(#version 330
+        in vec3 vNormal;
+        in vec4 vColor;
+        out vec4 fragColor;
+        void main() {
+            // Simple directional light from above
+            vec3 lightDir = normalize(vec3(0.5, 0.5, 1.0));
+            vec3 n = normalize(vNormal);
+            float diff = max(dot(n, lightDir), 0.0);
+            float amb = 0.3;
+            vec3 lit = vColor.rgb * (amb + diff * 0.7);
+            fragColor = vec4(lit, 1.0);
+        })";
+
+    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vs, 1, &vsSrc, nullptr);
+    glCompileShader(vs);
+
+    GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fs, 1, &fsSrc, nullptr);
+    glCompileShader(fs);
+
+    GLint ok;
+    glGetShaderiv(vs, GL_COMPILE_STATUS, &ok);
+    if (!ok) { char buf[512]; glGetShaderInfoLog(vs, 512, nullptr, buf); fprintf(stderr, "Terrain VS error: %s\n", buf); }
+
+    glGetShaderiv(fs, GL_COMPILE_STATUS, &ok);
+    if (!ok) { char buf[512]; glGetShaderInfoLog(fs, 512, nullptr, buf); fprintf(stderr, "Terrain FS error: %s\n", buf); }
+
+    m_glslProgram = glCreateProgram();
+    glAttachShader(m_glslProgram, vs);
+    glAttachShader(m_glslProgram, fs);
+    glLinkProgram(m_glslProgram);
+
+    glGetProgramiv(m_glslProgram, GL_LINK_STATUS, &ok);
+    if (!ok) { char buf[512]; glGetProgramInfoLog(m_glslProgram, 512, nullptr, buf); fprintf(stderr, "Terrain link error: %s\n", buf); }
+
+    glDeleteShader(vs);
+    glDeleteShader(fs);
+
+    m_uniformMVP = glGetUniformLocation(m_glslProgram, "uMVP");
+
+    return ok != 0;
+}
+
 void TerrainRenderer::Render() {
-    if (!IsValid()) return;
+    if (!IsValid() || !m_glslProgram) return;
 
     GLDevice *device = GLDevice::Get();
     if (!device) return;
 
-    bool savedDepthTest    = device->m_States.depth.testEnable;
-    bool savedDepthWrite   = device->m_States.depth.writeMask;
-    int32_t savedDepthFunc = device->m_States.depth.compareFunc;
-    bool savedLighting     = device->m_States.fixedFunc.lighting.enable;
-    int32_t savedCullMode  = device->m_States.rasterizer.cullMode;
+    // Get the view and projection matrices from the device
+    float proj[16], view[16], world[16] = {1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1};
 
-    device->SetDepthTestEnable(true);
-    device->SetDepthWriteMask(true);
-    device->SetDepthTestFunc(GL_LEQUAL);
-    device->SetLightingEnable(false);
-    device->SetCullMode(GL_CCW);
+    memcpy(proj, device->m_States.fixedFunc.transforms.projection.m, sizeof(proj));
+    memcpy(view, device->m_States.fixedFunc.transforms.view.m, sizeof(view));
 
-    device->SetShader(GLShader::eVertexShader, nullptr);
-    device->SetShader(GLShader::ePixelShader, nullptr);
+    // Y-flip projection for OpenGL (same as ApplyTransforms does)
+    proj[4] *= -1.0f; proj[5] *= -1.0f; proj[6] *= -1.0f; proj[7] *= -1.0f;
 
-    float worldIdentity[16] = {1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1};
-    device->SetTransform(0x57524C44 /*'WRLD'*/, worldIdentity);
+    // Compute MVP = projection * view * world
+    // C44Matrix is column-major: m[row + col*4] interpretation
+    auto mulMat4 = [](const float *a, const float *b, float *dst) {
+        for (int col = 0; col < 4; col++)
+            for (int row = 0; row < 4; row++)
+                dst[col*4 + row] = a[row]*b[col*4] + a[4+row]*b[col*4+1] + a[8+row]*b[col*4+2] + a[12+row]*b[col*4+3];
+    };
 
-    device->SetVertexBuffer(0, m_vbo, 0, sizeof(TerrainVertex));
-    device->SetVertexFormat(&m_vertexFormat);
-    device->SetIndexBuffer(m_ibo);
+    float viewWorld[16];
+    mulMat4(view, world, viewWorld);
+    float mvp[16];
+    mulMat4(proj, viewWorld, mvp);
 
-    device->GLLDraw(GL_TRIANGLES, 0, m_vertexCount - 1, 0, 0, m_indexCount);
+    // Set GL state
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glDepthMask(GL_TRUE);
+    glDisable(GL_CULL_FACE);  // avoid culling issues from CW/CCW mismatch
 
-    device->SetDepthTestEnable(savedDepthTest);
-    device->SetDepthWriteMask(savedDepthWrite);
-    device->SetDepthTestFunc(savedDepthFunc);
-    device->SetLightingEnable(savedLighting);
-    device->SetCullMode(savedCullMode);
+    glUseProgram(m_glslProgram);
+    glUniformMatrix4fv(m_uniformMVP, 1, GL_FALSE, mvp);
 
+    glBindVertexArray(m_vao);
+    glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_SHORT, nullptr);
+    glBindVertexArray(0);
+    glUseProgram(0);
+
+    // Mark state dirty for CGxDevice
     if (g_theGxDevicePtr) {
         g_theGxDevicePtr->IRsDirty(GxRs_DepthTest);
         g_theGxDevicePtr->IRsDirty(GxRs_DepthFunc);
         g_theGxDevicePtr->IRsDirty(GxRs_DepthWrite);
-        g_theGxDevicePtr->IRsDirty(GxRs_Lighting);
         g_theGxDevicePtr->IRsDirty(GxRs_Culling);
         g_theGxDevicePtr->IRsDirty(GxRs_VertexShader);
         g_theGxDevicePtr->IRsDirty(GxRs_PixelShader);
@@ -211,6 +301,16 @@ void TerrainRenderer::Render() {
 void TerrainRenderer::Destroy() {
     delete[] m_heightmap;
     m_heightmap = nullptr;
+
+    if (m_vao) {
+        glDeleteVertexArrays(1, &m_vao);
+        m_vao = 0;
+    }
+
+    if (m_glslProgram) {
+        glDeleteProgram(m_glslProgram);
+        m_glslProgram = 0;
+    }
 
     if (m_vbo) {
         delete m_vbo;
