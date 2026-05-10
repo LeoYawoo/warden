@@ -2,12 +2,13 @@
 #include "Graphic/Gx.h"
 #include "Anim/Model2.h"
 #include "Graphic/shader/CShaderEffect.h"
-#include "Terrain/TerrainRenderer.h"
+#include "Terrain/CTerrain.h"
+#include <cmath>
 
 
 uint32_t CWorld::s_enables;
 uint32_t CWorld::s_enables2;
-TerrainRenderer *CWorld::s_terrain = nullptr;
+CTerrain *CWorld::s_terrain = nullptr;
 
 void CWorld::Initialize() {
     CWorld::s_enables |=
@@ -44,8 +45,30 @@ void CWorld::Initialize() {
     );
 
     if (!s_terrain) {
-        s_terrain = new TerrainRenderer();
-        s_terrain->Initialize(33, 8.0f, 50.0f);
+        s_terrain = new CTerrain();
+        // Initialize a 64x64 cell terrain grid at origin (0, 0)
+        // Each cell is 128 world units (matching War3 CELL_SIZE)
+        s_terrain->Initialize(64, 64, 0.0f, 0.0f);
+
+        // Generate procedural heightmap for testing
+        uint32_t gx = s_terrain->GetCellsPerRow() + 1;
+        uint32_t gy = s_terrain->GetCellsPerCol() + 1;
+        uint32_t vertexCount = gx * gy;
+        auto *heights = new float[vertexCount];
+
+        for (uint32_t y = 0; y < gy; y++) {
+            for (uint32_t x = 0; x < gx; x++) {
+                float fx = static_cast<float>(x) / static_cast<float>(gx - 1);
+                float fy = static_cast<float>(y) / static_cast<float>(gy - 1);
+                float h = 0.0f;
+                h += sinf(fx * 4.0f + 1.3f) * cosf(fy * 3.0f + 0.7f) * 30.0f;
+                h += sinf(fx * 8.0f - fy * 5.0f + 2.1f) * 15.0f;
+                h += cosf(fx * 12.0f + fy * 7.0f) * 8.0f;
+                heights[y * gx + x] = h;
+            }
+        }
+        s_terrain->SetHeights(heights);
+        delete[] heights;
     }
 
     // TODO
@@ -53,7 +76,6 @@ void CWorld::Initialize() {
 
 void CWorld::Shutdown() {
     if (s_terrain) {
-        s_terrain->Destroy();
         delete s_terrain;
         s_terrain = nullptr;
     }

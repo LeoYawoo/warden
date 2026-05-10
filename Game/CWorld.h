@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-class TerrainRenderer;
+class CTerrain;
 
 class CWorld {
 public:
@@ -49,10 +49,10 @@ public:
     // Static functions
     static void Initialize();
     static void Shutdown();
-    static TerrainRenderer *GetTerrain() { return s_terrain; }
+    static CTerrain *GetTerrain() { return s_terrain; }
 
 private:
-    static TerrainRenderer *s_terrain;
+    static CTerrain *s_terrain;
 };
 
 

@@ -9,7 +9,7 @@
 #include "Common/Region.h"
 #include <storm/String.h>
 #include "Game/CWorld.h"
-#include "Terrain/TerrainRenderer.h"
+#include "Terrain/CTerrain.h"
 #include "Graphic/Gx.h"
 #include "Graphic/CCamera.h"
 #include "Graphic/gll/GLDevice.h"
@@ -72,7 +72,7 @@ int32_t OnPaint(const void *a1, void *a2) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render terrain
-    TerrainRenderer *terrain = CWorld::GetTerrain();
+    CTerrain *terrain = CWorld::GetTerrain();
     if (terrain && terrain->IsValid()) {
         CRect windowSize;
         GxCapsWindowSize(windowSize);
@@ -82,12 +82,15 @@ int32_t OnPaint(const void *a1, void *a2) {
             CRect projRect = {0.0f, 0.0f, w, h};
 
             CCamera camera;
-            camera.m_position.Set(C3Vector(128.0f, -50.0f, 200.0f));
-            camera.m_target.Set(C3Vector(128.0f, 128.0f, 0.0f));
+            // Position camera to look at the terrain center
+            float cx = terrain->GetOriginX() + terrain->GetCellsPerRow() * terrain->GetCellSize() * 0.5f;
+            float cy = terrain->GetOriginY() + terrain->GetCellsPerCol() * terrain->GetCellSize() * 0.5f;
+            camera.m_position.Set(C3Vector(cx, cy - 200.0f, 300.0f));
+            camera.m_target.Set(C3Vector(cx, cy, 0.0f));
             camera.m_distance.Set(1.0f);
             camera.m_fov.Set(1.2f);
-            camera.m_zFar.Set(2000.0f);
-            camera.m_zNear.Set(1.0f);
+            camera.m_zFar.Set(10000.0f);
+            camera.m_zNear.Set(10.0f);
             camera.SetupWorldProjection(projRect, 0);
 
             terrain->Render();
