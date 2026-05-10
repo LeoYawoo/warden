@@ -203,7 +203,12 @@ void GLContext::SetContextFormat(GLTextureFormat textureFormat, uint32_t sampleC
         // 如果需要共享上下文，可以指定共享的上下文
         contextInfo.context->setShareContext(s_MainContext);
         bool createOk = contextInfo.context->create();
-        LOG("[GLContext] QOpenGLContext::create() returned %d", (int)createOk);
+        QSurfaceFormat actualFmt = contextInfo.context->format();
+        LOG("[GLContext] QOpenGLContext::create() returned %d, actual profile=%d ver=%d.%d opts=0x%x",
+            (int)createOk, (int)actualFmt.profile(),
+            actualFmt.majorVersion(), actualFmt.minorVersion(), (int)actualFmt.options());
+        fprintf(stderr, "[GLContext] actual profile=%d ver=%d.%d opts=0x%x\n",
+            (int)actualFmt.profile(), actualFmt.majorVersion(), actualFmt.minorVersion(), (int)actualFmt.options());
         if (!createOk) {
             BLIZZARD_ASSERT(!"Failed to create QOpenGLContext");
         }
