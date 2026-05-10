@@ -1619,27 +1619,42 @@ void GLDevice::DrawIndexed(GLEnum primitive, uint32_t a3, uint32_t a4, uint32_t 
 }
 
 void GLDevice::DrawRect() {
+    FILE *rlog = fopen("D:/dev_qt/w3/warden/build/debug_gll.log", "a");
     if (!this->m_Context->m_Window) {
-        return;
+        fprintf(rlog, "[DrawRect] no window, skip\n"); fclose(rlog); return;
     }
+    fprintf(rlog, "[DrawRect] useWSB=%d flippedSB=%d backBuf=%p curTarget=%p curTargetFBO=%u\n",
+        (int)this->m_UseWindowSystemBuffer, (int)this->m_FlippedSystemBuffer,
+        (void*)this->m_BackBufferColor, (void*)this->m_CurrentTarget,
+        this->m_CurrentTarget ? this->m_CurrentTarget->m_FramebufferID : 0);
+    fflush(rlog);
 
     if (!this->m_UseWindowSystemBuffer || this->m_FlippedSystemBuffer) {
         GLTexture2D *backBuffer = this->m_BackBufferColor;
 
         if (!backBuffer) {
-            return;
+            fprintf(rlog, "[DrawRect] no backBuffer, skip\n"); fclose(rlog); return;
         }
 
         GLMipmap *backBufferImage = backBuffer->GetMipmap(0, GL_TEXTURE_CUBE_MAP_POSITIVE_X);
-
-        // Use glBlitFramebuffer instead of the ARB-shader BlitFramebuffer
-        // to avoid corrupting FFP state needed by terrain rendering.
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, this->m_CurrentTarget->m_FramebufferID);
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        fprintf(rlog, "[DrawRect] bbImage=%p size=%dx%d\n",
+            (void*)backBufferImage, backBufferImage ? backBufferImage->m_Width : 0,
+            backBufferImage ? backBufferImage->m_Height : 0);
 
         int32_t w = backBufferImage->m_Width;
         int32_t h = backBufferImage->m_Height;
+        GLuint srcFBO = this->m_CurrentTarget ? this->m_CurrentTarget->m_FramebufferID : 0;
+        fprintf(rlog, "[DrawRect] blit from FBO=%u to screen, w=%d h=%d\n", srcFBO, (int)w, (int)h);
+        GLenum preErr = glGetError();
+        fprintf(rlog, "[DrawRect] pre-blit glGetError=%d\n", (int)preErr);
+
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, srcFBO);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
         glBlitFramebuffer(0, 0, w, h, 0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+        GLenum blitErr = glGetError();
+        fprintf(rlog, "[DrawRect] glBlitFramebuffer err=%d (0x%x)\n", (int)blitErr, (int)blitErr);
 
         glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -1647,11 +1662,16 @@ void GLDevice::DrawRect() {
     }
 
     this->m_Context->Swap();
+    fprintf(rlog, "[DrawRect] Swap done, frame=%u\n", this->m_FrameNumber + 1);
+    fflush(rlog);
 
     if (!this->m_UseWindowSystemBuffer || this->m_FlippedSystemBuffer) {
         glBindFramebuffer(GL_FRAMEBUFFER, this->m_CurrentTarget->m_FramebufferID);
         this->m_States.binding.framebuffer = this->m_CurrentTarget->m_FramebufferID;
+        fprintf(rlog, "[DrawRect] re-bound FBO=%u\n", this->m_CurrentTarget->m_FramebufferID);
     }
+    fflush(rlog);
+    fclose(rlog);
 }
 
 uint32_t GLDevice::GetID() {
