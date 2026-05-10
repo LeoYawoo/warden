@@ -1631,8 +1631,17 @@ void GLDevice::DrawRect() {
         }
 
         GLMipmap *backBufferImage = backBuffer->GetMipmap(0, GL_TEXTURE_CUBE_MAP_POSITIVE_X);
-        this->BlitFramebuffer(backBufferImage, nullptr, nullptr, nullptr, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
+        // Use glBlitFramebuffer instead of the ARB-shader BlitFramebuffer
+        // to avoid corrupting FFP state needed by terrain rendering.
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, this->m_CurrentTarget->m_FramebufferID);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+        int32_t w = backBufferImage->m_Width;
+        int32_t h = backBufferImage->m_Height;
+        glBlitFramebuffer(0, 0, w, h, 0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         this->m_States.binding.framebuffer = 0;
     }
@@ -1722,11 +1731,6 @@ void GLDevice::GLLDraw(GLEnum mode, uint32_t start, uint32_t end, uint32_t a5, u
 
     if (count) {
         GLBuffer *buffer = this->m_VertexArrayObject->m_Properties.m_IndexBuffer;
-        LOG("[GLLDraw] IndexBuffer=%p m_Data=%p m_BufferID=%u m_IndexFormat=%d UsingVBO=%d",
-            (void*)buffer, buffer ? (void*)buffer->m_Data : 0, buffer ? buffer->m_BufferID : 0,
-            buffer ? (int)buffer->m_IndexFormat : -1, (int)GLBuffer::m_UsingVBO);
-        fflush(stderr);
-
         GLEnum format = buffer->m_IndexFormat;
 
         uint32_t v18;
@@ -1742,31 +1746,7 @@ void GLDevice::GLLDraw(GLEnum mode, uint32_t start, uint32_t end, uint32_t a5, u
                         ? reinterpret_cast<void *>(a6 << v18)
                         : buffer->m_Data + (a6 << v18);
 
-        GLBuffer *vb0 = this->m_VertexArrayObject->m_Properties.m_VertexBuffer[0];
-        FILE *flog = fopen("D:/dev_qt/w3/warden/build/debug_gll.log", "a");
-        fprintf(flog, "[GLLDraw] GL_VERSION=%s GL_RENDERER=%s\n",
-            (const char*)glGetString(GL_VERSION), (const char*)glGetString(GL_RENDERER));
-        fprintf(flog, "[GLLDraw] glDrawElements fn_ptr=%p mode=%u count=%u fmt=0x%x indices=%p\n",
-            (void*)glad_glDrawElements, mode, count, (int)buffer->m_IndexFormat, indices);
-        fprintf(flog, "[GLLDraw] VBO: id=%u size=%u ptr=%p  IBO: id=%u size=%u ptr=%p UsingVBO=%d\n",
-            vb0 ? vb0->m_BufferID : 0, vb0 ? vb0->m_Size : 0, (void*)vb0,
-            buffer ? buffer->m_BufferID : 0, buffer ? buffer->m_Size : 0, (void*)buffer,
-            (int)GLBuffer::m_UsingVBO);
-        fprintf(flog, "[GLLDraw] VAO vertexAttribs: pos.enable=%d norm.enable=%d col0.enable=%d\n",
-            (int)this->m_DefaultVertexArrayObject.m_GLStates.position.enable,
-            (int)this->m_DefaultVertexArrayObject.m_GLStates.normal.enable,
-            (int)this->m_DefaultVertexArrayObject.m_GLStates.color0.enable);
-        fprintf(flog, "[GLLDraw] GL error codes: pre=");
-        while (1) { GLenum e = glGetError(); fprintf(flog, "%d ", (int)e); if (!e) break; }
-        fprintf(flog, "\n");
-        fflush(flog);
-
         glDrawElements(mode, count, buffer->m_IndexFormat, indices);
-
-        fprintf(flog, "[GLLDraw] glDrawElements returned\n");
-        fprintf(flog, "[GLLDraw] post-draw glGetError=%d\n", (int)glGetError());
-        fflush(flog);
-        fclose(flog);
     } else {
         glDrawArrays(mode, start, end - start);
     }
@@ -2557,6 +2537,20 @@ void GLDevice::SetShader(GLShader::ShaderType shaderType, GLShader *shader) {
         BLIZZARD_ASSERT(shader->GetShaderType() == shaderType);
 
         this->BindShader(shader);
+    } else {
+        // When clearing shader, also unbind ARB program to avoid
+        // stale binding causing crash on subsequent FFP glDrawElements
+        if (shaderType == GLShader::eVertexShader
+            && this->m_States.binding.vertexProgram != 0
+            && this->glBindProgramARB) {
+            this->glBindProgramARB(GL_VERTEX_PROGRAM_ARB, 0);
+            this->m_States.binding.vertexProgram = 0;
+        } else if (shaderType == GLShader::ePixelShader
+                   && this->m_States.binding.pixelProgram != 0
+                   && this->glBindProgramARB) {
+            this->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, 0);
+            this->m_States.binding.pixelProgram = 0;
+        }
     }
 
     int32_t enable = shader != nullptr;
@@ -2818,20 +2812,7 @@ void GLDevice::Sub38460(bool a2) {
 
 void GLDevice::Swap() {
     if (this->m_Context->m_Window) {
-        if (this->m_FlippedSystemBuffer) {
-            GLRect rect = {
-                    0,
-                    0,
-                    static_cast<int32_t>(this->m_BackBufferColor->m_Width),
-                    static_cast<int32_t>(this->m_BackBufferColor->m_Height)
-            };
-
-            GLMipmap *image = this->m_BackBufferColor->GetMipmap(0, GL_TEXTURE_CUBE_MAP_POSITIVE_X);
-            this->CopyTex(0, 0, image, &rect);
-        }
-
         this->DrawRect();
-
         this->m_FrameNumber++;
         this->m_DrawCount = 0;
     } else {

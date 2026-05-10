@@ -175,9 +175,9 @@ int32_t OnPaint(const void *a1, void *a2) {
             return 1;
         }
 
-        fprintf(stderr, "[Screen] SKIPPING GxSub682A00 (Swap) for testing...\n"); fflush(stderr);
-        glFlush();  // test: flush without Swap to isolate crash
-        fprintf(stderr, "[Screen] glFlush done\n"); fflush(stderr);
+        fprintf(stderr, "[Screen] Calling GxSub682A00...\n"); fflush(stderr);
+        GxSub682A00();
+        fprintf(stderr, "[Screen] GxSub682A00 done\n"); fflush(stderr);
     }
 
     Screen::s_elapsedSec = 0.0f;

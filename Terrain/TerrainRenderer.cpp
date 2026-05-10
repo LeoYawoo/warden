@@ -181,7 +181,7 @@ void TerrainRenderer::Render() {
     device->SetDepthTestEnable(true);
     device->SetDepthWriteMask(true);
     device->SetDepthTestFunc(GL_LEQUAL);
-    device->SetLightingEnable(true);
+    device->SetLightingEnable(false);
     device->SetCullMode(GL_CCW);
 
     device->SetShader(GLShader::eVertexShader, nullptr);
