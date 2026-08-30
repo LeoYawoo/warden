@@ -3,3 +3,8 @@ cmake-build-debug/**
 cmake-build-release/**
 .vscode/**
 .idea/**
+war3_mac_binary/
+CLAUDE.md
+ARCHITECTURE.md
+.claude/
+.mcp.json
