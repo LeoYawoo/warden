@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstring>
 
 
 struct lua_State;
@@ -51,6 +52,18 @@ enum FRAMEPOINT {
     FRAMEPOINT_NUMPOINTS = 9
 };
 
+inline const char* GetFramePointName(FRAMEPOINT point) {
+    static const char* names[] = {
+        "TOPLEFT", "TOP", "TOPRIGHT",
+        "LEFT", "CENTER", "RIGHT",
+        "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT"
+    };
+    if (point >= 0 && point < FRAMEPOINT_NUMPOINTS) {
+        return names[point];
+    }
+    return "UNKNOWN";
+}
+
 enum FRAME_STRATA {
     FRAME_STRATA_WORLD = 0,
     FRAME_STRATA_BACKGROUND = 1,
@@ -63,6 +76,17 @@ enum FRAME_STRATA {
     FRAME_STRATA_TOOLTIP = 8,
     NUM_FRAME_STRATA = 9
 };
+
+inline const char* GetFrameStrataName(FRAME_STRATA strata) {
+    static const char* names[] = {
+        "WORLD", "BACKGROUND", "LOW", "MEDIUM",
+        "HIGH", "DIALOG", "FULLSCREEN", "FULLSCREEN_DIALOG", "TOOLTIP"
+    };
+    if (strata >= 0 && strata < NUM_FRAME_STRATA) {
+        return names[strata];
+    }
+    return "UNKNOWN";
+}
 
 enum FRAMESCRIPT_GENDER {
     GENDER_NOT_APPLICABLE = 0,
@@ -97,12 +121,33 @@ class CSimpleFrame;
 struct FRAMEPRIORITY {
     CSimpleFrame *frame;
     uint32_t priority;
+
+    bool operator<(const FRAMEPRIORITY &other) const {
+        return priority < other.priority;
+    }
+
+    bool operator>(const FRAMEPRIORITY &other) const {
+        return priority > other.priority;
+    }
 };
 
 struct FrameScript_Method {
     const char *name;
 
     int32_t (*method)(lua_State *);
+
+    bool IsValid() const {
+        return name != nullptr && method != nullptr;
+    }
 };
+
+// Helper functions for UI types
+inline bool IsKeyDown(uint32_t keyState, uint32_t keyMask) {
+    return (keyState & keyMask) != 0;
+}
+
+inline uint32_t MakeKeyState(uint32_t keyMask, bool down) {
+    return down ? keyMask : 0;
+}
 
 

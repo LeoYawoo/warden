@@ -1,0 +1,154 @@
+#include <gtest/gtest.h>
+#include "UI/Types.h"
+
+TEST(UITypesTest, DRAWLAYERValues) {
+    EXPECT_EQ(DRAWLAYER_BACKGROUND, 0);
+    EXPECT_EQ(DRAWLAYER_BACKGROUND_BORDER, 1);
+    EXPECT_EQ(DRAWLAYER_ARTWORK, 2);
+    EXPECT_EQ(DRAWLAYER_ARTWORK_OVERLAY, 3);
+    EXPECT_EQ(DRAWLAYER_HIGHLIGHT, 4);
+    EXPECT_EQ(NUM_SIMPLEFRAME_DRAWLAYERS, 5);
+}
+
+TEST(UITypesTest, CSimpleEventTypeValues) {
+    EXPECT_EQ(SIMPLE_EVENT_CHAR, 0);
+    EXPECT_EQ(SIMPLE_EVENT_KEY, 1);
+    EXPECT_EQ(SIMPLE_EVENT_MOUSE, 2);
+    EXPECT_EQ(SIMPLE_EVENT_MOUSEWHEEL, 3);
+    EXPECT_EQ(NUM_SIMPLE_EVENTS, 5);
+}
+
+TEST(UITypesTest, FONT_UPDATE_FLAGSValues) {
+    EXPECT_EQ(FLAG_FONT_UPDATE, 0x1);
+    EXPECT_EQ(FLAG_STYLE_UPDATE, 0x2);
+    EXPECT_EQ(FLAG_COLOR_UPDATE, 0x4);
+    EXPECT_EQ(FLAG_SHADOW_UPDATE, 0x8);
+    EXPECT_EQ(FLAG_SPACING_UPDATE, 0x10);
+}
+
+TEST(UITypesTest, FRAMEPOINTValues) {
+    EXPECT_EQ(FRAMEPOINT_TOPLEFT, 0);
+    EXPECT_EQ(FRAMEPOINT_TOP, 1);
+    EXPECT_EQ(FRAMEPOINT_TOPRIGHT, 2);
+    EXPECT_EQ(FRAMEPOINT_LEFT, 3);
+    EXPECT_EQ(FRAMEPOINT_CENTER, 4);
+    EXPECT_EQ(FRAMEPOINT_RIGHT, 5);
+    EXPECT_EQ(FRAMEPOINT_BOTTOMLEFT, 6);
+    EXPECT_EQ(FRAMEPOINT_BOTTOM, 7);
+    EXPECT_EQ(FRAMEPOINT_BOTTOMRIGHT, 8);
+    EXPECT_EQ(FRAMEPOINT_NUMPOINTS, 9);
+}
+
+TEST(UITypesTest, GetFramePointName) {
+    EXPECT_STREQ(GetFramePointName(FRAMEPOINT_TOPLEFT), "TOPLEFT");
+    EXPECT_STREQ(GetFramePointName(FRAMEPOINT_TOP), "TOP");
+    EXPECT_STREQ(GetFramePointName(FRAMEPOINT_TOPRIGHT), "TOPRIGHT");
+    EXPECT_STREQ(GetFramePointName(FRAMEPOINT_LEFT), "LEFT");
+    EXPECT_STREQ(GetFramePointName(FRAMEPOINT_CENTER), "CENTER");
+    EXPECT_STREQ(GetFramePointName(FRAMEPOINT_RIGHT), "RIGHT");
+    EXPECT_STREQ(GetFramePointName(FRAMEPOINT_BOTTOMLEFT), "BOTTOMLEFT");
+    EXPECT_STREQ(GetFramePointName(FRAMEPOINT_BOTTOM), "BOTTOM");
+    EXPECT_STREQ(GetFramePointName(FRAMEPOINT_BOTTOMRIGHT), "BOTTOMRIGHT");
+}
+
+TEST(UITypesTest, GetFramePointNameInvalid) {
+    EXPECT_STREQ(GetFramePointName(static_cast<FRAMEPOINT>(-1)), "UNKNOWN");
+    EXPECT_STREQ(GetFramePointName(FRAMEPOINT_NUMPOINTS), "UNKNOWN");
+}
+
+TEST(UITypesTest, FRAMESTRATAValues) {
+    EXPECT_EQ(FRAME_STRATA_WORLD, 0);
+    EXPECT_EQ(FRAME_STRATA_BACKGROUND, 1);
+    EXPECT_EQ(FRAME_STRATA_LOW, 2);
+    EXPECT_EQ(FRAME_STRATA_MEDIUM, 3);
+    EXPECT_EQ(FRAME_STRATA_HIGH, 4);
+    EXPECT_EQ(FRAME_STRATA_DIALOG, 5);
+    EXPECT_EQ(FRAME_STRATA_FULLSCREEN, 6);
+    EXPECT_EQ(FRAME_STRATA_FULLSCREEN_DIALOG, 7);
+    EXPECT_EQ(FRAME_STRATA_TOOLTIP, 8);
+    EXPECT_EQ(NUM_FRAME_STRATA, 9);
+}
+
+TEST(UITypesTest, GetFrameStrataName) {
+    EXPECT_STREQ(GetFrameStrataName(FRAME_STRATA_WORLD), "WORLD");
+    EXPECT_STREQ(GetFrameStrataName(FRAME_STRATA_BACKGROUND), "BACKGROUND");
+    EXPECT_STREQ(GetFrameStrataName(FRAME_STRATA_LOW), "LOW");
+    EXPECT_STREQ(GetFrameStrataName(FRAME_STRATA_MEDIUM), "MEDIUM");
+    EXPECT_STREQ(GetFrameStrataName(FRAME_STRATA_HIGH), "HIGH");
+    EXPECT_STREQ(GetFrameStrataName(FRAME_STRATA_DIALOG), "DIALOG");
+    EXPECT_STREQ(GetFrameStrataName(FRAME_STRATA_FULLSCREEN), "FULLSCREEN");
+    EXPECT_STREQ(GetFrameStrataName(FRAME_STRATA_FULLSCREEN_DIALOG), "FULLSCREEN_DIALOG");
+    EXPECT_STREQ(GetFrameStrataName(FRAME_STRATA_TOOLTIP), "TOOLTIP");
+}
+
+TEST(UITypesTest, GetFrameStrataNameInvalid) {
+    EXPECT_STREQ(GetFrameStrataName(static_cast<FRAME_STRATA>(-1)), "UNKNOWN");
+    EXPECT_STREQ(GetFrameStrataName(NUM_FRAME_STRATA), "UNKNOWN");
+}
+
+TEST(UITypesTest, FRAMESCRIPT_GENDERValues) {
+    EXPECT_EQ(GENDER_NOT_APPLICABLE, 0);
+    EXPECT_EQ(GENDER_NONE, 1);
+    EXPECT_EQ(GENDER_MALE, 2);
+    EXPECT_EQ(GENDER_FEMALE, 3);
+    EXPECT_EQ(GENDER_MALE_PLURAL, 4);
+    EXPECT_EQ(GENDER_FEMALE_PLURAL, 5);
+    EXPECT_EQ(GENDER_MIXED_PLURAL, 6);
+}
+
+TEST(UITypesTest, HTML_TEXT_TYPEValues) {
+    EXPECT_EQ(HTML_TEXT_NORMAL, 0);
+    EXPECT_EQ(HTML_TEXT_HEADER1, 1);
+    EXPECT_EQ(HTML_TEXT_HEADER2, 2);
+    EXPECT_EQ(HTML_TEXT_HEADER3, 3);
+    EXPECT_EQ(NUM_HTML_TEXT_TYPES, 4);
+}
+
+TEST(UITypesTest, PLURAL_RULEValues) {
+    EXPECT_EQ(PLURAL_RULE_0, 0);
+    EXPECT_EQ(PLURAL_RULE_1, 1);
+    EXPECT_EQ(PLURAL_RULE_2, 2);
+}
+
+TEST(UITypesTest, TextureImageModeValues) {
+    EXPECT_EQ(ImageMode_UI, 0);
+    EXPECT_EQ(ImageMode_Desaturate, 1);
+}
+
+TEST(UITypesTest, FRAMEPRIORITYComparison) {
+    FRAMEPRIORITY fp1;
+    fp1.frame = nullptr;
+    fp1.priority = 10;
+
+    FRAMEPRIORITY fp2;
+    fp2.frame = nullptr;
+    fp2.priority = 20;
+
+    EXPECT_TRUE(fp1 < fp2);
+    EXPECT_TRUE(fp2 > fp1);
+}
+
+TEST(UITypesTest, FrameScript_MethodIsValid) {
+    FrameScript_Method method;
+    method.name = nullptr;
+    method.method = nullptr;
+    EXPECT_FALSE(method.IsValid());
+
+    method.name = "TestFunc";
+    method.method = [](lua_State*) -> int32_t { return 0; };
+    EXPECT_TRUE(method.IsValid());
+}
+
+TEST(UITypesTest, IsKeyDown) {
+    uint32_t keyState = 0x0F;  // First 4 bits set
+    EXPECT_TRUE(IsKeyDown(keyState, 0x01));
+    EXPECT_TRUE(IsKeyDown(keyState, 0x08));
+    EXPECT_FALSE(IsKeyDown(keyState, 0x10));
+}
+
+TEST(UITypesTest, MakeKeyState) {
+    uint32_t state1 = MakeKeyState(0x01, true);
+    uint32_t state2 = MakeKeyState(0x01, false);
+    EXPECT_EQ(state1, 0x01u);
+    EXPECT_EQ(state2, 0x00u);
+}

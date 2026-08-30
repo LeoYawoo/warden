@@ -42,6 +42,27 @@ public:
     FrameScript_EventObject() : TSHashObject<FrameScript_EventObject, HASHKEY_STRI>() {};
 
     const char *GetName();
+
+    // Check if event has any listeners
+    bool HasListeners() const {
+        return signalCount > 0;
+    }
+
+    // Check if event has pending signals
+    bool HasPendingSignals() const {
+        return pendingSignalCount > 0;
+    }
+
+    // Get listener count
+    uint32_t GetListenerCount() const {
+        return signalCount;
+    }
+
+    // Reset signal counts
+    void ResetCounts() {
+        signalCount = 0;
+        pendingSignalCount = 0;
+    }
 };
 
 extern const char *g_glueScriptEvents[41];

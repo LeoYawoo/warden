@@ -221,5 +221,17 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(storm_tests)
+
+        # UI tests
+        add_executable(ui_tests
+                tests/UI/TestUITypes.cpp
+                tests/UI/TestFrameScript.cpp
+        )
+
+        target_link_libraries(ui_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(ui_tests PRIVATE ${CMAKE_SOURCE_DIR})
+
+        include(GoogleTest)
+        gtest_discover_tests(ui_tests)
     endif()
 endif()
