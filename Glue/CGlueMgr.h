@@ -24,8 +24,23 @@ public:
         IDLE_10 = 10,
         IDLE_11 = 11,
         IDLE_12 = 12,
-        IDLE_13 = 13
+        IDLE_13 = 13,
+        NUM_IDLE_STATES = 14
     };
+
+    // Helper functions for GLUE_IDLE_STATE
+    static const char* GetIdleStateName(GLUE_IDLE_STATE state) {
+        static const char* names[] = {
+            "NONE", "LOGIN_SERVER_LOGIN", "ACCOUNT_LOGIN", "3", "4",
+            "5", "6", "7", "8", "9", "10", "11", "12", "13"
+        };
+        if (state >= 0 && state < NUM_IDLE_STATES) return names[state];
+        return "UNKNOWN";
+    }
+
+    static bool IsIdleStateValid(GLUE_IDLE_STATE state) {
+        return state >= IDLE_NONE && state < NUM_IDLE_STATES;
+    }
 
     // Static variables
     static int32_t m_acceptedEULA;

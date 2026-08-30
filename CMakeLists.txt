@@ -304,5 +304,27 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(net_tests)
+
+        # Sound tests
+        add_executable(sound_tests
+                tests/Sound/TestSI2.cpp
+        )
+
+        target_link_libraries(sound_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(sound_tests PRIVATE ${CMAKE_SOURCE_DIR})
+
+        include(GoogleTest)
+        gtest_discover_tests(sound_tests)
+
+        # Glue tests
+        add_executable(glue_tests
+                tests/Glue/TestCGlueMgr.cpp
+        )
+
+        target_link_libraries(glue_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(glue_tests PRIVATE ${CMAKE_SOURCE_DIR})
+
+        include(GoogleTest)
+        gtest_discover_tests(glue_tests)
     endif()
 endif()
