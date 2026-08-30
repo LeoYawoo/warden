@@ -16,6 +16,7 @@ if (WIN32 AND MSVC)
 endif ()
 
 file(GLOB_RECURSE dir_src
+        # 原有模块
         "Agile/*.h"
         "Agile/*.cpp"
         "Common/*.h"
@@ -51,6 +52,25 @@ file(GLOB_RECURSE dir_src
         "Sound/*.cpp"
         "Terrain/*.h"
         "Terrain/*.cpp"
+        # 基于 IDA 分析新增的模块
+        "WorldEdit/*.h"
+        "WorldEdit/*.cpp"
+        "Unit/*.h"
+        "Unit/*.cpp"
+        "Engine/*.h"
+        "Engine/*.cpp"
+        "StormMac/*.h"
+        "StormMac/*.cpp"
+        "System/*.h"
+        "System/*.cpp"
+        "Win32/*.h"
+        "Win32/*.cpp"
+        "IOUnit/*.h"
+        "IOUnit/*.cpp"
+        "Mac/*.h"
+        "Mac/*.cpp"
+        "Data/*.h"
+        "Data/*.cpp"
 )
 
 link_directories(${CMAKE_SOURCE_DIR}/build/Debug/)
