@@ -135,6 +135,10 @@ if(BUILD_TESTS)
                 NTempest/CAaSphere.cpp
                 Storm/Error.cpp
                 Storm/Debug.cpp
+                Storm/thread/SCritSect.cpp
+                Storm/thread/CCritSect.cpp
+                Storm/thread/SSyncObject.cpp
+                Storm/thread/SEvent.cpp
                 Common/Hashkey.cpp
                 Agile/CStatus.cpp
                 Agile/Float.cpp
@@ -203,5 +207,19 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(event_tests)
+
+        # Storm tests
+        add_executable(storm_tests
+                tests/Storm/TestSCritSect.cpp
+                tests/Storm/TestCCritSect.cpp
+                tests/Storm/TestDebug.cpp
+                tests/Storm/TestError.cpp
+        )
+
+        target_link_libraries(storm_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(storm_tests PRIVATE ${CMAKE_SOURCE_DIR})
+
+        include(GoogleTest)
+        gtest_discover_tests(storm_tests)
     endif()
 endif()

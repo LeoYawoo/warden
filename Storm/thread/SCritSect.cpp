@@ -15,3 +15,7 @@ void SCritSect::Enter() {
 void SCritSect::Leave() {
     LeaveCriticalSection(&this->m_opaqueData);
 }
+
+bool SCritSect::TryEnter() {
+    return TryEnterCriticalSection(&this->m_opaqueData) != 0;
+}

@@ -25,3 +25,7 @@ void CCritSect::Leave(int32_t fromWriting) {
     // Overload to provide compatibility with CSRWLock
     this->Leave();
 }
+
+bool CCritSect::TryEnter() {
+    return TryEnterCriticalSection(&this->m_critsect) != 0;
+}
