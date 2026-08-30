@@ -71,6 +71,10 @@ file(GLOB_RECURSE dir_src
         "Mac/*.cpp"
         "Data/*.h"
         "Data/*.cpp"
+        "BLPFile/*.h"
+        "BLPFile/*.cpp"
+        "BLPFile/IJG/*.h"
+        "BLPFile/IJG/*.cpp"
 )
 
 link_directories(${CMAKE_SOURCE_DIR}/build/Debug/)
@@ -165,6 +169,7 @@ if(BUILD_TESTS)
                 Agile/Integer.cpp
                 Agile/Position.cpp
                 Anim/Type.cpp
+                BLPFile/blp.cpp
         )
 
         target_include_directories(ntempest_lib PRIVATE ${CMAKE_SOURCE_DIR})
@@ -346,5 +351,16 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(glue_tests)
+
+        # BLPFile tests
+        add_executable(blp_tests
+                tests/BLPFile/TestBLPFile.cpp
+        )
+
+        target_link_libraries(blp_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(blp_tests PRIVATE ${CMAKE_SOURCE_DIR})
+
+        include(GoogleTest)
+        gtest_discover_tests(blp_tests)
     endif()
 endif()
