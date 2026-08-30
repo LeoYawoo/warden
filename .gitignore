@@ -1,8 +1,17 @@
+# Build directories
 build/**
 cmake-build-debug/**
 cmake-build-release/**
+build-test/**
+
+# IDE
 .vscode/**
 .idea/**
+
+# External dependencies (managed by git submodules)
+# external/googletest/ is a submodule
+
+# Project-specific ignores
 war3_mac_binary/
 CLAUDE.md
 ARCHITECTURE.md
