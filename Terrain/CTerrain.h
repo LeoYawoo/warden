@@ -18,6 +18,67 @@ struct TerrainVertex {
     uint8_t waterEdge;      // +11: water edge flags
     C3Vector normal;        // +12: vertex normal (3 floats = 12 bytes)
     // Total: 24 bytes + padding = 28 bytes
+
+    // Constructors
+    TerrainVertex() : flags(0), cellIndex(0), textureLayer(0), cliffLevel(0),
+                      flags2(0), waterEdge(0), normal(0.0f, 0.0f, 1.0f) {}
+
+    // Get height from flags (encoded in upper bits)
+    float GetHeight() const {
+        return static_cast<float>((flags >> 16) & 0xFFFF) / 256.0f;
+    }
+
+    // Set height in flags
+    void SetHeight(float height) {
+        uint16_t h = static_cast<uint16_t>(height * 256.0f);
+        flags = (flags & 0x0000FFFF) | (static_cast<uint32_t>(h) << 16);
+    }
+
+    // Get water flag
+    bool IsWater() const {
+        return (flags & 0x1) != 0;
+    }
+
+    // Set water flag
+    void SetWater(bool water) {
+        if (water) {
+            flags |= 0x1;
+        } else {
+            flags &= ~0x1;
+        }
+    }
+
+    // Get cell index (lower 18 bits)
+    uint32_t GetCellIndex() const {
+        return cellIndex & 0x3FFFF;
+    }
+
+    // Set cell index
+    void SetCellIndex(uint32_t index) {
+        cellIndex = (cellIndex & ~0x3FFFF) | (index & 0x3FFFF);
+    }
+
+    // Normalize the normal vector
+    void NormalizeNormal() {
+        float len = normal.Mag();
+        if (len > 0.0001f) {
+            float invLen = 1.0f / len;
+            normal.x *= invLen;
+            normal.y *= invLen;
+            normal.z *= invLen;
+        }
+    }
+
+    // Equality operators
+    bool operator==(const TerrainVertex &other) const {
+        return flags == other.flags && cellIndex == other.cellIndex &&
+               textureLayer == other.textureLayer && cliffLevel == other.cliffLevel &&
+               normal == other.normal;
+    }
+
+    bool operator!=(const TerrainVertex &other) const {
+        return !(*this == other);
+    }
 };
 
 static_assert(sizeof(TerrainVertex) == 24, "TerrainVertex should be 24 bytes, plus 4 padding makes 28");
@@ -76,6 +137,32 @@ public:
     float GetCellSize() const { return CELL_SIZE; }
 
     bool IsValid() const { return m_vertices != nullptr && m_initialized; }
+
+    // Get terrain bounds
+    float GetMinX() const { return m_originX; }
+    float GetMaxX() const { return m_originX + m_cellsPerRow * CELL_SIZE; }
+    float GetMinY() const { return m_originY; }
+    float GetMaxY() const { return m_originY + m_cellsPerCol * CELL_SIZE; }
+
+    // Check if world position is within terrain bounds
+    bool IsInBounds(float worldX, float worldY) const {
+        return worldX >= GetMinX() && worldX <= GetMaxX() &&
+               worldY >= GetMinY() && worldY <= GetMaxY();
+    }
+
+    // Convert world position to cell coordinates
+    void WorldToCell(float worldX, float worldY, uint32_t &cellX, uint32_t &cellY) const {
+        cellX = static_cast<uint32_t>((worldX - m_originX) / CELL_SIZE);
+        cellY = static_cast<uint32_t>((worldY - m_originY) / CELL_SIZE);
+        if (cellX >= m_cellsPerRow) cellX = m_cellsPerRow - 1;
+        if (cellY >= m_cellsPerCol) cellY = m_cellsPerCol - 1;
+    }
+
+    // Convert cell coordinates to world position (center of cell)
+    void CellToWorld(uint32_t cellX, uint32_t cellY, float &worldX, float &worldY) const {
+        worldX = m_originX + (cellX + 0.5f) * CELL_SIZE;
+        worldY = m_originY + (cellY + 0.5f) * CELL_SIZE;
+    }
 
     static constexpr float CELL_SIZE = 128.0f;
 

@@ -282,5 +282,16 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(anim_tests)
+
+        # Terrain tests
+        add_executable(terrain_tests
+                tests/Terrain/TestTerrainVertex.cpp
+        )
+
+        target_link_libraries(terrain_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(terrain_tests PRIVATE ${CMAKE_SOURCE_DIR})
+
+        include(GoogleTest)
+        gtest_discover_tests(terrain_tests)
     endif()
 endif()
