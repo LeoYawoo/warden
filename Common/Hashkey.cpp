@@ -29,6 +29,12 @@ HASHKEY_STR &HASHKEY_STR::operator=(const char *str) {
 }
 
 bool HASHKEY_STR::operator==(const char *str) {
+    if (this->m_str == str) {
+        return true;
+    }
+    if (!this->m_str || !str) {
+        return false;
+    }
     return SStrCmp(this->m_str, str, STORM_MAX_STR) == 0;
 }
 

@@ -31,14 +31,18 @@ public:
 class HASHKEY_STR {
 public:
     // Member variables
-    char *m_str;
+    char *m_str = nullptr;
 
     // Member functions
+    HASHKEY_STR() : m_str(nullptr) {}
+
     ~HASHKEY_STR();
 
     HASHKEY_STR &operator=(const char *str);
 
     bool operator==(const char *str);
+
+    const char *GetStr() const { return m_str; }
 };
 
 class HASHKEY_STRI : public HASHKEY_STR {

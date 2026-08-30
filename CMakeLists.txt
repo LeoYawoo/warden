@@ -135,6 +135,7 @@ if(BUILD_TESTS)
                 NTempest/CAaSphere.cpp
                 Storm/Error.cpp
                 Storm/Debug.cpp
+                Common/Hashkey.cpp
                 Agile/CStatus.cpp
                 Agile/Float.cpp
                 Agile/Integer.cpp
@@ -175,5 +176,18 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(agile_tests)
+
+        # Common tests
+        add_executable(common_tests
+                tests/Common/TestTRefCnt.cpp
+                tests/Common/TestTRefCntPtr.cpp
+                tests/Common/TestTSLink.cpp
+        )
+
+        target_link_libraries(common_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(common_tests PRIVATE ${CMAKE_SOURCE_DIR})
+
+        include(GoogleTest)
+        gtest_discover_tests(common_tests)
     endif()
 endif()
