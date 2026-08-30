@@ -189,5 +189,19 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(common_tests)
+
+        # Event tests
+        add_executable(event_tests
+                tests/Event/TestEvtMessage.cpp
+                tests/Event/TestEvtHandler.cpp
+                tests/Event/TestEvtTimer.cpp
+                tests/Event/TestEventTypes.cpp
+        )
+
+        target_link_libraries(event_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(event_tests PRIVATE ${CMAKE_SOURCE_DIR})
+
+        include(GoogleTest)
+        gtest_discover_tests(event_tests)
     endif()
 endif()
