@@ -258,5 +258,17 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(graphic_tests)
+
+        # Game tests
+        add_executable(game_tests
+                tests/Game/TestGameTypes.cpp
+                tests/Game/TestCBoundingBox.cpp
+        )
+
+        target_link_libraries(game_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(game_tests PRIVATE ${CMAKE_SOURCE_DIR})
+
+        include(GoogleTest)
+        gtest_discover_tests(game_tests)
     endif()
 endif()

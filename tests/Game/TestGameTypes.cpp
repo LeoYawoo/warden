@@ -1,0 +1,40 @@
+#include <gtest/gtest.h>
+#include "Game/Types.h"
+
+TEST(GameTypesTest, COLOR_TValues) {
+    EXPECT_EQ(DEFAULT_COLOR, 0);
+    EXPECT_EQ(INPUT_COLOR, 1);
+    EXPECT_EQ(ECHO_COLOR, 2);
+    EXPECT_EQ(ERROR_COLOR, 3);
+    EXPECT_EQ(WARNING_COLOR, 4);
+    EXPECT_EQ(GLOBAL_COLOR, 5);
+    EXPECT_EQ(ADMIN_COLOR, 6);
+    EXPECT_EQ(HIGHLIGHT_COLOR, 7);
+    EXPECT_EQ(BACKGROUND_COLOR, 8);
+    EXPECT_EQ(NUM_COLORTYPES, 9);
+}
+
+TEST(GameTypesTest, GetColorTypeName) {
+    EXPECT_STREQ(GetColorTypeName(DEFAULT_COLOR), "DEFAULT");
+    EXPECT_STREQ(GetColorTypeName(INPUT_COLOR), "INPUT");
+    EXPECT_STREQ(GetColorTypeName(ECHO_COLOR), "ECHO");
+    EXPECT_STREQ(GetColorTypeName(ERROR_COLOR), "ERROR");
+    EXPECT_STREQ(GetColorTypeName(WARNING_COLOR), "WARNING");
+    EXPECT_STREQ(GetColorTypeName(GLOBAL_COLOR), "GLOBAL");
+    EXPECT_STREQ(GetColorTypeName(ADMIN_COLOR), "ADMIN");
+    EXPECT_STREQ(GetColorTypeName(HIGHLIGHT_COLOR), "HIGHLIGHT");
+    EXPECT_STREQ(GetColorTypeName(BACKGROUND_COLOR), "BACKGROUND");
+    EXPECT_STREQ(GetColorTypeName(static_cast<COLOR_T>(100)), "UNKNOWN");
+}
+
+TEST(GameTypesTest, CONSOLERESIZESTATEValues) {
+    EXPECT_EQ(CS_NONE, 0);
+    EXPECT_EQ(CS_STRETCH, 1);
+    EXPECT_EQ(NUM_CONSOLERESIZESTATES, 2);
+}
+
+TEST(GameTypesTest, GetConsoleResizeStateName) {
+    EXPECT_STREQ(GetConsoleResizeStateName(CS_NONE), "NONE");
+    EXPECT_STREQ(GetConsoleResizeStateName(CS_STRETCH), "STRETCH");
+    EXPECT_STREQ(GetConsoleResizeStateName(static_cast<CONSOLERESIZESTATE>(10)), "UNKNOWN");
+}

@@ -51,6 +51,17 @@ public:
     static void Shutdown();
     static CTerrain *GetTerrain() { return s_terrain; }
 
+    // Enable/Disable helpers
+    static bool IsEnabled(Enables flag) { return (s_enables & static_cast<uint32_t>(flag)) != 0; }
+    static void Enable(Enables flag) { s_enables |= static_cast<uint32_t>(flag); }
+    static void Disable(Enables flag) { s_enables &= ~static_cast<uint32_t>(flag); }
+    static void Toggle(Enables flag) { s_enables ^= static_cast<uint32_t>(flag); }
+
+    static bool IsEnabled2(Enables2 flag) { return (s_enables2 & static_cast<uint32_t>(flag)) != 0; }
+    static void Enable2(Enables2 flag) { s_enables2 |= static_cast<uint32_t>(flag); }
+    static void Disable2(Enables2 flag) { s_enables2 &= ~static_cast<uint32_t>(flag); }
+    static void Toggle2(Enables2 flag) { s_enables2 ^= static_cast<uint32_t>(flag); }
+
 private:
     static CTerrain *s_terrain;
 };
