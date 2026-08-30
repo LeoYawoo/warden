@@ -293,5 +293,16 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(terrain_tests)
+
+        # Net tests
+        add_executable(net_tests
+                tests/Net/TestNetTypes.cpp
+        )
+
+        target_link_libraries(net_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(net_tests PRIVATE ${CMAKE_SOURCE_DIR})
+
+        include(GoogleTest)
+        gtest_discover_tests(net_tests)
     endif()
 endif()

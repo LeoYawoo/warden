@@ -47,6 +47,32 @@ enum LOGIN_RESULT {
     LOGIN_RESULT_MAX = 41,
 };
 
+inline const char* GetLoginResultName(LOGIN_RESULT result) {
+    static const char* names[] = {
+        "OK", "INVALID_CHALLENGE_MESSAGE", "SRP_ERROR", "INVALID_PROOF_MESSAGE",
+        "BAD_SERVER_PROOF", "INVALID_RECODE_MESSAGE", "BAD_SERVER_RECODE_PROOF",
+        "UNKNOWN_ACCOUNT", "UNKNOWN_ACCOUNT_PIN", "UNKNOWN_ACCOUNT_CALL",
+        "INCORRECT_PASSWORD", "FAILED", "SERVER_DOWN", "BANNED", "BADVERSION",
+        "ALREADYONLINE", "NOTIME", "DBBUSY", "SUSPENDED", "PARENTALCONTROL",
+        "LOCKED_ENFORCED", "DISCONNECTED", "ACCOUNT_CONVERTED", "ANTI_INDULGENCE",
+        "EXPIRED", "TRIAL_EXPIRED", "NO_GAME_ACCOUNT", "AUTH_OUTAGE",
+        "GAME_ACCOUNT_LOCKED", "NO_BATTLENET_MANAGER", "NO_BATTLENET_APPLICATION",
+        "MALFORMED_ACCOUNT_NAME", "USE_GRUNT", "TOO_FAST", "CHARGEBACK",
+        "IGR_WITHOUT_BNET", "UNLOCKABLE_LOCK", "CONVERSION_REQUIRED",
+        "UNABLE_TO_DOWNLOAD_MODULE", "NO_GAME_ACCOUNTS_IN_REGION", "ACCOUNT_LOCKED"
+    };
+    if (result >= 0 && result < LOGIN_RESULT_MAX) return names[result];
+    return "UNKNOWN";
+}
+
+inline bool IsLoginSuccess(LOGIN_RESULT result) {
+    return result == LOGIN_OK;
+}
+
+inline bool IsLoginError(LOGIN_RESULT result) {
+    return result != LOGIN_OK && result < LOGIN_RESULT_MAX;
+}
+
 enum LOGIN_STATE {
     LOGIN_STATE_INITIALIZED = 0,
     LOGIN_STATE_CONNECTING = 1,
@@ -1173,6 +1199,19 @@ enum NETSTATE {
     NS_CONNECTED = 5,
 };
 
+inline const char* GetNetStateName(NETSTATE state) {
+    static const char* names[] = {
+        "UNINITIALIZED", "INITIALIZING", "INITIALIZED", "STATE_3",
+        "CONNECTING", "CONNECTED"
+    };
+    if (state >= 0 && state <= NS_CONNECTED) return names[state];
+    return "UNKNOWN";
+}
+
+inline bool IsNetConnected(NETSTATE state) {
+    return state == NS_CONNECTED;
+}
+
 enum WOW_CONN_STATE {
     WOWC_UNINITIALIZED = 0,
     WOWC_INITIALIZED = 1,
@@ -1184,6 +1223,19 @@ enum WOW_CONN_STATE {
     WOWC_DISCONNECTING = 7,
     WOWC_ERROR = 8,
 };
+
+inline const char* GetWowConnStateName(WOW_CONN_STATE state) {
+    static const char* names[] = {
+        "UNINITIALIZED", "INITIALIZED", "CONNECTING", "LISTENING",
+        "ACCEPTED", "CONNECTED", "DISCONNECTED", "DISCONNECTING", "ERROR"
+    };
+    if (state >= 0 && state <= WOWC_ERROR) return names[state];
+    return "UNKNOWN";
+}
+
+inline bool IsWowConnected(WOW_CONN_STATE state) {
+    return state == WOWC_CONNECTED;
+}
 
 enum WOWC_TYPE {
     WOWC_TYPE_MESSAGES = 0,

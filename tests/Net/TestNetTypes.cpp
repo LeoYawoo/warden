@@ -1,0 +1,96 @@
+#include <gtest/gtest.h>
+#include "Net/Types.h"
+
+TEST(NetTypesTest, LOGIN_RESULTValues) {
+    EXPECT_EQ(LOGIN_OK, 0);
+    EXPECT_EQ(LOGIN_INVALID_CHALLENGE_MESSAGE, 1);
+    EXPECT_EQ(LOGIN_SRP_ERROR, 2);
+    EXPECT_EQ(LOGIN_RESULT_MAX, 41);
+}
+
+TEST(NetTypesTest, GetLoginResultName) {
+    EXPECT_STREQ(GetLoginResultName(LOGIN_OK), "OK");
+    EXPECT_STREQ(GetLoginResultName(LOGIN_INVALID_CHALLENGE_MESSAGE), "INVALID_CHALLENGE_MESSAGE");
+    EXPECT_STREQ(GetLoginResultName(LOGIN_SRP_ERROR), "SRP_ERROR");
+    EXPECT_STREQ(GetLoginResultName(LOGIN_INCORRECT_PASSWORD), "INCORRECT_PASSWORD");
+    EXPECT_STREQ(GetLoginResultName(LOGIN_BANNED), "BANNED");
+    EXPECT_STREQ(GetLoginResultName(static_cast<LOGIN_RESULT>(100)), "UNKNOWN");
+}
+
+TEST(NetTypesTest, IsLoginSuccess) {
+    EXPECT_TRUE(IsLoginSuccess(LOGIN_OK));
+    EXPECT_FALSE(IsLoginSuccess(LOGIN_FAILED));
+    EXPECT_FALSE(IsLoginSuccess(LOGIN_BANNED));
+}
+
+TEST(NetTypesTest, IsLoginError) {
+    EXPECT_FALSE(IsLoginError(LOGIN_OK));
+    EXPECT_TRUE(IsLoginError(LOGIN_FAILED));
+    EXPECT_TRUE(IsLoginError(LOGIN_BANNED));
+    EXPECT_TRUE(IsLoginError(LOGIN_SERVER_DOWN));
+}
+
+TEST(NetTypesTest, NETSTATEValues) {
+    EXPECT_EQ(NS_UNINITIALIZED, 0);
+    EXPECT_EQ(NS_INITIALIZING, 1);
+    EXPECT_EQ(NS_INITIALIZED, 2);
+    EXPECT_EQ(NS_CONNECTING, 4);
+    EXPECT_EQ(NS_CONNECTED, 5);
+}
+
+TEST(NetTypesTest, GetNetStateName) {
+    EXPECT_STREQ(GetNetStateName(NS_UNINITIALIZED), "UNINITIALIZED");
+    EXPECT_STREQ(GetNetStateName(NS_INITIALIZING), "INITIALIZING");
+    EXPECT_STREQ(GetNetStateName(NS_INITIALIZED), "INITIALIZED");
+    EXPECT_STREQ(GetNetStateName(NS_CONNECTING), "CONNECTING");
+    EXPECT_STREQ(GetNetStateName(NS_CONNECTED), "CONNECTED");
+    EXPECT_STREQ(GetNetStateName(static_cast<NETSTATE>(100)), "UNKNOWN");
+}
+
+TEST(NetTypesTest, IsNetConnected) {
+    EXPECT_TRUE(IsNetConnected(NS_CONNECTED));
+    EXPECT_FALSE(IsNetConnected(NS_CONNECTING));
+    EXPECT_FALSE(IsNetConnected(NS_UNINITIALIZED));
+}
+
+TEST(NetTypesTest, WOW_CONN_STATEValues) {
+    EXPECT_EQ(WOWC_UNINITIALIZED, 0);
+    EXPECT_EQ(WOWC_INITIALIZED, 1);
+    EXPECT_EQ(WOWC_CONNECTING, 2);
+    EXPECT_EQ(WOWC_CONNECTED, 5);
+    EXPECT_EQ(WOWC_DISCONNECTED, 6);
+    EXPECT_EQ(WOWC_ERROR, 8);
+}
+
+TEST(NetTypesTest, GetWowConnStateName) {
+    EXPECT_STREQ(GetWowConnStateName(WOWC_UNINITIALIZED), "UNINITIALIZED");
+    EXPECT_STREQ(GetWowConnStateName(WOWC_INITIALIZED), "INITIALIZED");
+    EXPECT_STREQ(GetWowConnStateName(WOWC_CONNECTING), "CONNECTING");
+    EXPECT_STREQ(GetWowConnStateName(WOWC_CONNECTED), "CONNECTED");
+    EXPECT_STREQ(GetWowConnStateName(WOWC_DISCONNECTED), "DISCONNECTED");
+    EXPECT_STREQ(GetWowConnStateName(WOWC_ERROR), "ERROR");
+    EXPECT_STREQ(GetWowConnStateName(static_cast<WOW_CONN_STATE>(100)), "UNKNOWN");
+}
+
+TEST(NetTypesTest, IsWowConnected) {
+    EXPECT_TRUE(IsWowConnected(WOWC_CONNECTED));
+    EXPECT_FALSE(IsWowConnected(WOWC_CONNECTING));
+    EXPECT_FALSE(IsWowConnected(WOWC_UNINITIALIZED));
+}
+
+TEST(NetTypesTest, LoginDataSize) {
+    // LoginData size may vary due to padding
+    EXPECT_GE(sizeof(LoginData), 1300u);
+}
+
+TEST(NetTypesTest, NETADDRSize) {
+    EXPECT_EQ(sizeof(NETADDR), 16u);
+}
+
+TEST(NetTypesTest, NETCONNADDRSize) {
+    EXPECT_EQ(sizeof(NETCONNADDR), 32u);
+}
+
+TEST(NetTypesTest, REALM_INFOSize) {
+    EXPECT_GE(sizeof(REALM_INFO), 280u);
+}
