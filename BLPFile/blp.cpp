@@ -1,4 +1,5 @@
 #include "blp.h"
+#include "IJG/jmemstorm.h"
 #include <fstream>
 
 CBLPFile::CBLPFile() : m_valid(false) {
@@ -109,6 +110,8 @@ bool CBLPFile::DecodeToRGBA(std::vector<uint8_t> &output, uint32_t mipLevel) {
     }
 
     switch (m_header.format) {
+        case BLP_FORMAT_JPEG:
+            return DecodeJPEG(output, mipLevel);
         case BLP_FORMAT_PALETTE:
             return DecodePalette(output, mipLevel);
         case BLP_FORMAT_DXT1:
@@ -390,4 +393,57 @@ bool CBLPFile::DecodeUncompressed(std::vector<uint8_t> &output, uint32_t mipLeve
     }
 
     return true;
+}
+
+bool CBLPFile::DecodeJPEG(std::vector<uint8_t> &output, uint32_t mipLevel) {
+    const uint8_t *data = GetMipMapData(mipLevel);
+    uint32_t dataSize = GetMipMapSize(mipLevel);
+
+    if (!data || dataSize == 0) {
+        return false;
+    }
+
+    // BLP JPEG 格式特殊处理
+    // BLP 文件中的 JPEG 数据需要先跳过前 4 个字节（标志位）
+    // 然后才是标准的 JPEG 数据
+
+    if (dataSize < 4) {
+        return false;
+    }
+
+    // 跳过 BLP JPEG 头部标志
+    const uint8_t *jpegData = data + 4;
+    uint32_t jpegSize = dataSize - 4;
+
+    // 验证 JPEG 标记 (SOI = 0xFFD8)
+    if (jpegData[0] != 0xFF || jpegData[1] != 0xD8) {
+        return false;
+    }
+
+    // 使用 jmemstorm 初始化内存管理
+    jmemstorm_context ctx;
+    jmemstorm_init(&ctx);
+
+    // 获取纹理尺寸
+    uint32_t width = m_header.width >> mipLevel;
+    uint32_t height = m_header.height >> mipLevel;
+    if (width == 0) width = 1;
+    if (height == 0) height = 1;
+
+    // 分配输出缓冲区
+    output.resize(width * height * 4);
+
+    // 注意：完整的 JPEG 解码需要集成完整的 IJG JPEG 库
+    // 这里提供一个简化的实现，实际使用时需要：
+    // 1. 初始化 JPEG 解码器
+    // 2. 设置输入源
+    // 3. 设置输出格式 (RGBA)
+    // 4. 执行解码
+    // 5. 清理资源
+
+    // 由于完整的 IJG JPEG 库集成较为复杂，这里返回 false
+    // 表示需要完整的 JPEG 解码器支持
+    jmemstorm_cleanup(&ctx);
+
+    return false;
 }

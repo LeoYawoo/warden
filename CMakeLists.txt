@@ -170,6 +170,7 @@ if(BUILD_TESTS)
                 Agile/Position.cpp
                 Anim/Type.cpp
                 BLPFile/blp.cpp
+                BLPFile/IJG/jmemstorm.cpp
         )
 
         target_include_directories(ntempest_lib PRIVATE ${CMAKE_SOURCE_DIR})

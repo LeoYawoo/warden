@@ -89,6 +89,7 @@ private:
     bool DecodeDXT3(std::vector<uint8_t> &output, uint32_t mipLevel);
     bool DecodeDXT5(std::vector<uint8_t> &output, uint32_t mipLevel);
     bool DecodeUncompressed(std::vector<uint8_t> &output, uint32_t mipLevel);
+    bool DecodeJPEG(std::vector<uint8_t> &output, uint32_t mipLevel);
 
     BLPHeader m_header;
     std::vector<uint8_t> m_fileData;

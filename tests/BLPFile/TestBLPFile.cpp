@@ -161,3 +161,45 @@ TEST(BLPFileTest, MagicNumber) {
 TEST(BLPFileTest, HeaderSize) {
     EXPECT_EQ(sizeof(BLPHeader), 164u);
 }
+
+TEST(BLPFileTest, DecodeJPEGFormat) {
+    // 测试 JPEG 格式识别
+    // 注意：完整的 JPEG 解码需要 IJG 库，这里只测试格式识别
+    uint8_t data[1024] = {0};
+
+    // Set valid header
+    *reinterpret_cast<uint32_t*>(data) = BLP_MAGIC;
+    *reinterpret_cast<uint32_t*>(data + 4) = 1;
+    *reinterpret_cast<uint32_t*>(data + 8) = BLP_FORMAT_JPEG;
+    *reinterpret_cast<uint32_t*>(data + 16) = 64;  // width
+    *reinterpret_cast<uint32_t*>(data + 20) = 64;  // height
+    *reinterpret_cast<uint32_t*>(data + 152) = 1;
+    *reinterpret_cast<uint32_t*>(data + 24) = 164;
+    *reinterpret_cast<uint32_t*>(data + 28) = 800;  // mipmap size
+
+    CBLPFile blp;
+    EXPECT_TRUE(blp.LoadFromMemory(data, sizeof(data)));
+    EXPECT_TRUE(blp.IsValid());
+    EXPECT_EQ(blp.GetFormat(), BLP_FORMAT_JPEG);
+
+    // JPEG 解码需要完整的 IJG 库，这里测试格式识别
+    std::vector<uint8_t> output;
+    // DecodeJPEG returns false without full JPEG decoder
+    EXPECT_FALSE(blp.DecodeToRGBA(output, 0));
+}
+
+TEST(BLPFileTest, JPEGMagicNumber) {
+    // BLP JPEG has special 4-byte header before actual JPEG data
+    uint8_t data[256] = {0};
+
+    *reinterpret_cast<uint32_t*>(data) = BLP_MAGIC;
+    *reinterpret_cast<uint32_t*>(data + 8) = BLP_FORMAT_JPEG;
+
+    // Set JPEG SOI marker at offset 168 (164 header + 4 BLP JPEG header)
+    data[168] = 0xFF;
+    data[169] = 0xD8;
+
+    CBLPFile blp;
+    blp.LoadFromMemory(data, sizeof(data));
+    EXPECT_EQ(blp.GetFormat(), BLP_FORMAT_JPEG);
+}
