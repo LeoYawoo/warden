@@ -103,3 +103,59 @@ set_target_properties(freetype-2.0 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY
 #        ${CMAKE_SOURCE_DIR}/build)
 #set_target_properties(glew_s PROPERTIES ARCHIVE_OUTPUT_DIRECTORY
 #        ${CMAKE_SOURCE_DIR}/build)
+
+# Option to enable tests
+option(BUILD_TESTS "Build unit tests" ON)
+
+if(BUILD_TESTS)
+    # Google Test - use local copy
+    if(EXISTS "${CMAKE_SOURCE_DIR}/external/googletest/CMakeLists.txt")
+        add_subdirectory(${CMAKE_SOURCE_DIR}/external/googletest)
+    else()
+        message(WARNING "Google Test not found in external/googletest. Tests will not be built.")
+        set(BUILD_TESTS OFF)
+    endif()
+
+    if(BUILD_TESTS)
+        enable_testing()
+
+        # NTempest test library (header-only + source)
+        add_library(ntempest_lib STATIC
+                NTempest/C2Vector.cpp
+                NTempest/C3Vector.cpp
+                NTempest/C4Vector.cpp
+                NTempest/C4Quaternion.cpp
+                NTempest/C33Matrix.cpp
+                NTempest/C44Matrix.cpp
+                NTempest/C4Plane.cpp
+                NTempest/CRect.cpp
+                NTempest/CMathi.cpp
+                NTempest/CiRect.cpp
+                NTempest/C22uMatrix.cpp
+                NTempest/CAaSphere.cpp
+                Storm/Error.cpp
+                Storm/Debug.cpp
+        )
+
+        target_include_directories(ntempest_lib PRIVATE ${CMAKE_SOURCE_DIR})
+
+        # NTempest tests
+        add_executable(ntempest_tests
+                tests/NTempest/TestC2Vector.cpp
+                tests/NTempest/TestC3Vector.cpp
+                tests/NTempest/TestC4Vector.cpp
+                tests/NTempest/TestC4Quaternion.cpp
+                tests/NTempest/TestC33Matrix.cpp
+                tests/NTempest/TestC44Matrix.cpp
+                tests/NTempest/TestC4Plane.cpp
+                tests/NTempest/TestCRect.cpp
+                tests/NTempest/TestCMath.cpp
+        )
+
+        target_link_libraries(ntempest_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(ntempest_tests PRIVATE ${CMAKE_SOURCE_DIR})
+
+        include(GoogleTest)
+        gtest_discover_tests(ntempest_tests)
+    endif()
+endif()

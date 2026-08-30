@@ -16,6 +16,9 @@ namespace NTempest {
 
     class C33Matrix {
     public:
+        // Static functions
+        static C33Matrix Identity();
+
         // Member functions
         C33Matrix();
 
@@ -26,6 +29,8 @@ namespace NTempest {
         float Determinant() const;
 
         C33Matrix Inverse(float det) const;
+
+        C33Matrix Transpose() const;
 
 
     public:
@@ -40,7 +45,7 @@ namespace NTempest {
         float c2;
     };
 
-    
+
 }
 
 

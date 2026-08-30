@@ -3,6 +3,10 @@
 
 using namespace NTempest;
 
+C44Matrix C44Matrix::Identity() {
+    return C44Matrix();
+}
+
 C44Matrix::C44Matrix() {
     a0 = 1.0f;
     a1 = 0.0f;
@@ -54,6 +58,71 @@ C44Matrix C44Matrix::RotationAroundZ(float angle) {
     return {a0, a1, a2, a3, b0, b1, b2, b3, c0, c1, c2, c3, d0, d1, d2, d3};
 }
 
+C44Matrix C44Matrix::RotationAroundX(float angle) {
+    float cosAngle = cos(angle);
+    float sinAngle = sin(angle);
+
+    return C44Matrix(
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, cosAngle, sinAngle, 0.0f,
+        0.0f, -sinAngle, cosAngle, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
+}
+
+C44Matrix C44Matrix::RotationAroundY(float angle) {
+    float cosAngle = cos(angle);
+    float sinAngle = sin(angle);
+
+    return C44Matrix(
+        cosAngle, 0.0f, -sinAngle, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        sinAngle, 0.0f, cosAngle, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
+}
+
+C44Matrix C44Matrix::LookAt(const C3Vector &eye, const C3Vector &target, const C3Vector &up) {
+    C3Vector f = target - eye;
+    f.Normalize();
+
+    C3Vector s = f.Cross(up);
+    s.Normalize();
+
+    C3Vector u = s.Cross(f);
+
+    return C44Matrix(
+        s.x, s.y, s.z, -s.Dot(eye),
+        u.x, u.y, u.z, -u.Dot(eye),
+        -f.x, -f.y, -f.z, f.Dot(eye),
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
+}
+
+C44Matrix C44Matrix::Perspective(float fov, float aspect, float nearPlane, float farPlane) {
+    float tanHalfFov = tanf(fov * 0.5f);
+    float range = farPlane - nearPlane;
+
+    return C44Matrix(
+        1.0f / (aspect * tanHalfFov), 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f / tanHalfFov, 0.0f, 0.0f,
+        0.0f, 0.0f, -(farPlane + nearPlane) / range, -2.0f * farPlane * nearPlane / range,
+        0.0f, 0.0f, -1.0f, 0.0f
+    );
+}
+
+C44Matrix C44Matrix::Orthographic(float left, float right, float bottom, float top, float nearPlane, float farPlane) {
+    float tx = -(right + left) / (right - left);
+    float ty = -(top + bottom) / (top - bottom);
+    float tz = -(farPlane + nearPlane) / (farPlane - nearPlane);
+
+    return C44Matrix(
+        2.0f / (right - left), 0.0f, 0.0f, tx,
+        0.0f, 2.0f / (top - bottom), 0.0f, ty,
+        0.0f, 0.0f, -2.0f / (farPlane - nearPlane), tz,
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
+}
 
 C44Matrix::C44Matrix(const C4Quaternion &rotation) {
     this->a3 = 0.0f;
@@ -168,6 +237,14 @@ C44Matrix C44Matrix::Inverse(float det) const {
 
 void C44Matrix::RotateAroundZ(float angle) {
     *this = C44Matrix::RotationAroundZ(angle) * *this;
+}
+
+void C44Matrix::RotateAroundX(float angle) {
+    *this = C44Matrix::RotationAroundX(angle) * *this;
+}
+
+void C44Matrix::RotateAroundY(float angle) {
+    *this = C44Matrix::RotationAroundY(angle) * *this;
 }
 
 

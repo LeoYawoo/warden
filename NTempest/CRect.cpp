@@ -15,23 +15,46 @@ CRect CRect::Intersection(const CRect &l, const CRect &r) {
     return i;
 }
 
+CRect CRect::Union(const CRect &l, const CRect &r) {
+    CRect u;
+
+    u.minX = l.minX <= r.minX ? l.minX : r.minX;
+    u.minY = l.minY <= r.minY ? l.minY : r.minY;
+    u.maxX = l.maxX >= r.maxX ? l.maxX : r.maxX;
+    u.maxY = l.maxY >= r.maxY ? l.maxY : r.maxY;
+
+    return u;
+}
+
 CRect::CRect() {
-    minY = 0.0f; // t
-    minX = 0.0f; // l
-    maxY = 0.0f; // b
-    maxX = 0.0f; // r
+    minY = 0.0f;
+    minX = 0.0f;
+    maxY = 0.0f;
+    maxX = 0.0f;
 }
 
 CRect::CRect(float miny, float minx, float maxy, float maxx) : minY(miny), minX(minx), maxY(maxy), maxX(maxx) {}
 
-bool CRect::operator==(CRect &rect) {
+bool CRect::operator==(const CRect &rect) const {
     return this->minX == rect.minX && this->minY == rect.minY && this->maxX == rect.maxX &&
            this->maxY == rect.maxY;
 }
 
+bool CRect::operator!=(const CRect &rect) const {
+    return !(*this == rect);
+}
 
-bool CRect::IsPointInside(const C2Vector &pt) {
+bool CRect::IsPointInside(const C2Vector &pt) const {
     return this->minX <= pt.x && this->maxX >= pt.x && this->minY <= pt.y && this->maxY >= pt.y;
+}
+
+bool CRect::Contains(const C2Vector &pt) const {
+    return this->IsPointInside(pt);
+}
+
+bool CRect::Contains(const CRect &r) const {
+    return this->minX <= r.minX && this->maxX >= r.maxX &&
+           this->minY <= r.minY && this->maxY >= r.maxY;
 }
 
 CRect *CRect::Clamp(C2Vector &a2) {
@@ -53,18 +76,32 @@ CRect *CRect::Clamp(C2Vector &a2) {
     return this;
 }
 
-//bool NTempest::operator==(const CRect &rectA, const CRect &rectB) {
-//    return rectA.minX == rectB.minX && rectA.minY == rectB.minY && rectA.maxX == rectB.maxX &&
-//           rectA.maxY == rectB.maxY;
-//}
+void CRect::Expand(const C2Vector &pt) {
+    if (pt.x < this->minX) this->minX = pt.x;
+    if (pt.x > this->maxX) this->maxX = pt.x;
+    if (pt.y < this->minY) this->minY = pt.y;
+    if (pt.y > this->maxY) this->maxY = pt.y;
+}
+
+void CRect::Expand(const CRect &r) {
+    if (r.minX < this->minX) this->minX = r.minX;
+    if (r.maxX > this->maxX) this->maxX = r.maxX;
+    if (r.minY < this->minY) this->minY = r.minY;
+    if (r.maxY > this->maxY) this->maxY = r.maxY;
+}
+
+C2Vector CRect::Center() const {
+    return C2Vector((this->minX + this->maxX) * 0.5f, (this->minY + this->maxY) * 0.5f);
+}
+
 bool CRect::Sub4826D0() const {
     return this->maxY < 0.0f || this->minY > 1.0f || this->maxX < 0.0f || this->minX > 1.0f;
 }
 
-const float &CRect::Width() const {
+float CRect::Width() const {
     return this->maxX - this->minX;
 }
 
-const float &CRect::Height() const {
+float CRect::Height() const {
     return this->maxY - this->minY;
 }
