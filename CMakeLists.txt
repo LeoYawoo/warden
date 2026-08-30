@@ -233,5 +233,18 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(ui_tests)
+
+        # NIpse tests
+        add_executable(nipse_tests
+                tests/NIpse/TestCPoReal.cpp
+                tests/NIpse/TestCRlAgent.cpp
+                tests/NIpse/TestCRlAgentDef.cpp
+        )
+
+        target_link_libraries(nipse_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(nipse_tests PRIVATE ${CMAKE_SOURCE_DIR})
+
+        include(GoogleTest)
+        gtest_discover_tests(nipse_tests)
     endif()
 endif()
