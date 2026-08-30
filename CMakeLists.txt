@@ -144,6 +144,7 @@ if(BUILD_TESTS)
                 Agile/Float.cpp
                 Agile/Integer.cpp
                 Agile/Position.cpp
+                Anim/Type.cpp
         )
 
         target_include_directories(ntempest_lib PRIVATE ${CMAKE_SOURCE_DIR})
@@ -270,5 +271,16 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(game_tests)
+
+        # Anim tests
+        add_executable(anim_tests
+                tests/Anim/TestFixed16.cpp
+        )
+
+        target_link_libraries(anim_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(anim_tests PRIVATE ${CMAKE_SOURCE_DIR})
+
+        include(GoogleTest)
+        gtest_discover_tests(anim_tests)
     endif()
 endif()
