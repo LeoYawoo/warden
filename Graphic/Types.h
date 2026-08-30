@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstring>
 
 enum BlitAlpha {
     BlitAlpha_0 = 0,
@@ -9,6 +10,12 @@ enum BlitAlpha {
     BlitAlpha_Filler = 3,
     BlitAlphas_Last = 4
 };
+
+inline const char* GetBlitAlphaName(BlitAlpha alpha) {
+    static const char* names[] = {"0", "1", "8", "Filler"};
+    if (alpha >= 0 && alpha < BlitAlphas_Last) return names[alpha];
+    return "Unknown";
+}
 
 enum BlitFormat {
     BlitFormat_Unknown = 0,
@@ -26,6 +33,40 @@ enum BlitFormat {
     BlitFormat_D24X8 = 12,
     BlitFormats_Last = 13
 };
+
+inline const char* GetBlitFormatName(BlitFormat format) {
+    static const char* names[] = {
+        "Unknown", "Abgr8888", "Argb8888", "Argb4444",
+        "Argb1555", "Rgb565", "Dxt1", "Dxt3", "Dxt5",
+        "Uv88", "Gr1616F", "R32F", "D24X8"
+    };
+    if (format >= 0 && format < BlitFormats_Last) return names[format];
+    return "Unknown";
+}
+
+inline uint32_t GetBlitFormatBPP(BlitFormat format) {
+    switch (format) {
+        case BlitFormat_Abgr8888:
+        case BlitFormat_Argb8888:
+        case BlitFormat_R32F:
+        case BlitFormat_D24X8:
+            return 32;
+        case BlitFormat_Argb4444:
+        case BlitFormat_Argb1555:
+        case BlitFormat_Rgb565:
+        case BlitFormat_Gr1616F:
+            return 16;
+        case BlitFormat_Uv88:
+            return 16;
+        case BlitFormat_Dxt1:
+            return 4;  // 4 bits per pixel
+        case BlitFormat_Dxt3:
+        case BlitFormat_Dxt5:
+            return 8;  // 8 bits per pixel
+        default:
+            return 0;
+    }
+}
 
 enum EGxApi {
     GxApi_OpenGl = 0,
@@ -341,10 +382,126 @@ struct C4Pixel {
     char g;
     char r;
     char a;
+
+    // Constructors
+    C4Pixel() : b(0), g(0), r(0), a(0) {}
+    C4Pixel(char r, char g, char b, char a) : b(b), g(g), r(r), a(a) {}
+    C4Pixel(uint32_t argb) {
+        a = static_cast<char>((argb >> 24) & 0xFF);
+        r = static_cast<char>((argb >> 16) & 0xFF);
+        g = static_cast<char>((argb >> 8) & 0xFF);
+        b = static_cast<char>(argb & 0xFF);
+    }
+
+    // Convert to ARGB uint32_t
+    uint32_t ToARGB() const {
+        return (static_cast<uint32_t>(static_cast<uint8_t>(a)) << 24) |
+               (static_cast<uint32_t>(static_cast<uint8_t>(r)) << 16) |
+               (static_cast<uint32_t>(static_cast<uint8_t>(g)) << 8) |
+               static_cast<uint32_t>(static_cast<uint8_t>(b));
+    }
+
+    // Convert to RGBA uint32_t
+    uint32_t ToRGBA() const {
+        return (static_cast<uint32_t>(static_cast<uint8_t>(r)) << 24) |
+               (static_cast<uint32_t>(static_cast<uint8_t>(g)) << 16) |
+               (static_cast<uint32_t>(static_cast<uint8_t>(b)) << 8) |
+               static_cast<uint32_t>(static_cast<uint8_t>(a));
+    }
+
+    // Set from ARGB uint32_t
+    void FromARGB(uint32_t argb) {
+        a = static_cast<char>((argb >> 24) & 0xFF);
+        r = static_cast<char>((argb >> 16) & 0xFF);
+        g = static_cast<char>((argb >> 8) & 0xFF);
+        b = static_cast<char>(argb & 0xFF);
+    }
+
+    // Equality operators
+    bool operator==(const C4Pixel &other) const {
+        return r == other.r && g == other.g && b == other.b && a == other.a;
+    }
+
+    bool operator!=(const C4Pixel &other) const {
+        return !(*this == other);
+    }
+
+    // Get grayscale value
+    uint8_t Grayscale() const {
+        return static_cast<uint8_t>((28 * static_cast<uint8_t>(r) +
+                                    151 * static_cast<uint8_t>(g) +
+                                    77 * static_cast<uint8_t>(b)) >> 8);
+    }
+
+    // Clamp values to 0-255
+    void Clamp() {
+        r = static_cast<char>(std::max(0, std::min(255, static_cast<int>(r))));
+        g = static_cast<char>(std::max(0, std::min(255, static_cast<int>(g))));
+        b = static_cast<char>(std::max(0, std::min(255, static_cast<int>(b))));
+        a = static_cast<char>(std::max(0, std::min(255, static_cast<int>(a))));
+    }
+
+    // Predefined colors
+    static C4Pixel Black() { return C4Pixel(0, 0, 0, 255); }
+    static C4Pixel White() { return C4Pixel(255, 255, 255, 255); }
+    static C4Pixel Red() { return C4Pixel(255, 0, 0, 255); }
+    static C4Pixel Green() { return C4Pixel(0, 255, 0, 255); }
+    static C4Pixel Blue() { return C4Pixel(0, 0, 255, 255); }
+    static C4Pixel Transparent() { return C4Pixel(0, 0, 0, 0); }
 };
 
 struct MipBits {
     C4Pixel* mip[1];
 };
+
+inline const char* GetEGxApiName(EGxApi api) {
+    static const char* names[] = {"OpenGL", "D3D9", "D3D9Ex", "D3D10", "D3D11", "GLL"};
+    if (api >= 0 && api < GxApis_Last) return names[api];
+    return "Unknown";
+}
+
+inline const char* GetEGxBlendName(EGxBlend blend) {
+    static const char* names[] = {
+        "Opaque", "AlphaKey", "Alpha", "Add", "Mod", "Mod2x",
+        "ModAdd", "InvSrcAlphaAdd", "InvSrcAlphaOpaque", "SrcAlphaOpaque",
+        "NoAlphaAdd", "ConstantAlpha"
+    };
+    if (blend >= 0 && blend < GxBlends_Last) return names[blend];
+    return "Unknown";
+}
+
+inline const char* GetEGxTexFilterName(EGxTexFilter filter) {
+    static const char* names[] = {
+        "Nearest", "Linear", "NearestMipNearest",
+        "LinearMipNearest", "LinearMipLinear", "Anisotropic"
+    };
+    if (filter >= 0 && filter < GxTexFilters_Last) return names[filter];
+    return "Unknown";
+}
+
+inline const char* GetEGxTexFormatName(EGxTexFormat format) {
+    static const char* names[] = {
+        "Unknown", "Abgr8888", "Argb8888", "Argb4444",
+        "Argb1555", "Rgb565", "Dxt1", "Dxt3", "Dxt5",
+        "Uv88", "Gr1616F", "R32F", "D24X8"
+    };
+    if (format >= 0 && format < GxTexFormats_Last) return names[format];
+    return "Unknown";
+}
+
+inline const char* GetEGxTexWrapModeName(EGxTexWrapMode mode) {
+    static const char* names[] = {"Clamp", "Wrap"};
+    if (mode >= 0 && mode <= 1) return names[mode];
+    return "Unknown";
+}
+
+inline const char* GetEGxPrimName(EGxPrim prim) {
+    static const char* names[] = {
+        "Points", "Lines", "LineStrip", "Triangles",
+        "TriangleStrip", "TriangleFan"
+    };
+    if (prim >= 0 && prim < GxPrims_Last) return names[prim];
+    return "Unknown";
+}
 
 

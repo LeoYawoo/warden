@@ -246,5 +246,17 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(nipse_tests)
+
+        # Graphic tests
+        add_executable(graphic_tests
+                tests/Graphic/TestGraphicTypes.cpp
+                tests/Graphic/TestC4Pixel.cpp
+        )
+
+        target_link_libraries(graphic_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(graphic_tests PRIVATE ${CMAKE_SOURCE_DIR})
+
+        include(GoogleTest)
+        gtest_discover_tests(graphic_tests)
     endif()
 endif()
