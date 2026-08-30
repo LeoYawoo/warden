@@ -16,7 +16,7 @@ public:
         if (this != &unk_F6BCE0) {
             this->m_refcnt = this->m_refcnt - 1;
             if (!result) {
-                CStringManager *v2 = CStringManager::getInstance();
+                CStringManager *v2 = CStringManager::Get();
                 v2->Delete(this);
             }
         }

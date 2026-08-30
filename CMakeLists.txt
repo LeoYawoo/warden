@@ -135,6 +135,10 @@ if(BUILD_TESTS)
                 NTempest/CAaSphere.cpp
                 Storm/Error.cpp
                 Storm/Debug.cpp
+                Agile/CStatus.cpp
+                Agile/Float.cpp
+                Agile/Integer.cpp
+                Agile/Position.cpp
         )
 
         target_include_directories(ntempest_lib PRIVATE ${CMAKE_SOURCE_DIR})
@@ -157,5 +161,19 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(ntempest_tests)
+
+        # Agile tests
+        add_executable(agile_tests
+                tests/Agile/TestCStatus.cpp
+                tests/Agile/TestFloat.cpp
+                tests/Agile/TestInteger.cpp
+                tests/Agile/TestPosition.cpp
+        )
+
+        target_link_libraries(agile_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(agile_tests PRIVATE ${CMAKE_SOURCE_DIR})
+
+        include(GoogleTest)
+        gtest_discover_tests(agile_tests)
     endif()
 endif()
