@@ -1,6 +1,6 @@
-#include "storm/String.h"
-#include "storm/Error.h"
-#include "storm/Memory.h"
+#include "StormMac/String.h"
+#include "StormMac/Error.h"
+#include "StormMac/Memory.h"
 #include "StormMac/string/bjhash.h"
 #include <cctype>
 #include <cmath>

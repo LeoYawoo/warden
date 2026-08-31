@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "Storm/thread/SCritSect.h"
+#include "StormMac/thread/SCritSect.h"
 #include <thread>
 #include <vector>
 #include <atomic>

@@ -114,6 +114,7 @@ add_custom_command(TARGET warden POST_BUILD
 target_include_directories(warden PRIVATE "/")
 target_include_directories(warden PRIVATE ${CMAKE_SOURCE_DIR})
 target_include_directories(warden PRIVATE ${CMAKE_SOURCE_DIR}/Source)
+target_include_directories(warden PRIVATE ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 target_include_directories(warden PRIVATE "external/freetype-2.0.9/include")
 target_include_directories(warden PRIVATE "external/")
 target_include_directories(warden PRIVATE "external/lua-5.1.3/src")
@@ -162,6 +163,9 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Tempest/CAaSphere.cpp
                 Source/StormMac/Error.cpp
                 Source/StormMac/Debug.cpp
+                Source/StormMac/memory.cpp
+                Source/StormMac/String.cpp
+                Source/StormMac/string/bjhash.cpp
                 Source/StormMac/thread/SCritSect.cpp
                 Source/StormMac/thread/CCritSect.cpp
                 Source/StormMac/thread/SSyncObject.cpp
@@ -181,7 +185,7 @@ if(BUILD_TESTS)
                 Source/Engine/Source/FDFile/FDFile.cpp
         )
 
-        target_include_directories(tempest_lib PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(tempest_lib PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         # Tempest tests
         add_executable(tempest_tests
@@ -197,7 +201,7 @@ if(BUILD_TESTS)
         )
 
         target_link_libraries(tempest_tests PRIVATE tempest_lib GTest::gtest_main)
-        target_include_directories(tempest_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(tempest_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         include(GoogleTest)
         gtest_discover_tests(tempest_tests)
@@ -211,7 +215,7 @@ if(BUILD_TESTS)
         )
 
         target_link_libraries(agile_tests PRIVATE tempest_lib GTest::gtest_main)
-        target_include_directories(agile_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(agile_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         include(GoogleTest)
         gtest_discover_tests(agile_tests)
@@ -224,7 +228,7 @@ if(BUILD_TESTS)
         )
 
         target_link_libraries(common_tests PRIVATE tempest_lib GTest::gtest_main)
-        target_include_directories(common_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(common_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         include(GoogleTest)
         gtest_discover_tests(common_tests)
@@ -238,7 +242,7 @@ if(BUILD_TESTS)
         )
 
         target_link_libraries(event_tests PRIVATE tempest_lib GTest::gtest_main)
-        target_include_directories(event_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(event_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         include(GoogleTest)
         gtest_discover_tests(event_tests)
@@ -252,7 +256,7 @@ if(BUILD_TESTS)
         )
 
         target_link_libraries(stormmac_tests PRIVATE tempest_lib GTest::gtest_main)
-        target_include_directories(stormmac_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(stormmac_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         include(GoogleTest)
         gtest_discover_tests(stormmac_tests)
@@ -264,7 +268,7 @@ if(BUILD_TESTS)
         )
 
         target_link_libraries(ui_tests PRIVATE tempest_lib GTest::gtest_main)
-        target_include_directories(ui_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(ui_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         include(GoogleTest)
         gtest_discover_tests(ui_tests)
@@ -277,7 +281,7 @@ if(BUILD_TESTS)
         )
 
         target_link_libraries(ipse_tests PRIVATE tempest_lib GTest::gtest_main)
-        target_include_directories(ipse_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(ipse_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         include(GoogleTest)
         gtest_discover_tests(ipse_tests)
@@ -289,7 +293,7 @@ if(BUILD_TESTS)
         )
 
         target_link_libraries(gx_tests PRIVATE tempest_lib GTest::gtest_main)
-        target_include_directories(gx_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(gx_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         include(GoogleTest)
         gtest_discover_tests(gx_tests)
@@ -301,7 +305,7 @@ if(BUILD_TESTS)
         )
 
         target_link_libraries(game_tests PRIVATE tempest_lib GTest::gtest_main)
-        target_include_directories(game_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(game_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         include(GoogleTest)
         gtest_discover_tests(game_tests)
@@ -312,7 +316,7 @@ if(BUILD_TESTS)
         )
 
         target_link_libraries(anim_tests PRIVATE tempest_lib GTest::gtest_main)
-        target_include_directories(anim_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(anim_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         include(GoogleTest)
         gtest_discover_tests(anim_tests)
@@ -323,7 +327,7 @@ if(BUILD_TESTS)
         )
 
         target_link_libraries(worldedit_tests PRIVATE tempest_lib GTest::gtest_main)
-        target_include_directories(worldedit_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(worldedit_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         include(GoogleTest)
         gtest_discover_tests(worldedit_tests)
@@ -334,7 +338,7 @@ if(BUILD_TESTS)
         )
 
         target_link_libraries(fdfile_tests PRIVATE tempest_lib GTest::gtest_main)
-        target_include_directories(fdfile_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(fdfile_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         include(GoogleTest)
         gtest_discover_tests(fdfile_tests)
@@ -345,7 +349,7 @@ if(BUILD_TESTS)
         )
 
         target_link_libraries(net_tests PRIVATE tempest_lib GTest::gtest_main)
-        target_include_directories(net_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(net_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         include(GoogleTest)
         gtest_discover_tests(net_tests)
@@ -356,7 +360,7 @@ if(BUILD_TESTS)
         )
 
         target_link_libraries(sound_tests PRIVATE tempest_lib GTest::gtest_main)
-        target_include_directories(sound_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(sound_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         include(GoogleTest)
         gtest_discover_tests(sound_tests)
@@ -367,7 +371,7 @@ if(BUILD_TESTS)
         )
 
         target_link_libraries(glue_tests PRIVATE tempest_lib GTest::gtest_main)
-        target_include_directories(glue_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(glue_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         include(GoogleTest)
         gtest_discover_tests(glue_tests)
@@ -378,7 +382,7 @@ if(BUILD_TESTS)
         )
 
         target_link_libraries(blp_tests PRIVATE tempest_lib GTest::gtest_main)
-        target_include_directories(blp_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(blp_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         include(GoogleTest)
         gtest_discover_tests(blp_tests)
@@ -391,7 +395,7 @@ if(BUILD_TESTS)
         )
 
         target_link_libraries(base_tests PRIVATE tempest_lib GTest::gtest_main)
-        target_include_directories(base_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
+        target_include_directories(base_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
 
         include(GoogleTest)
         gtest_discover_tests(base_tests)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "storm/thread/SSyncObject.h"
+#include "StormMac/thread/SSyncObject.h"
 #include <cstdint>
 
 class SEvent : public SSyncObject {

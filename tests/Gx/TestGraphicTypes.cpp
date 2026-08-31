@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "Graphic/Types.h"
+#include "Gx/Types.h"
 
 TEST(GraphicTypesTest, BlitAlphaValues) {
     EXPECT_EQ(BlitAlpha_0, 0);

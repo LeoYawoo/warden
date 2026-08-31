@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TSList.h"
-#include "storm/String.h"
+#include "StormMac/String.h"
 #include "TSGrowableArray.h"
 #include "TSExplicitList.h"
 

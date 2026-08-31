@@ -1,4 +1,4 @@
-#include "storm/thread/S_Thread.h"
+#include "StormMac/thread/S_Thread.h"
 
 int32_t S_Thread::s_numthreads;
 

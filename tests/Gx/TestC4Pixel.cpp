@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "Graphic/Types.h"
+#include "Gx/Types.h"
 
 TEST(C4PixelTest, DefaultConstructor) {
     C4Pixel pixel;

@@ -1,4 +1,4 @@
-#include "storm/thread/SSyncObject.h"
+#include "StormMac/thread/SSyncObject.h"
 
 
 SSyncObject::SSyncObject() {

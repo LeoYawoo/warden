@@ -1,7 +1,7 @@
-#include "storm/Thread.h"
-#include "storm/Memory.h"
-#include "storm/String.h"
-#include "storm/thread/S_Thread.h"
+#include "StormMac/Thread.h"
+#include "StormMac/Memory.h"
+#include "StormMac/String.h"
+#include "StormMac/thread/S_Thread.h"
 #include <new>
 #include <windows.h>
 

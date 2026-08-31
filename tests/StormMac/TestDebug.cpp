@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "Storm/Debug.h"
+#include "StormMac/Debug.h"
 
 TEST(BlizzardDebugTest, AssertHandler) {
     // Test that SetAssertHandler doesn't crash

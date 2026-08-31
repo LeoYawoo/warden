@@ -1,4 +1,4 @@
-#include "storm/thread/SCritSect.h"
+#include "StormMac/thread/SCritSect.h"
 
 SCritSect::SCritSect() {
     InitializeCriticalSection(&this->m_opaqueData);

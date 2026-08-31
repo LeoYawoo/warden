@@ -1,5 +1,5 @@
-#include "storm/thread/SThread.h"
-#include "storm/Thread.h"
+#include "StormMac/thread/SThread.h"
+#include "StormMac/Thread.h"
 
 int32_t SThread::Create(uint32_t (*threadProc)(void *), void *param, SThread &thread, char *threadName, uint32_t a5) {
     uint32_t v8;

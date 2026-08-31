@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "Storm/Error.h"
+#include "StormMac/Error.h"
 
 TEST(StormErrorTest, GetLastError) {
     // Test that GetLastError/SetLastError work

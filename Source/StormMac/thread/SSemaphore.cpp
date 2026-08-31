@@ -1,4 +1,4 @@
-#include "storm/thread/SSemaphore.h"
+#include "StormMac/thread/SSemaphore.h"
 
 SSemaphore::SSemaphore(uint32_t initialCount, uint32_t maximumCount)
         : SSyncObject() {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "storm/thread/SThread.h"
+#include "StormMac/thread/SThread.h"
 #include <cstdint>
 #include <windows.h>
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "storm/Error.h"
+#include "StormMac/Error.h"
 #include <cstdint>
 #include <typeinfo>
 

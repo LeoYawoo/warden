@@ -1,4 +1,4 @@
-#include "storm/thread/CCritSect.h"
+#include "StormMac/thread/CCritSect.h"
 
 CCritSect::CCritSect() {
     InitializeCriticalSection(&this->m_critsect);

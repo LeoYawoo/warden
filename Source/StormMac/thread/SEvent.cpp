@@ -1,4 +1,4 @@
-#include "storm/thread/SEvent.h"
+#include "StormMac/thread/SEvent.h"
 
 SEvent::SEvent(int32_t manualReset, int32_t initialValue)
         : SSyncObject() {

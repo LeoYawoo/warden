@@ -1,5 +1,5 @@
-#include "storm/thread/S_Thread.h"
-#include "storm/Memory.h"
+#include "StormMac/thread/S_Thread.h"
+#include "StormMac/Memory.h"
 
 DWORD S_Thread::s_SLaunchThread(void *threadParam) {
     auto params = static_cast<SThreadParmBlock *>(threadParam);

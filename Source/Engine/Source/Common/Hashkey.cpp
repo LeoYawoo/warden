@@ -1,6 +1,6 @@
 #include "Hashkey.h"
-#include "storm/Memory.h"
-#include "storm/String.h"
+#include "StormMac/Memory.h"
+#include "StormMac/String.h"
 
 bool HASHKEY_NONE::operator==(const HASHKEY_NONE &key) {
     return true;
