@@ -18,3 +18,8 @@ ARCHITECTURE.md
 .claude/
 .mcp.json
 Ponce.cfg
+raw_strings.txt
+source_files_clean.txt
+source_files.txt
+PROJECT_TREE.txt
+missing_files_report.txt
