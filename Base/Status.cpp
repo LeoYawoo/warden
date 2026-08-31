@@ -1,4 +1,13 @@
 #include "Status.h"
 
-// TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for Status
+Status::Status()
+    : m_code(0) {
+}
+
+Status::Status(int32_t code, const std::string& message)
+    : m_code(code)
+    , m_message(message) {
+}
+
+Status::~Status() {
+}

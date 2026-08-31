@@ -171,6 +171,10 @@ if(BUILD_TESTS)
                 Anim/Type.cpp
                 BLPFile/blp.cpp
                 BLPFile/IJG/jmemstorm.cpp
+                Base/CDataStore.cpp
+                Base/MsgBuffer.cpp
+                Base/Status.cpp
+                Base/RCString.cpp
         )
 
         target_include_directories(ntempest_lib PRIVATE ${CMAKE_SOURCE_DIR})
@@ -363,5 +367,19 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(blp_tests)
+
+        # Base tests
+        add_executable(base_tests
+                tests/Base/TestCDataStore.cpp
+                tests/Base/TestMsgBuffer.cpp
+                tests/Base/TestStatus.cpp
+                tests/Base/TestRCString.cpp
+        )
+
+        target_link_libraries(base_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(base_tests PRIVATE ${CMAKE_SOURCE_DIR})
+
+        include(GoogleTest)
+        gtest_discover_tests(base_tests)
     endif()
 endif()
