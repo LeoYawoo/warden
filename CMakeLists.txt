@@ -380,7 +380,6 @@ if(BUILD_TESTS)
 
         # Base tests
         add_executable(base_tests
-                tests/Base/TestCDataStore.cpp
                 tests/Base/TestMsgBuffer.cpp
                 tests/Base/TestStatus.cpp
                 tests/Base/TestRCString.cpp

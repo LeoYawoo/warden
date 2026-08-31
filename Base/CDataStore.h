@@ -1,90 +1,86 @@
 #pragma once
 
 #include <cstdint>
-#include <cstring>
-#include <vector>
 
-// CDataStore - 数据存储类
-// 基于 IDA 反编译分析实现
 class CDataStore {
 public:
-    // 构造函数
-    CDataStore();
+    // Member variables
+    uint8_t *m_data = nullptr;
+    uint32_t m_base = 0;
+    uint32_t m_alloc = 0;
+    uint32_t m_size = 0;
+    uint32_t m_read = -1;
+
+    // Virtual member functions
+    virtual void InternalInitialize(uint8_t *&data, uint32_t &base, uint32_t &alloc) {};
+
+    virtual void InternalDestroy(uint8_t *&data, uint32_t &base, uint32_t &alloc);
+
+    virtual int32_t InternalFetchRead(uint32_t pos, uint32_t bytes, uint8_t *&data, uint32_t &base, uint32_t &alloc);
+
+    virtual int32_t InternalFetchWrite(uint32_t pos, uint32_t bytes, uint8_t *&data, uint32_t &base, uint32_t &alloc,
+                                       const char *fileName, int32_t lineNumber);
+
     virtual ~CDataStore();
 
-    // 重置数据存储
-    void Reset();
+    virtual int32_t IsRead() const;
 
-    // 销毁数据存储
+    virtual void Reset();
+
+    virtual void Finalize();
+
+    virtual void GetBufferParams(const void **data, uint32_t *size, uint32_t *alloc) const;
+
+    virtual void DetachBuffer(void **data, uint32_t *size, uint32_t *alloc);
+
+    virtual uint32_t GetHeaderSpace();
+
+    // Member functions
     void Destroy();
 
-    // 获取数据指针
-    const uint8_t* GetData() const { return m_data; }
+    int32_t FetchRead(uint32_t pos, uint32_t bytes);
 
-    // 获取数据大小
-    uint32_t GetSize() const { return m_usedSize; }
+    int32_t FetchWrite(uint32_t pos, uint32_t bytes, const char *fileName, int32_t lineNumber);
 
-    // 获取已使用大小
-    uint32_t GetUsedSize() const { return m_usedSize; }
+    CDataStore &Get(uint8_t &val);
 
-    // 获取容量
-    uint32_t GetCapacity() const { return m_capacity; }
+    CDataStore &Get(uint16_t &val);
 
-    // 检查是否为空
-    bool IsEmpty() const { return m_usedSize == 0; }
+    CDataStore &Get(uint32_t &val);
 
-    // 检查是否已满
-    bool IsFull() const { return m_usedSize >= m_capacity; }
+    CDataStore &Get(uint64_t &val);
 
-    // 写入数据
-    bool Write(const void* data, uint32_t size);
+    CDataStore &Get(float &val);
 
-    // 读取数据
-    bool Read(void* buffer, uint32_t size);
+    CDataStore &GetDataInSitu(void *&val, uint32_t bytes);
 
-    // 跳过指定字节
-    bool Skip(uint32_t bytes);
+    CDataStore &GetString(char *val, uint32_t maxChars);
 
-    // 获取当前位置
-    uint32_t Tell() const { return m_position; }
+    int32_t IsFinal();
 
-    // 设置位置
-    bool Seek(uint32_t position);
+    CDataStore &Put(uint8_t val);
 
-    // 获取剩余可读字节数
-    uint32_t Remaining() const { return m_usedSize - m_position; }
+    CDataStore &Put(uint16_t val);
 
-    // 检查是否可以读取指定字节数
-    bool CanRead(uint32_t bytes) const { return m_position + bytes <= m_usedSize; }
+    CDataStore &Put(uint32_t val);
 
-    // 检查是否可以写入指定字节数
-    bool CanWrite(uint32_t bytes) const { return m_usedSize + bytes <= m_capacity; }
+    CDataStore &Put(uint64_t val);
 
-    // 获取数据存储状态
-    int32_t GetState() const { return m_state; }
+    CDataStore &Put(float val);
 
-    // 设置数据存储状态
-    void SetState(int32_t state) { m_state = state; }
+    CDataStore &PutArray(const uint8_t *val, uint32_t count);
 
-private:
-    // 虚函数表指针（IDB 中的 offset 0）
-    void** m_vtable;
+    CDataStore &PutData(const void *val, uint32_t bytes);
 
-    // 内部数据指针（IDB 中的 offset 4）
-    uint8_t* m_data;
+    CDataStore &PutString(const char *val);
 
-    // 内部数据大小（IDB 中的 offset 8）
-    uint32_t m_dataSize;
+    CDataStore &Set(uint32_t pos, uint16_t val);
 
-    // 已使用大小（IDB 中的 offset 12）
-    uint32_t m_usedSize;
+    void SetSize(uint32_t size);
 
-    // 容量（IDB 中的 offset 16）
-    uint32_t m_capacity;
+    uint32_t Size();
 
-    // 当前位置（IDB 中的 offset 20）
-    uint32_t m_position;
-
-    // 状态（IDB 中的 offset 24）
-    int32_t m_state;
+    bool Sub8CBBF0(uint32_t a2);
 };
+
+

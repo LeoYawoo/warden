@@ -1,89 +1,370 @@
 #include "CDataStore.h"
+#include "Storm/Error.h"
+#include "Storm/Memory.h"
+#include "Storm/String.h"
 #include <algorithm>
-
-CDataStore::CDataStore()
-    : m_vtable(nullptr)
-    , m_data(nullptr)
-    , m_dataSize(0)
-    , m_usedSize(0)
-    , m_capacity(0)
-    , m_position(0)
-    , m_state(-1) {
-}
+#include <cstring>
 
 CDataStore::~CDataStore() {
-    Destroy();
-}
-
-void CDataStore::Reset() {
-    if (m_state == -1) {
-        m_usedSize = 0;
-        m_state = 0;
-    }
-    m_position = 0;
-    m_state = -1;
+    this->Destroy();
 }
 
 void CDataStore::Destroy() {
-    if (m_data) {
-        delete[] m_data;
-        m_data = nullptr;
+    if (this->m_alloc != -1) {
+        this->InternalDestroy(this->m_data, this->m_base, this->m_alloc);
     }
-    m_dataSize = 0;
-    m_usedSize = 0;
-    m_capacity = 0;
-    m_position = 0;
-    m_state = -1;
 }
 
-bool CDataStore::Write(const void* data, uint32_t size) {
-    if (!data || size == 0) {
-        return false;
-    }
+void CDataStore::DetachBuffer(void **data, uint32_t *size, uint32_t *alloc) {
+    // TODO
+}
 
-    if (m_usedSize + size > m_capacity) {
-        // 重新分配内存
-        uint32_t newCapacity = std::max(m_capacity * 2, m_usedSize + size);
-        uint8_t* newData = new uint8_t[newCapacity];
-
-        if (m_data) {
-            std::memcpy(newData, m_data, m_usedSize);
-            delete[] m_data;
+int32_t CDataStore::FetchRead(uint32_t pos, uint32_t bytes) {
+    if (pos + bytes <= this->m_size) {
+        if (pos >= this->m_base && pos + bytes <= this->m_base + this->m_alloc) {
+            return 1;
         }
 
-        m_data = newData;
-        m_capacity = newCapacity;
+        if (this->InternalFetchRead(pos, bytes, this->m_data, this->m_base, this->m_alloc)) {
+            return 1;
+        }
     }
 
-    std::memcpy(m_data + m_usedSize, data, size);
-    m_usedSize += size;
-    return true;
+    this->m_read = this->m_size + 1;
+
+    return 0;
 }
 
-bool CDataStore::Read(void* buffer, uint32_t size) {
-    if (!buffer || size == 0 || !CanRead(size)) {
-        return false;
+int32_t CDataStore::FetchWrite(uint32_t pos, uint32_t bytes, const char *fileName, int32_t lineNumber) {
+    if (pos >= this->m_base && pos + bytes <= this->m_base + this->m_alloc) {
+        return 1;
     }
 
-    std::memcpy(buffer, m_data + m_position, size);
-    m_position += size;
-    return true;
+    if (this->InternalFetchWrite(pos, bytes, this->m_data, this->m_base, this->m_alloc, fileName, lineNumber)) {
+        return 1;
+    }
+
+    return 0;
 }
 
-bool CDataStore::Skip(uint32_t bytes) {
-    if (!CanRead(bytes)) {
-        return false;
-    }
+void CDataStore::Finalize() {
+    STORM_ASSERT(!this->IsFinal());
 
-    m_position += bytes;
-    return true;
+    this->m_read = 0;
 }
 
-bool CDataStore::Seek(uint32_t position) {
-    if (position > m_usedSize) {
-        return false;
+CDataStore &CDataStore::Get(uint8_t &val) {
+    STORM_ASSERT(this->IsFinal());
+
+    auto bytes = sizeof(val);
+
+    if (this->FetchRead(this->m_read, bytes)) {
+        auto ofs = this->m_read - this->m_base;
+        auto ptr = &this->m_data[ofs];
+        val = *reinterpret_cast<uint8_t *>(ptr);
+
+        this->m_read += bytes;
     }
 
-    m_position = position;
-    return true;
+    return *this;
+}
+
+CDataStore &CDataStore::Get(uint16_t &val) {
+    STORM_ASSERT(this->IsFinal());
+
+    auto bytes = sizeof(val);
+
+    if (this->FetchRead(this->m_read, bytes)) {
+        auto ofs = this->m_read - this->m_base;
+        auto ptr = &this->m_data[ofs];
+        val = *reinterpret_cast<uint16_t *>(ptr);
+
+        this->m_read += bytes;
+    }
+
+    return *this;
+}
+
+CDataStore &CDataStore::Get(uint32_t &val) {
+    STORM_ASSERT(this->IsFinal());
+
+    auto bytes = sizeof(val);
+
+    if (this->FetchRead(this->m_read, bytes)) {
+        auto ofs = this->m_read - this->m_base;
+        auto ptr = &this->m_data[ofs];
+        val = *reinterpret_cast<uint32_t *>(ptr);
+
+        this->m_read += bytes;
+    }
+
+    return *this;
+}
+
+CDataStore &CDataStore::Get(uint64_t &val) {
+    STORM_ASSERT(this->IsFinal());
+
+    auto bytes = sizeof(val);
+
+    if (this->FetchRead(this->m_read, bytes)) {
+        auto ofs = this->m_read - this->m_base;
+        auto ptr = &this->m_data[ofs];
+        val = *reinterpret_cast<uint64_t *>(ptr);
+
+        this->m_read += bytes;
+    }
+
+    return *this;
+}
+
+CDataStore &CDataStore::Get(float &val) {
+    STORM_ASSERT(this->IsFinal());
+
+    auto bytes = sizeof(val);
+
+    if (this->FetchRead(this->m_read, bytes)) {
+        auto ofs = this->m_read - this->m_base;
+        auto ptr = &this->m_data[ofs];
+        val = *reinterpret_cast<float *>(ptr);
+
+        this->m_read += bytes;
+    }
+
+    return *this;
+}
+
+void CDataStore::GetBufferParams(const void **data, uint32_t *size, uint32_t *alloc) const {
+    if (data) {
+        *data = this->m_data;
+    }
+
+    if (size) {
+        *size = this->m_size;
+    }
+
+    if (alloc) {
+        *alloc = this->m_alloc;
+    }
+}
+
+CDataStore &CDataStore::GetDataInSitu(void *&val, uint32_t bytes) {
+    STORM_ASSERT(this->IsFinal());
+
+    if (this->FetchRead(this->m_read, bytes)) {
+        auto ofs = this->m_read - this->m_base;
+        auto ptr = &this->m_data[ofs];
+        val = ptr;
+
+        this->m_read += bytes;
+    }
+
+    return *this;
+}
+
+uint32_t CDataStore::GetHeaderSpace() {
+    return 0;
+}
+
+CDataStore &CDataStore::GetString(char *val, uint32_t maxChars) {
+    STORM_ASSERT(this->IsFinal());
+    STORM_ASSERT(val || maxChars == 0);
+
+    if (maxChars == 0) {
+        return *this;
+    }
+
+    if (this->FetchRead(this->m_read, 1)) {
+        auto ofs = this->m_read - this->m_base;
+        auto ptr = &this->m_data[ofs];
+
+        uint32_t i;
+        for (i = 0; ptr[i] != '\0' && i < maxChars; i++) {
+            val[i] = *reinterpret_cast<char *>(&ptr[i]);
+        }
+
+        this->m_read += i == maxChars ? i : i + 1;
+    }
+
+    return *this;
+}
+
+void CDataStore::InternalDestroy(uint8_t *&data, uint32_t &base, uint32_t &alloc) {
+    if (alloc && data) {
+        SMemFree(data, __FILE__, __LINE__, 0);
+    }
+
+    data = nullptr;
+    base = 0;
+    alloc = 0;
+}
+
+int32_t CDataStore::InternalFetchRead(uint32_t pos, uint32_t bytes, uint8_t *&data, uint32_t &base, uint32_t &alloc) {
+    return 0;
+}
+
+int32_t CDataStore::InternalFetchWrite(uint32_t pos, uint32_t bytes, uint8_t *&data, uint32_t &base, uint32_t &alloc,
+                                       const char *fileName, int32_t lineNumber) {
+    alloc = (pos + bytes + 0xFF) & 0xFFFFFF00;
+
+    data = static_cast<uint8_t *>(SMemReAlloc(
+            data,
+            alloc,
+            fileName == nullptr ? __FILE__ : fileName,
+            fileName == nullptr ? __LINE__ : lineNumber,
+            0x0));
+
+    return 1;
+}
+
+int32_t CDataStore::IsFinal() {
+    return this->m_read != -1;
+}
+
+int32_t CDataStore::IsRead() const {
+    return this->m_size == this->m_read;
+}
+
+CDataStore &CDataStore::Put(uint8_t val) {
+    STORM_ASSERT(!this->IsFinal());
+
+    this->FetchWrite(this->m_size, sizeof(val), nullptr, 0);
+
+    auto ofs = this->m_size - this->m_base;
+    auto ptr = &this->m_data[ofs];
+    *reinterpret_cast<uint8_t *>(ptr) = val;
+
+    this->m_size += sizeof(val);
+
+    return *this;
+}
+
+CDataStore &CDataStore::Put(uint16_t val) {
+    STORM_ASSERT(!this->IsFinal());
+
+    this->FetchWrite(this->m_size, sizeof(val), nullptr, 0);
+
+    auto ofs = this->m_size - this->m_base;
+    auto ptr = &this->m_data[ofs];
+    *reinterpret_cast<uint16_t *>(ptr) = val;
+
+    this->m_size += sizeof(val);
+
+    return *this;
+}
+
+CDataStore &CDataStore::Put(uint32_t val) {
+    STORM_ASSERT(!this->IsFinal());
+
+    this->FetchWrite(this->m_size, sizeof(val), nullptr, 0);
+
+    auto ofs = this->m_size - this->m_base;
+    auto ptr = &this->m_data[ofs];
+    *reinterpret_cast<uint32_t *>(ptr) = val;
+
+    this->m_size += sizeof(val);
+
+    return *this;
+}
+
+CDataStore &CDataStore::Put(uint64_t val) {
+    STORM_ASSERT(!this->IsFinal());
+
+    this->FetchWrite(this->m_size, sizeof(val), nullptr, 0);
+
+    auto ofs = this->m_size - this->m_base;
+    auto ptr = &this->m_data[ofs];
+    *reinterpret_cast<uint64_t *>(ptr) = val;
+
+    this->m_size += sizeof(val);
+
+    return *this;
+}
+
+CDataStore &CDataStore::Put(float val) {
+    STORM_ASSERT(!this->IsFinal());
+
+    this->FetchWrite(this->m_size, sizeof(val), nullptr, 0);
+
+    auto ofs = this->m_size - this->m_base;
+    auto ptr = &this->m_data[ofs];
+    *reinterpret_cast<float *>(ptr) = val;
+
+    this->m_size += sizeof(val);
+
+    return *this;
+}
+
+CDataStore &CDataStore::PutArray(const uint8_t *val, uint32_t count) {
+    STORM_ASSERT(!this->IsFinal());
+    STORM_ASSERT(val || !count);
+
+    if (val) {
+        auto src = val;
+        auto bytes = count;
+
+        this->FetchWrite(this->m_size, bytes, nullptr, 0);
+
+        while (count) {
+            bytes = (std::max)(1u, (std::min)(bytes, this->m_alloc));
+
+            this->FetchWrite(this->m_size, bytes, nullptr, 0);
+
+            auto ofs = this->m_size - this->m_base;
+            auto ptr = &this->m_data[ofs];
+
+            if (ptr != src) {
+                memcpy(ptr, src, bytes);
+            }
+
+            src += bytes;
+            this->m_size += bytes;
+            count -= bytes;
+        }
+    }
+
+    return *this;
+}
+
+CDataStore &CDataStore::PutData(const void *val, uint32_t bytes) {
+    return this->PutArray(static_cast<const uint8_t *>(val), bytes);
+}
+
+CDataStore &CDataStore::PutString(const char *val) {
+    auto len = SStrLen(val);
+    return this->PutArray(reinterpret_cast<const uint8_t *>(val), len + 1);
+}
+
+void CDataStore::Reset() {
+    if (this->m_alloc == -1) {
+        this->m_data = nullptr;
+        this->m_alloc = 0;
+    }
+
+    this->m_size = 0;
+    this->m_read = -1;
+}
+
+CDataStore &CDataStore::Set(uint32_t pos, uint16_t val) {
+    STORM_ASSERT(!this->IsFinal());
+    STORM_ASSERT(pos + sizeof(val) <= this->m_size);
+
+    this->FetchWrite(pos, sizeof(val), nullptr, 0);
+
+    auto ofs = pos - this->m_base;
+    auto ptr = &this->m_data[ofs];
+    *reinterpret_cast<uint16_t *>(ptr) = val;
+
+    return *this;
+}
+
+void CDataStore::SetSize(uint32_t size) {
+    this->m_size = size;
+}
+
+uint32_t CDataStore::Size() {
+    return this->m_size;
+}
+
+bool CDataStore::Sub8CBBF0(uint32_t a2) {
+    return this->m_read <= this->m_size && this->m_size - this->m_read >= a2;
 }
