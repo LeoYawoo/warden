@@ -1,0 +1,360 @@
+war3_mac_binary/
+└── Engine/Source/
+    ├── ../
+    │   ├── CMiscCustom.cpp
+    │   └── Data.h
+    ├── AI/
+    │   └── CCaptainAI.cpp
+    ├── Agile/
+    │   ├── AgentRef.cpp
+    │   ├── CAgent.cpp
+    │   ├── CAgentBase.cpp
+    │   ├── FloatListener.h
+    │   ├── FloatModifier.h
+    │   ├── FloatProp.cpp
+    │   ├── IntegerListener.h
+    │   ├── IntegerModifier.h
+    │   ├── Position.cpp
+    │   └── PositionListener.h
+    ├── Anim/
+    │   └── Interp.cpp
+    ├── BLPFile/
+    │   └── jmemstorm.cpp
+    ├── Base/
+    │   ├── CDataAllocator.cpp
+    │   ├── CDataRecycler.cpp
+    │   ├── CDataStoreChunked.cpp
+    │   ├── FileCache.cpp
+    │   ├── MsgBuffer.cpp
+    │   ├── Param.cpp
+    │   ├── RCString.cpp
+    │   └── Status.cpp
+    ├── BattleNet/
+    │   ├── BattleNetCache.cpp
+    │   └── BattleNetChat.cpp
+    ├── CGxDevice/
+    │   └── CGxDevice.cpp
+    ├── CGxDeviceOpenGL/
+    │   ├── CGxDeviceOpenGl.cpp
+    │   ├── CGxOglPrim_VXR.cpp
+    │   ├── CGxOglScene.cpp
+    │   └── CGxOglTexture.cpp
+    ├── CoreAudio/
+    │   ├── MIDIPlayer.cpp
+    │   ├── StreamingCache.cpp
+    │   └── WAVPlayerCoreAudio.cpp
+    ├── Event/
+    │   ├── CInputObserver.cpp
+    │   ├── EvtSched.cpp
+    │   └── EvtTimer.cpp
+    ├── FDFile/
+    │   ├── EditBoxHandlers.cpp
+    │   ├── FDFile.cpp
+    │   ├── FDFile.h
+    │   ├── IFDFile.cpp
+    │   ├── MenuHashNode.cpp
+    │   └── TextFrameHandlers.cpp
+    ├── Frame/
+    │   ├── CBackdropGenerator.cpp
+    │   ├── CButtonFrame.cpp
+    │   ├── CChatDisplay.cpp
+    │   ├── CCheckBox.cpp
+    │   ├── CControl.cpp
+    │   ├── CControlSet.cpp
+    │   ├── CDialog.cpp
+    │   ├── CEditBox.cpp
+    │   ├── CFrame.cpp
+    │   ├── CFramePoint.cpp
+    │   ├── CHighlightFrame.cpp
+    │   ├── CHighlightFrame.h
+    │   ├── CLayer.cpp
+    │   ├── CMenu.cpp
+    │   ├── CMessageFrame.cpp
+    │   ├── CModelFrame.cpp
+    │   ├── CPopupMenu.cpp
+    │   ├── CScreenFrame.cpp
+    │   ├── CScrollBar.cpp
+    │   ├── CSimpleButton.cpp
+    │   ├── CSimpleCheckbox.cpp
+    │   ├── CSimpleFrame.cpp
+    │   ├── CSimpleMessageFrame.cpp
+    │   ├── CSimpleRender.cpp
+    │   ├── CSimpleStatusBar.cpp
+    │   ├── CSimpleTop.cpp
+    │   ├── CSlider.cpp
+    │   ├── CSpriteFrame.cpp
+    │   ├── CTextArea.cpp
+    │   ├── CTextButtonFrame.cpp
+    │   └── CTextFrame.cpp
+    ├── FrameDef/
+    │   ├── FrameDef.cpp
+    │   ├── IFrameDef.h
+    │   └── SetupFrame.cpp
+    ├── Game/
+    │   ├── CDialogButtonEventReg.cpp
+    │   ├── CDialogEventReg.cpp
+    │   ├── CFogOfWarMap.cpp
+    │   ├── CGameState.cpp
+    │   ├── CGameWar3.cpp
+    │   ├── CGroup.cpp
+    │   ├── CMultiboardWar3.cpp
+    │   ├── CPathingFootprint.cpp
+    │   ├── CPlayerWar3.cpp
+    │   ├── CPreloadManager.cpp
+    │   ├── CSaveGame.h
+    │   ├── CSelectionWar3.cpp
+    │   ├── CTimerDialogWar3.cpp
+    │   ├── CampaignProfiles.cpp
+    │   └── JassWar3.cpp
+    ├── Glue/
+    │   ├── CAdBanner.cpp
+    │   ├── CAdManager.cpp
+    │   ├── CAdvancedOptionsDisplay.h
+    │   ├── CAdvancedOptionsPane.h
+    │   ├── CBattleNetChatActionMenu.cpp
+    │   ├── CBattleNetChatActionMenu.h
+    │   ├── CBattleNetChatPanel.cpp
+    │   ├── CBattleNetChatPanel.h
+    │   ├── CBattleNetChatroom.cpp
+    │   ├── CBattleNetChatroom.h
+    │   ├── CBattleNetClanInvitation.h
+    │   ├── CBattleNetClanMateListBox.cpp
+    │   ├── CBattleNetClanMateListBox.h
+    │   ├── CBattleNetClanPane.h
+    │   ├── CBattleNetCustomJoinPanel.h
+    │   ├── CBattleNetFriendsListBox.cpp
+    │   ├── CBattleNetFriendsListBox.h
+    │   ├── CBattleNetFriendsPane.h
+    │   ├── CBattleNetIconSelectBox.cpp
+    │   ├── CBattleNetIconSelectBox.h
+    │   ├── CBattleNetMain.h
+    │   ├── CBattleNetNewsBox.cpp
+    │   ├── CBattleNetNewsBox.h
+    │   ├── CBattleNetProfileListBox.cpp
+    │   ├── CBattleNetProfileListBox.h
+    │   ├── CBattleNetProfilePanel.h
+    │   ├── CBattleNetScheduledGame.cpp
+    │   ├── CBattleNetScheduledGame.h
+    │   ├── CBattleNetStandardPanel.h
+    │   ├── CBattleNetStatusBox.cpp
+    │   ├── CBattleNetStatusBox.h
+    │   ├── CBattleNetTeamPanel.h
+    │   ├── CBattleNetUserListBox.cpp
+    │   ├── CBattleNetUserListBox.h
+    │   ├── CBattleNetUserListBoxItem.cpp
+    │   ├── CCampaignListBox.cpp
+    │   ├── CCampaignListBox.h
+    │   ├── CCampaignMenu.h
+    │   ├── CCheckListBox.cpp
+    │   ├── CCheckListBox.h
+    │   ├── CCheckListBoxItem.cpp
+    │   ├── CCustomCampaignMenu.h
+    │   ├── CDialogWar3.cpp
+    │   ├── CDialogWar3.h
+    │   ├── CGameChatroom.h
+    │   ├── CGlueButtonWar3.h
+    │   ├── CGlueCheckBoxWar3.h
+    │   ├── CGlueEditBoxWar3.h
+    │   ├── CGlueMgr.cpp
+    │   ├── CGluePopupMenuWar3.h
+    │   ├── CGlueTextButtonWar3.h
+    │   ├── CGlueToolTipWar3.cpp
+    │   ├── CListBoxItemWar3.cpp
+    │   ├── CListBoxWar3.cpp
+    │   ├── CListBoxWar3.h
+    │   ├── CLoadSavedGameScreen.h
+    │   ├── CLocalMultiplayerCreate.h
+    │   ├── CLocalMultiplayerJoin.h
+    │   ├── CMainMenu.cpp
+    │   ├── CMainMenu.h
+    │   ├── CMapList.cpp
+    │   ├── CMapList.h
+    │   ├── CMapListBoxItem.cpp
+    │   ├── CMapPreferenceBox.cpp
+    │   ├── CMapPreferenceBox.h
+    │   ├── CMapPreferenceBoxItem.cpp
+    │   ├── COptionsMenu.cpp
+    │   ├── COptionsMenu.h
+    │   ├── CPlayerSlot.cpp
+    │   ├── CPlayerSlot.h
+    │   ├── CScoreScreen.h
+    │   ├── CSkirmish.h
+    │   ├── CSlashChatBox.h
+    │   ├── CTeamSetup.h
+    │   ├── CTimerTextFrame.h
+    │   ├── CTitle.h
+    │   ├── CViewReplayScreen.h
+    │   └── NetGlue.cpp
+    ├── Gxu/
+    │   ├── GxuFont.cpp
+    │   ├── GxuFontUtil.cpp
+    │   ├── GxuLight.cpp
+    │   └── IGxuFontGlyph.cpp
+    ├── Images/
+    │   ├── funcs.cpp
+    │   └── tga.cpp
+    ├── Ipse/
+    │   ├── agent_.cpp
+    │   ├── cproximitymap.cpp
+    │   ├── ipse_thread.cpp
+    │   └── ipse_thread.h
+    ├── Jass2/
+    │   ├── Instance.cpp
+    │   ├── Nodes.h
+    │   ├── parser.cpp
+    │   └── scanner.cpp
+    ├── Mac/
+    │   ├── EditBoxImpl.cpp
+    │   ├── IOAlignUnit.cpp
+    │   ├── OsBattleNet.cpp
+    │   ├── OsClipboard.cpp
+    │   ├── OsGui.cpp
+    │   ├── SBig.cpp
+    │   ├── SFile2.cpp
+    │   ├── SSignature.cpp
+    │   ├── SThread.cpp
+    │   ├── SZip.cpp
+    │   └── TreeViewImpl.cpp
+    ├── MacShell/
+    │   └── MainApp.cpp
+    ├── Net/
+    │   ├── NetClient.cpp
+    │   ├── NetCommon.cpp
+    │   ├── NetGameStore.cpp
+    │   ├── NetProvider.cpp
+    │   ├── NetProviderBNET.cpp
+    │   ├── NetProviderLOOP.cpp
+    │   ├── NetProviderLTCP.cpp
+    │   └── NetRouter.cpp
+    ├── SRP/
+    │   └── SHA.cpp
+    ├── Services/
+    │   ├── Database.cpp
+    │   ├── GfxSingletonManager.cpp
+    │   ├── Lightning.cpp
+    │   ├── SprLinkTable.cpp
+    │   ├── SysMessage.cpp
+    │   ├── TextBlock.cpp
+    │   ├── Texture.cpp
+    │   └── Tokenizer.cpp
+    ├── Storm/
+    │   ├── SLock.cpp
+    │   ├── Win32_Registry.cpp
+    │   └── WinCompat.cpp
+    ├── Tempest/
+    │   ├── cmemblock.cpp
+    │   └── tempest_thread.h
+    ├── UI/
+    │   ├── CAllianceDialog.h
+    │   ├── CAllianceSlot.h
+    │   ├── CBuffBar.cpp
+    │   ├── CBuffIndicator.cpp
+    │   ├── CBuildFrame.cpp
+    │   ├── CBuildMode.cpp
+    │   ├── CBuildTimeIndicator.cpp
+    │   ├── CBuildTimeIndicator.h
+    │   ├── CCargoGrid.cpp
+    │   ├── CChatDialog.h
+    │   ├── CChatEditBar.h
+    │   ├── CCinematicPanel.h
+    │   ├── CCommandBar.cpp
+    │   ├── CConstructUI.cpp
+    │   ├── CEscMenuMainPanel.h
+    │   ├── CEscMenuOptionsPanel.h
+    │   ├── CEscMenuSaveGamePanel.h
+    │   ├── CGameResultDialog.h
+    │   ├── CGameSaveSplashDialog.h
+    │   ├── CHeroBar.cpp
+    │   ├── CHeroLevelBar.cpp
+    │   ├── CHeroLevelBar.h
+    │   ├── CInfoBar.cpp
+    │   ├── CInfoPanelBuildingDetail.cpp
+    │   ├── CInfoPanelBuildingDetail.h
+    │   ├── CInfoPanelButton.cpp
+    │   ├── CInfoPanelButton.h
+    │   ├── CInfoPanelDestructableDetail.h
+    │   ├── CInfoPanelGroup.cpp
+    │   ├── CInfoPanelGroupButton.cpp
+    │   ├── CInfoPanelItemDetail.h
+    │   ├── CInfoPanelUnitDetail.cpp
+    │   ├── CInfoPanelUnitDetail.h
+    │   ├── CInventoryBar.cpp
+    │   ├── CLeaderBoard.cpp
+    │   ├── CLeaderboard.h
+    │   ├── CLogDialog.h
+    │   ├── CMinimap.cpp
+    │   ├── CMultiboard.h
+    │   ├── COccupUI.cpp
+    │   ├── CPeonBar.cpp
+    │   ├── CPortraitButton.cpp
+    │   ├── CPreselectUI.cpp
+    │   ├── CProgressIndicator.h
+    │   ├── CQuestDialog.cpp
+    │   ├── CQuestDialog.h
+    │   ├── CQuestLists.h
+    │   ├── CReplayPanel.cpp
+    │   ├── CReplayPanel.h
+    │   ├── CResourceBar.cpp
+    │   ├── CResourceBar.h
+    │   ├── CScriptDialog.h
+    │   ├── CSimpleConsole.h
+    │   ├── CSoundManager.cpp
+    │   ├── CSoundManagerI.cpp
+    │   ├── CStatBar.cpp
+    │   ├── CSuspendDialog.h
+    │   ├── CTimeOfDayIndicator.cpp
+    │   ├── CTimerDialog.h
+    │   ├── CToolTipWar3.cpp
+    │   ├── CUnitTip.cpp
+    │   ├── CUnresponsiveDialog.h
+    │   ├── CUpperButtonBar.cpp
+    │   ├── CUpperButtonBar.h
+    │   └── CWorldFrameWar3.cpp
+    ├── Unit/
+    │   ├── CAbilityAttack.cpp
+    │   ├── CAbilityCouple.cpp
+    │   ├── CAbilityCriticalStrike.cpp
+    │   ├── CAbilityEvasion.cpp
+    │   ├── CAbilityMove.cpp
+    │   ├── CAbilitySilence.cpp
+    │   ├── CCustomData.cpp
+    │   ├── CItem.cpp
+    │   ├── CMissile.cpp
+    │   ├── CUnitDatabase.cpp
+    │   ├── CUnitUI.cpp
+    │   ├── CUnit_Enum.cpp
+    │   ├── CUnit_Ownership.cpp
+    │   ├── CUnit_Visibility.cpp
+    │   ├── CUnit_Vision.cpp
+    │   └── CWidget.cpp
+    ├── Utility/
+    │   └── PersistentPath.cpp
+    ├── W32/
+    │   ├── OSSystem.cpp
+    │   ├── OsLock.cpp
+    │   └── OsTcp.cpp
+    ├── WardenClient/
+    │   └── WardenClient.cpp
+    ├── World/
+    │   ├── WorldCampaign.cpp
+    │   └── WorldLoad.cpp
+    ├── WorldEdit/
+    │   ├── CCustomObjectData.h
+    │   ├── CRegion.cpp
+    │   ├── CTerrain.cpp
+    │   ├── CTerrainBlight.cpp
+    │   ├── CTerrainBounds.cpp
+    │   ├── CTerrainCliff.cpp
+    │   ├── CTerrainCliffDoodads.cpp
+    │   ├── CTerrainHeight.cpp
+    │   ├── CTerrainRamp.cpp
+    │   ├── CTerrainTextures.cpp
+    │   ├── CTerrainUberSplats.cpp
+    │   ├── CTerrainVertex.cpp
+    │   ├── CTerrainWater.cpp
+    │   ├── CWeatherArea.cpp
+    │   ├── CWorldObjectsClippable.cpp
+    │   ├── MapInfoFile.cpp
+    │   ├── TestGameFile.cpp
+    │   ├── TextureUtilities.cpp
+    │   └── WEUtilities.cpp

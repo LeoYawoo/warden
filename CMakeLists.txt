@@ -16,69 +16,92 @@ if (WIN32 AND MSVC)
 endif ()
 
 file(GLOB_RECURSE dir_src
-        # 原有模块
-        "Agile/*.h"
-        "Agile/*.cpp"
-        "Common/*.h"
-        "Common/*.cpp"
-        "NIpse/*.h"
-        "NIpse/*.cpp"
-        "NTempest/*.h"
-        "NTempest/*.cpp"
-        "Graphic/*.h"
-        "Graphic/*.cpp"
-        "Graphic/gll/.h"
-        "Graphic/gll/.cpp"
-        "Storm/*.h"
-        "Storm/*.cpp"
-        "include/*.h"
-        "Anim/*.h"
-        "Anim/*.cpp"
-        "Services/*.h"
-        "Services/*.cpp"
-        "Scrn/*.h"
-        "Scrn/*.cpp"
-        "Glue/*.h"
-        "Glue/*.cpp"
-        "Event/*.h"
-        "Event/*.cpp"
-        "Net/*.h"
-        "Net/*.cpp"
-        "UI/*.h"
-        "UI/*.cpp"
-        "Game/*.h"
-        "Game/*.cpp"
-        "Sound/*.h"
-        "Sound/*.cpp"
-        # 基于 IDA 分析新增的模块
-        "WorldEdit/*.h"
-        "WorldEdit/*.cpp"
-        "Unit/*.h"
-        "Unit/*.cpp"
-        "Engine/*.h"
-        "Engine/*.cpp"
-        "StormMac/*.h"
-        "StormMac/*.cpp"
-        "System/*.h"
-        "System/*.cpp"
-        "Win32/*.h"
-        "Win32/*.cpp"
-        "IOUnit/*.h"
-        "IOUnit/*.cpp"
-        "Mac/*.h"
-        "Mac/*.cpp"
-        "Data/*.h"
-        "Data/*.cpp"
-        "BLPFile/*.h"
-        "BLPFile/*.cpp"
-        "BLPFile/IJG/*.h"
-        "BLPFile/IJG/*.cpp"
+        # Source/Engine/Source 模块
+        "Source/Engine/Source/Agile/*.h"
+        "Source/Engine/Source/Agile/*.cpp"
+        "Source/Engine/Source/Anim/*.h"
+        "Source/Engine/Source/Anim/*.cpp"
+        "Source/Engine/Source/Base/*.h"
+        "Source/Engine/Source/Base/*.cpp"
+        "Source/Engine/Source/BLPFile/*.h"
+        "Source/Engine/Source/BLPFile/*.cpp"
+        "Source/Engine/Source/BLPFile/IJG/*.h"
+        "Source/Engine/Source/BLPFile/IJG/*.cpp"
+        "Source/Engine/Source/BattleNet/*.h"
+        "Source/Engine/Source/BattleNet/*.cpp"
+        "Source/Engine/Source/Common/*.h"
+        "Source/Engine/Source/Common/*.cpp"
+        "Source/Engine/Source/Event/*.h"
+        "Source/Engine/Source/Event/*.cpp"
+        "Source/Engine/Source/FDFile/*.h"
+        "Source/Engine/Source/FDFile/*.cpp"
+        "Source/Engine/Source/FDFile/Handlers/*.h"
+        "Source/Engine/Source/FDFile/Handlers/*.cpp"
+        "Source/Engine/Source/Frame/*.h"
+        "Source/Engine/Source/Frame/*.cpp"
+        "Source/Engine/Source/FrameDef/*.h"
+        "Source/Engine/Source/FrameDef/*.cpp"
+        "Source/Engine/Source/Gx/**/*.h"
+        "Source/Engine/Source/Gx/**/*.cpp"
+        "Source/Engine/Source/Gxu/*.h"
+        "Source/Engine/Source/Gxu/*.cpp"
+        "Source/Engine/Source/Images/*.h"
+        "Source/Engine/Source/Images/*.cpp"
+        "Source/Engine/Source/Ipse/*.h"
+        "Source/Engine/Source/Ipse/*.cpp"
+        "Source/Engine/Source/Jass2/*.h"
+        "Source/Engine/Source/Jass2/*.cpp"
+        "Source/Engine/Source/Model/*.h"
+        "Source/Engine/Source/Model/*.cpp"
+        "Source/Engine/Source/Net/*.h"
+        "Source/Engine/Source/Net/*.cpp"
+        "Source/Engine/Source/Net/**/*.h"
+        "Source/Engine/Source/Net/**/*.cpp"
+        "Source/Engine/Source/Os/**/*.h"
+        "Source/Engine/Source/Os/**/*.cpp"
+        "Source/Engine/Source/SRP/*.h"
+        "Source/Engine/Source/SRP/*.cpp"
+        "Source/Engine/Source/Scrn/*.h"
+        "Source/Engine/Source/Scrn/*.cpp"
+        "Source/Engine/Source/Services/*.h"
+        "Source/Engine/Source/Services/*.cpp"
+        "Source/Engine/Source/Sound/*.h"
+        "Source/Engine/Source/Sound/*.cpp"
+        "Source/Engine/Source/Tempest/*.h"
+        "Source/Engine/Source/Tempest/*.cpp"
+        "Source/Engine/Source/WardenClient/*.h"
+        "Source/Engine/Source/WardenClient/*.cpp"
+        # Source/ 顶层模块
+        "Source/AI/*.h"
+        "Source/AI/*.cpp"
+        "Source/Game/*.h"
+        "Source/Game/*.cpp"
+        "Source/Glue/*.h"
+        "Source/Glue/*.cpp"
+        "Source/Net/*.h"
+        "Source/Net/*.cpp"
+        "Source/StormMac/**/*.h"
+        "Source/StormMac/**/*.cpp"
+        "Source/System/**/*.h"
+        "Source/System/**/*.cpp"
+        "Source/UI/*.h"
+        "Source/UI/*.cpp"
+        "Source/Unit/*.h"
+        "Source/Unit/*.cpp"
+        "Source/World/*.h"
+        "Source/World/*.cpp"
+        "Source/WorldEdit/*.h"
+        "Source/WorldEdit/*.cpp"
+        # 顶层文件
+        "Source/Data.h"
+        "Source/Engine.cpp"
+        "Source/main.cpp"
 )
 
 link_directories(${CMAKE_SOURCE_DIR}/build/Debug/)
 find_package(Qt6 REQUIRED COMPONENTS Gui Widgets OpenGL)
 qt_standard_project_setup()
-qt_add_executable(warden main.cpp external/glad/src/glad.c ${dir_src})
+qt_add_executable(warden Source/main.cpp external/glad/src/glad.c ${dir_src})
 target_link_libraries(warden PRIVATE Qt6::Gui Qt6::Widgets Qt6::OpenGL)
 set_target_properties(warden PROPERTIES
         WIN32_EXECUTABLE ON
@@ -89,24 +112,16 @@ add_custom_command(TARGET warden POST_BUILD
 )
 
 target_include_directories(warden PRIVATE "/")
+target_include_directories(warden PRIVATE ${CMAKE_SOURCE_DIR})
+target_include_directories(warden PRIVATE ${CMAKE_SOURCE_DIR}/Source)
 target_include_directories(warden PRIVATE "external/freetype-2.0.9/include")
 target_include_directories(warden PRIVATE "external/")
-#target_include_directories(warden PRIVATE "external/glew-2.1.0/include")
 target_include_directories(warden PRIVATE "external/lua-5.1.3/src")
 target_include_directories(warden PRIVATE "external/glad/include" )
-#target_compile_options(warden PRIVATE "/Zc:offsetof-")
-#include_directories(${OPENGL_INCLUDE_DIRS})
-#add_subdirectory(${PROJECT_SOURCE_DIR}/external/glew-2.1.0/build/cmake)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/freetype-2.0.9)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/lua-5.1.3)
 add_subdirectory(${PROJECT_SOURCE_DIR}/external/expat-2.0.1)
-#add_definitions(
-#        -DGLEW_STATIC
-#)
 message("${CMAKE_SOURCE_DIR}/build/lib/Debug/")
-# target_link_libraries(warden PUBLIC ${OPENGL_LIBRARIES})
-# glew32d
-#
 target_link_libraries(warden PUBLIC freetype-2.0 ws2_32 lua-5.1 wsock32 expat-2.0)
 target_compile_definitions(expat-2.0 PUBLIC -DXML_STATIC)
 set_target_properties(warden PROPERTIES RUNTIME_OUTPUT_DIRECTORY
@@ -115,16 +130,6 @@ set_target_properties(freetype-2.0 PROPERTIES LIBRARY_OUTPUT_DIRECTORY
         ${CMAKE_SOURCE_DIR}/build)
 set_target_properties(freetype-2.0 PROPERTIES ARCHIVE_OUTPUT_DIRECTORY
         ${CMAKE_SOURCE_DIR}/build)
-#set_target_properties(glew PROPERTIES LIBRARY_OUTPUT_DIRECTORY
-#        ${CMAKE_SOURCE_DIR}/build)
-#set_target_properties(glew PROPERTIES ARCHIVE_OUTPUT_DIRECTORY
-#        ${CMAKE_SOURCE_DIR}/build)
-#set_target_properties(glew PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-#        ${CMAKE_SOURCE_DIR}/build)
-#set_target_properties(glew_s PROPERTIES LIBRARY_OUTPUT_DIRECTORY
-#        ${CMAKE_SOURCE_DIR}/build)
-#set_target_properties(glew_s PROPERTIES ARCHIVE_OUTPUT_DIRECTORY
-#        ${CMAKE_SOURCE_DIR}/build)
 
 # Option to enable tests
 option(BUILD_TESTS "Build unit tests" ON)
@@ -141,61 +146,61 @@ if(BUILD_TESTS)
     if(BUILD_TESTS)
         enable_testing()
 
-        # NTempest test library (header-only + source)
-        add_library(ntempest_lib STATIC
-                NTempest/C2Vector.cpp
-                NTempest/C3Vector.cpp
-                NTempest/C4Vector.cpp
-                NTempest/C4Quaternion.cpp
-                NTempest/C33Matrix.cpp
-                NTempest/C44Matrix.cpp
-                NTempest/C4Plane.cpp
-                NTempest/CRect.cpp
-                NTempest/CMathi.cpp
-                NTempest/CiRect.cpp
-                NTempest/C22uMatrix.cpp
-                NTempest/CAaSphere.cpp
-                Storm/Error.cpp
-                Storm/Debug.cpp
-                Storm/thread/SCritSect.cpp
-                Storm/thread/CCritSect.cpp
-                Storm/thread/SSyncObject.cpp
-                Storm/thread/SEvent.cpp
-                Common/Hashkey.cpp
-                Agile/CStatus.cpp
-                Agile/Float.cpp
-                Agile/Integer.cpp
-                Agile/Position.cpp
-                Anim/Type.cpp
-                BLPFile/blp.cpp
-                BLPFile/IJG/jmemstorm.cpp
-                Base/CDataStore.cpp
-                Base/MsgBuffer.cpp
-                Base/Status.cpp
-                Base/RCString.cpp
-                FDFile/FDFile.cpp
+        # Tempest test library
+        add_library(tempest_lib STATIC
+                Source/Engine/Source/Tempest/C2Vector.cpp
+                Source/Engine/Source/Tempest/C3Vector.cpp
+                Source/Engine/Source/Tempest/C4Vector.cpp
+                Source/Engine/Source/Tempest/C4Quaternion.cpp
+                Source/Engine/Source/Tempest/C33Matrix.cpp
+                Source/Engine/Source/Tempest/C44Matrix.cpp
+                Source/Engine/Source/Tempest/C4Plane.cpp
+                Source/Engine/Source/Tempest/CRect.cpp
+                Source/Engine/Source/Tempest/CMathi.cpp
+                Source/Engine/Source/Tempest/CiRect.cpp
+                Source/Engine/Source/Tempest/C22uMatrix.cpp
+                Source/Engine/Source/Tempest/CAaSphere.cpp
+                Source/StormMac/Error.cpp
+                Source/StormMac/Debug.cpp
+                Source/StormMac/thread/SCritSect.cpp
+                Source/StormMac/thread/CCritSect.cpp
+                Source/StormMac/thread/SSyncObject.cpp
+                Source/StormMac/thread/SEvent.cpp
+                Source/Engine/Source/Common/Hashkey.cpp
+                Source/Engine/Source/Agile/CStatus.cpp
+                Source/Engine/Source/Agile/Float.cpp
+                Source/Engine/Source/Agile/Integer.cpp
+                Source/Engine/Source/Agile/Position.cpp
+                Source/Engine/Source/Anim/Type.cpp
+                Source/Engine/Source/BLPFile/blp.cpp
+                Source/Engine/Source/BLPFile/IJG/jmemstorm.cpp
+                Source/Engine/Source/Base/CDataStore.cpp
+                Source/Engine/Source/Base/MsgBuffer.cpp
+                Source/Engine/Source/Base/Status.cpp
+                Source/Engine/Source/Base/RCString.cpp
+                Source/Engine/Source/FDFile/FDFile.cpp
         )
 
-        target_include_directories(ntempest_lib PRIVATE ${CMAKE_SOURCE_DIR})
+        target_include_directories(tempest_lib PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
-        # NTempest tests
-        add_executable(ntempest_tests
-                tests/NTempest/TestC2Vector.cpp
-                tests/NTempest/TestC3Vector.cpp
-                tests/NTempest/TestC4Vector.cpp
-                tests/NTempest/TestC4Quaternion.cpp
-                tests/NTempest/TestC33Matrix.cpp
-                tests/NTempest/TestC44Matrix.cpp
-                tests/NTempest/TestC4Plane.cpp
-                tests/NTempest/TestCRect.cpp
-                tests/NTempest/TestCMath.cpp
+        # Tempest tests
+        add_executable(tempest_tests
+                tests/Tempest/TestC2Vector.cpp
+                tests/Tempest/TestC3Vector.cpp
+                tests/Tempest/TestC4Vector.cpp
+                tests/Tempest/TestC4Quaternion.cpp
+                tests/Tempest/TestC33Matrix.cpp
+                tests/Tempest/TestC44Matrix.cpp
+                tests/Tempest/TestC4Plane.cpp
+                tests/Tempest/TestCRect.cpp
+                tests/Tempest/TestCMath.cpp
         )
 
-        target_link_libraries(ntempest_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(ntempest_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(tempest_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(tempest_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
         include(GoogleTest)
-        gtest_discover_tests(ntempest_tests)
+        gtest_discover_tests(tempest_tests)
 
         # Agile tests
         add_executable(agile_tests
@@ -205,8 +210,8 @@ if(BUILD_TESTS)
                 tests/Agile/TestPosition.cpp
         )
 
-        target_link_libraries(agile_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(agile_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(agile_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(agile_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
         include(GoogleTest)
         gtest_discover_tests(agile_tests)
@@ -218,8 +223,8 @@ if(BUILD_TESTS)
                 tests/Common/TestTSLink.cpp
         )
 
-        target_link_libraries(common_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(common_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(common_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(common_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
         include(GoogleTest)
         gtest_discover_tests(common_tests)
@@ -232,25 +237,25 @@ if(BUILD_TESTS)
                 tests/Event/TestEventTypes.cpp
         )
 
-        target_link_libraries(event_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(event_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(event_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(event_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
         include(GoogleTest)
         gtest_discover_tests(event_tests)
 
-        # Storm tests
-        add_executable(storm_tests
-                tests/Storm/TestSCritSect.cpp
-                tests/Storm/TestCCritSect.cpp
-                tests/Storm/TestDebug.cpp
-                tests/Storm/TestError.cpp
+        # StormMac tests
+        add_executable(stormmac_tests
+                tests/StormMac/TestSCritSect.cpp
+                tests/StormMac/TestCCritSect.cpp
+                tests/StormMac/TestDebug.cpp
+                tests/StormMac/TestError.cpp
         )
 
-        target_link_libraries(storm_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(storm_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(stormmac_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(stormmac_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
         include(GoogleTest)
-        gtest_discover_tests(storm_tests)
+        gtest_discover_tests(stormmac_tests)
 
         # UI tests
         add_executable(ui_tests
@@ -258,36 +263,36 @@ if(BUILD_TESTS)
                 tests/UI/TestFrameScript.cpp
         )
 
-        target_link_libraries(ui_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(ui_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(ui_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(ui_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
         include(GoogleTest)
         gtest_discover_tests(ui_tests)
 
-        # NIpse tests
-        add_executable(nipse_tests
-                tests/NIpse/TestCPoReal.cpp
-                tests/NIpse/TestCRlAgent.cpp
-                tests/NIpse/TestCRlAgentDef.cpp
+        # Ipse tests
+        add_executable(ipse_tests
+                tests/Ipse/TestCPoReal.cpp
+                tests/Ipse/TestCRlAgent.cpp
+                tests/Ipse/TestCRlAgentDef.cpp
         )
 
-        target_link_libraries(nipse_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(nipse_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(ipse_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(ipse_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
         include(GoogleTest)
-        gtest_discover_tests(nipse_tests)
+        gtest_discover_tests(ipse_tests)
 
-        # Graphic tests
-        add_executable(graphic_tests
-                tests/Graphic/TestGraphicTypes.cpp
-                tests/Graphic/TestC4Pixel.cpp
+        # Gx tests
+        add_executable(gx_tests
+                tests/Gx/TestGraphicTypes.cpp
+                tests/Gx/TestC4Pixel.cpp
         )
 
-        target_link_libraries(graphic_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(graphic_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(gx_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(gx_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
         include(GoogleTest)
-        gtest_discover_tests(graphic_tests)
+        gtest_discover_tests(gx_tests)
 
         # Game tests
         add_executable(game_tests
@@ -295,8 +300,8 @@ if(BUILD_TESTS)
                 tests/Game/TestCBoundingBox.cpp
         )
 
-        target_link_libraries(game_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(game_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(game_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(game_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
         include(GoogleTest)
         gtest_discover_tests(game_tests)
@@ -306,8 +311,8 @@ if(BUILD_TESTS)
                 tests/Anim/TestFixed16.cpp
         )
 
-        target_link_libraries(anim_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(anim_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(anim_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(anim_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
         include(GoogleTest)
         gtest_discover_tests(anim_tests)
@@ -317,8 +322,8 @@ if(BUILD_TESTS)
                 tests/WorldEdit/TestTerrainVertex.cpp
         )
 
-        target_link_libraries(worldedit_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(worldedit_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(worldedit_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(worldedit_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
         include(GoogleTest)
         gtest_discover_tests(worldedit_tests)
@@ -328,8 +333,8 @@ if(BUILD_TESTS)
                 tests/FDFile/TestFDFile.cpp
         )
 
-        target_link_libraries(fdfile_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(fdfile_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(fdfile_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(fdfile_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
         include(GoogleTest)
         gtest_discover_tests(fdfile_tests)
@@ -339,8 +344,8 @@ if(BUILD_TESTS)
                 tests/Net/TestNetTypes.cpp
         )
 
-        target_link_libraries(net_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(net_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(net_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(net_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
         include(GoogleTest)
         gtest_discover_tests(net_tests)
@@ -350,8 +355,8 @@ if(BUILD_TESTS)
                 tests/Sound/TestSI2.cpp
         )
 
-        target_link_libraries(sound_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(sound_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(sound_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(sound_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
         include(GoogleTest)
         gtest_discover_tests(sound_tests)
@@ -361,8 +366,8 @@ if(BUILD_TESTS)
                 tests/Glue/TestCGlueMgr.cpp
         )
 
-        target_link_libraries(glue_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(glue_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(glue_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(glue_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
         include(GoogleTest)
         gtest_discover_tests(glue_tests)
@@ -372,8 +377,8 @@ if(BUILD_TESTS)
                 tests/BLPFile/TestBLPFile.cpp
         )
 
-        target_link_libraries(blp_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(blp_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(blp_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(blp_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
         include(GoogleTest)
         gtest_discover_tests(blp_tests)
@@ -385,8 +390,8 @@ if(BUILD_TESTS)
                 tests/Base/TestRCString.cpp
         )
 
-        target_link_libraries(base_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(base_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(base_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(base_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source)
 
         include(GoogleTest)
         gtest_discover_tests(base_tests)

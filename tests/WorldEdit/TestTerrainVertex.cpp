@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "NTempest/C3Vector.h"
+#include "Tempest/C3Vector.h"
 
 // Test TerrainVertex-like structure without CTerrain dependency
 struct TestTerrainVertex {
@@ -9,7 +9,7 @@ struct TestTerrainVertex {
     uint8_t cliffLevel;
     uint8_t flags2;
     uint8_t waterEdge;
-    NTempest::C3Vector normal;
+    Tempest::C3Vector normal;
 
     TestTerrainVertex() : flags(0), cellIndex(0), textureLayer(0), cliffLevel(0),
                           flags2(0), waterEdge(0), normal(0.0f, 0.0f, 1.0f) {}
@@ -119,7 +119,7 @@ TEST(TerrainVertexTest, SetCellIndex) {
 
 TEST(TerrainVertexTest, NormalizeNormal) {
     TestTerrainVertex v;
-    v.normal = NTempest::C3Vector(3.0f, 4.0f, 0.0f);
+    v.normal = Tempest::C3Vector(3.0f, 4.0f, 0.0f);
     v.NormalizeNormal();
 
     float len = v.normal.Mag();

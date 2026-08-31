@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "Agile/Position.h"
-#include "NTempest/C3Vector.h"
+#include "Tempest/C3Vector.h"
 
 TEST(PositionTest, DefaultConstructor) {
     Position p;
@@ -17,7 +17,7 @@ TEST(PositionTest, ValueConstructor) {
 }
 
 TEST(PositionTest, VectorConstructor) {
-    NTempest::C3Vector v(4.0f, 5.0f, 6.0f);
+    Tempest::C3Vector v(4.0f, 5.0f, 6.0f);
     Position p(v);
     EXPECT_FLOAT_EQ(p.GetX(), 4.0f);
     EXPECT_FLOAT_EQ(p.GetY(), 5.0f);
@@ -51,7 +51,7 @@ TEST(PositionTest, SetPosition) {
 
 TEST(PositionTest, SetPositionVector) {
     Position p;
-    NTempest::C3Vector v(4.0f, 5.0f, 6.0f);
+    Tempest::C3Vector v(4.0f, 5.0f, 6.0f);
     p.SetPosition(v);
     EXPECT_FLOAT_EQ(p.GetX(), 4.0f);
     EXPECT_FLOAT_EQ(p.GetY(), 5.0f);
@@ -70,7 +70,7 @@ TEST(PositionTest, SetIndividualAxes) {
 
 TEST(PositionTest, GetPosition) {
     Position p(1.0f, 2.0f, 3.0f);
-    NTempest::C3Vector v = p.GetPosition();
+    Tempest::C3Vector v = p.GetPosition();
     EXPECT_FLOAT_EQ(v.x, 1.0f);
     EXPECT_FLOAT_EQ(v.y, 2.0f);
     EXPECT_FLOAT_EQ(v.z, 3.0f);
@@ -85,7 +85,7 @@ TEST(PositionTest, DistanceTo) {
 TEST(PositionTest, DirectionTo) {
     Position p1(0.0f, 0.0f, 0.0f);
     Position p2(3.0f, 4.0f, 0.0f);
-    NTempest::C3Vector dir = p1.DirectionTo(p2);
+    Tempest::C3Vector dir = p1.DirectionTo(p2);
     EXPECT_FLOAT_EQ(dir.x, 3.0f);
     EXPECT_FLOAT_EQ(dir.y, 4.0f);
     EXPECT_FLOAT_EQ(dir.z, 0.0f);
@@ -123,7 +123,7 @@ TEST(PositionTest, Inequality) {
 
 TEST(PositionTest, AddOffset) {
     Position p1(1.0f, 2.0f, 3.0f);
-    NTempest::C3Vector offset(4.0f, 5.0f, 6.0f);
+    Tempest::C3Vector offset(4.0f, 5.0f, 6.0f);
     Position p2 = p1 + offset;
     EXPECT_FLOAT_EQ(p2.GetX(), 5.0f);
     EXPECT_FLOAT_EQ(p2.GetY(), 7.0f);
@@ -132,7 +132,7 @@ TEST(PositionTest, AddOffset) {
 
 TEST(PositionTest, SubtractOffset) {
     Position p1(5.0f, 7.0f, 9.0f);
-    NTempest::C3Vector offset(4.0f, 5.0f, 6.0f);
+    Tempest::C3Vector offset(4.0f, 5.0f, 6.0f);
     Position p2 = p1 - offset;
     EXPECT_FLOAT_EQ(p2.GetX(), 1.0f);
     EXPECT_FLOAT_EQ(p2.GetY(), 2.0f);
