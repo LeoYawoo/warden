@@ -50,8 +50,6 @@ file(GLOB_RECURSE dir_src
         "Game/*.cpp"
         "Sound/*.h"
         "Sound/*.cpp"
-        "Terrain/*.h"
-        "Terrain/*.cpp"
         # 基于 IDA 分析新增的模块
         "WorldEdit/*.h"
         "WorldEdit/*.cpp"
@@ -313,16 +311,16 @@ if(BUILD_TESTS)
         include(GoogleTest)
         gtest_discover_tests(anim_tests)
 
-        # Terrain tests
-        add_executable(terrain_tests
-                tests/Terrain/TestTerrainVertex.cpp
+        # WorldEdit tests
+        add_executable(worldedit_tests
+                tests/WorldEdit/TestTerrainVertex.cpp
         )
 
-        target_link_libraries(terrain_tests PRIVATE ntempest_lib GTest::gtest_main)
-        target_include_directories(terrain_tests PRIVATE ${CMAKE_SOURCE_DIR})
+        target_link_libraries(worldedit_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(worldedit_tests PRIVATE ${CMAKE_SOURCE_DIR})
 
         include(GoogleTest)
-        gtest_discover_tests(terrain_tests)
+        gtest_discover_tests(worldedit_tests)
 
         # Net tests
         add_executable(net_tests
