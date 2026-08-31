@@ -173,6 +173,7 @@ if(BUILD_TESTS)
                 Base/MsgBuffer.cpp
                 Base/Status.cpp
                 Base/RCString.cpp
+                FDFile/FDFile.cpp
         )
 
         target_include_directories(ntempest_lib PRIVATE ${CMAKE_SOURCE_DIR})
@@ -321,6 +322,17 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(worldedit_tests)
+
+        # FDFile tests
+        add_executable(fdfile_tests
+                tests/FDFile/TestFDFile.cpp
+        )
+
+        target_link_libraries(fdfile_tests PRIVATE ntempest_lib GTest::gtest_main)
+        target_include_directories(fdfile_tests PRIVATE ${CMAKE_SOURCE_DIR})
+
+        include(GoogleTest)
+        gtest_discover_tests(fdfile_tests)
 
         # Net tests
         add_executable(net_tests
