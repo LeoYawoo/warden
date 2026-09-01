@@ -205,6 +205,12 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Agile/CAbilityInterfaced.cpp
                 Source/Engine/Source/Agile/CAbilityBaseBuild.cpp
                 Source/Engine/Source/Agile/CAbilityBaseSell.cpp
+                Source/Engine/Source/Agile/CUnitRefList.cpp
+                Source/Engine/Source/Agile/CAgentWar3.cpp
+                Source/Engine/Source/Agile/AgentRefMini.cpp
+                Source/Engine/Source/Agile/AgentRef.cpp
+                Source/Engine/Source/Agile/CEvent.cpp
+                Source/Engine/Source/Agile/CListenerEvent.cpp
                 Source/Engine/Source/Anim/Type.cpp
                 Source/Engine/Source/BLPFile/blp.cpp
                 Source/Engine/Source/BLPFile/IJG/jmemstorm.cpp
@@ -246,6 +252,7 @@ if(BUILD_TESTS)
                 tests/Agile/TestMoreClasses.cpp
                 tests/Agile/TestAngleAndPosition.cpp
                 tests/Agile/TestAbilityClasses.cpp
+                tests/Agile/TestAgentClasses.cpp
         )
 
         target_link_libraries(agile_tests PRIVATE tempest_lib GTest::gtest_main)
