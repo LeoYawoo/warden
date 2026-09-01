@@ -161,6 +161,9 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Tempest/CiRect.cpp
                 Source/Engine/Source/Tempest/C22uMatrix.cpp
                 Source/Engine/Source/Tempest/CAaSphere.cpp
+                Source/Engine/Source/Tempest/CDynParms.cpp
+                Source/Engine/Source/Tempest/CPresenceSys.cpp
+                Source/Engine/Source/Tempest/CPresenceSysTagged.cpp
                 Source/StormMac/Error.cpp
                 Source/StormMac/Debug.cpp
                 Source/StormMac/memory.cpp
@@ -239,6 +242,7 @@ if(BUILD_TESTS)
                 tests/Tempest/TestC4Plane.cpp
                 tests/Tempest/TestCRect.cpp
                 tests/Tempest/TestCMath.cpp
+                tests/Tempest/TestMoreTempestClasses.cpp
         )
 
         target_link_libraries(tempest_tests PRIVATE tempest_lib GTest::gtest_main)

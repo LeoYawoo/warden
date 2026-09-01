@@ -1,23 +1,37 @@
 #pragma once
 
 #include "CMemBlock.h"
-#include "CDynParms.h"
+
+// Reverse engineered from Warcraft III binary
+// CMemBlockT is a template memory block
 
 namespace Tempest {
-
     template<typename T>
     class CMemBlockT : public CMemBlock {
     public:
-        CMemBlockT(CDynParms const &a2, int a3, const char *a4, int a5) : CMemBlock(a2, a3, a4, a5) {}
+        CMemBlockT() : CMemBlock() {
+        }
 
-        virtual ~CMemBlockT() {}
+        virtual ~CMemBlockT() {
+        }
 
         virtual void Release() {
-            this->~CMemBlockT();
-            DeallocateMemoryEx(this);
+            delete this;
+        }
+
+        // Allocate memory for T objects
+        bool Allocate(size_t count) {
+            return CMemBlock::Allocate(count * sizeof(T));
+        }
+
+        // Get pointer to T objects
+        T* GetObjects() const {
+            return reinterpret_cast<T*>(m_data);
+        }
+
+        // Get object count
+        size_t GetObjectCount() const {
+            return m_size / sizeof(T);
         }
     };
 }
-
-
-

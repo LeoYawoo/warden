@@ -3,19 +3,36 @@
 #include "CMemBlockT.h"
 #include "CDynParms.h"
 
+// Reverse engineered from Warcraft III binary
+// CDynTable is a dynamic table implementation
+
 namespace Tempest {
     template<typename T>
     class CDynTable : public CMemBlockT<T> {
     public:
-        CDynTable(CDynParms const &a2, int a3, const char *a4, int a5) : CMemBlockT<T>(a2, a, a4, a5) {}
+        CDynTable(const CDynParms& parms) : m_parms(parms) {
+        }
 
-        virtual ~CDynTable() {}
+        virtual ~CDynTable() {
+        }
 
         virtual void Release() {
-            this->~CMemBlockT();
-            DeallocateMemoryEx(this);
+            delete this;
         }
+
+        // Grow the table
+        bool Grow(size_t newSize, size_t growBy) {
+            (void)newSize;
+            (void)growBy;
+            return true;
+        }
+
+        // Get parameters
+        const CDynParms& GetParms() const {
+            return m_parms;
+        }
+
+    private:
+        CDynParms m_parms;
     };
 }
-
-
