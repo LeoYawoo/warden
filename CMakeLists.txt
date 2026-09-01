@@ -197,6 +197,20 @@ if(BUILD_TESTS)
                 Source/WorldEdit/CWorldObjects.cpp
                 Source/WorldEdit/CWeatherEffects.cpp
                 Source/WorldEdit/TextureUtilities.cpp
+                Source/WorldEdit/CTerrainBlight.cpp
+                Source/WorldEdit/CTerrainBounds.cpp
+                Source/WorldEdit/CTerrainCliff.cpp
+                Source/WorldEdit/CTerrainCliffDoodads.cpp
+                Source/WorldEdit/CTerrainHeight.cpp
+                Source/WorldEdit/CTerrainRamp.cpp
+                Source/WorldEdit/CTerrainTextures.cpp
+                Source/WorldEdit/CTerrainUberSplats.cpp
+                Source/WorldEdit/CTerrainVertex.cpp
+                Source/WorldEdit/CTerrainWater.cpp
+                Source/WorldEdit/CWorldObjectsClippable.cpp
+                Source/WorldEdit/TestGameFile.cpp
+                Source/WorldEdit/WEPreferences.cpp
+                Source/WorldEdit/WEUtilities.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -402,6 +416,7 @@ if(BUILD_TESTS)
                 tests/WorldEdit/TestWorldEditClasses.cpp
                 tests/WorldEdit/TestMoreWorldEditClasses.cpp
                 tests/WorldEdit/TestEvenMoreWorldEditClasses.cpp
+                tests/WorldEdit/TestAllRemainingWorldEditClasses.cpp
         )
 
         target_link_libraries(worldedit_tests PRIVATE tempest_lib GTest::gtest_main)
