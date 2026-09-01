@@ -184,6 +184,9 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Common/RCString.cpp
                 Source/Engine/Source/Agile/CStringManager.cpp
                 Source/Engine/Source/Agile/CStringMemory.cpp
+                Source/Unit/CUnit.cpp
+                Source/Unit/CItem.cpp
+                Source/Unit/CWidget.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -463,5 +466,16 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(base_tests)
+
+        # Unit tests
+        add_executable(unit_tests
+                tests/Unit/TestUnitClasses.cpp
+        )
+
+        target_link_libraries(unit_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(unit_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
+
+        include(GoogleTest)
+        gtest_discover_tests(unit_tests)
     endif()
 endif()
