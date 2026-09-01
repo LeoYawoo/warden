@@ -1,4 +1,6 @@
 #include "Prop.h"
 
-// TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for Prop
+// Reverse engineered from Warcraft III binary
+// Address: 0x9F2576
+
+// Template instantiation is in the header file

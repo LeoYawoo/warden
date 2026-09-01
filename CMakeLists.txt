@@ -219,6 +219,7 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Base/CDataAllocator.cpp
                 Source/Engine/Source/Base/CDataRecycler.cpp
                 Source/Engine/Source/Base/FileCache.cpp
+                Source/Engine/Source/Base/Param.cpp
                 Source/Engine/Source/Base/MsgBuffer.cpp
                 Source/Engine/Source/Base/Status.cpp
                 Source/Engine/Source/Base/RCString.cpp
@@ -438,6 +439,7 @@ if(BUILD_TESTS)
                 tests/Base/TestStatus.cpp
                 tests/Base/TestRCString.cpp
                 tests/Base/TestMoreBaseClasses.cpp
+                tests/Base/TestPropAndParam.cpp
         )
 
         target_link_libraries(base_tests PRIVATE tempest_lib GTest::gtest_main)
