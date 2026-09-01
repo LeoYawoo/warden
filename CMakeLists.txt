@@ -185,6 +185,16 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Agile/IntegerListener.cpp
                 Source/Engine/Source/Agile/IntegerModifier.cpp
                 Source/Engine/Source/Agile/CAgent.cpp
+                Source/Engine/Source/Agile/CObserver.cpp
+                Source/Engine/Source/Agile/CEventTimer.cpp
+                Source/Engine/Source/Agile/CLeaveEvent.cpp
+                Source/Engine/Source/Agile/CAgentTimerEvent.cpp
+                Source/Engine/Source/Agile/CEventTimerEvent.cpp
+                Source/Engine/Source/Agile/CDatabaseBase.cpp
+                Source/Engine/Source/Agile/CDBDatabase.cpp
+                Source/Engine/Source/Agile/CSLKDatabase.cpp
+                Source/Engine/Source/Agile/CHuffman.cpp
+                Source/Engine/Source/Agile/CBitInput.cpp
                 Source/Engine/Source/Anim/Type.cpp
                 Source/Engine/Source/BLPFile/blp.cpp
                 Source/Engine/Source/BLPFile/IJG/jmemstorm.cpp
@@ -223,6 +233,7 @@ if(BUILD_TESTS)
                 tests/Agile/TestInteger.cpp
                 tests/Agile/TestPosition.cpp
                 tests/Agile/TestAgileHierarchy.cpp
+                tests/Agile/TestMoreClasses.cpp
         )
 
         target_link_libraries(agile_tests PRIVATE tempest_lib GTest::gtest_main)
