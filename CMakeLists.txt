@@ -173,10 +173,17 @@ if(BUILD_TESTS)
                 Source/StormMac/big/BigBuffer.cpp
                 Source/StormMac/big/BigStack.cpp
                 Source/StormMac/big/BigData.cpp
+                Source/StormMac/xml/XMLNode.cpp
+                Source/StormMac/xml/XMLTree.cpp
+                Source/StormMac/mempool/MemPool.cpp
+                Source/StormMac/mempool/MemChunk.cpp
                 Source/StormMac/thread/CCritSect.cpp
                 Source/StormMac/thread/SSyncObject.cpp
                 Source/StormMac/thread/SEvent.cpp
                 Source/Engine/Source/Common/Hashkey.cpp
+                Source/Engine/Source/Common/RCString.cpp
+                Source/Engine/Source/Agile/CStringManager.cpp
+                Source/Engine/Source/Agile/CStringMemory.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -307,6 +314,7 @@ if(BUILD_TESTS)
                 tests/StormMac/TestDebug.cpp
                 tests/StormMac/TestError.cpp
                 tests/StormMac/TestMoreStormMacClasses.cpp
+                tests/StormMac/TestXmlAndMempool.cpp
         )
 
         target_link_libraries(stormmac_tests PRIVATE tempest_lib GTest::gtest_main)

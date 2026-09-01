@@ -1,86 +1,83 @@
-
-
 #include "XMLNode.h"
-#include "StormMac/String.h"
-#include "XMLAttribute.h"
+#include "StormMac/Memory.h"
+#include <cstring>
 
-XMLNode::XMLNode() {
-    // TODO
+// Reverse engineered from Warcraft III binary
+
+XMLNode::XMLNode()
+    : m_userData(nullptr),
+      m_parent(nullptr),
+      m_child(nullptr),
+      m_body(nullptr),
+      m_bodyLen(0),
+      m_offset(0),
+      m_next(nullptr) {
 }
 
 XMLNode::~XMLNode() {
-    // TODO
+    // Don't delete children here to avoid circular references
+    // Children should be managed separately
+
+    // Clean up body
+    if (m_body) {
+        SMemFree(m_body, __FILE__, __LINE__, 0);
+        m_body = nullptr;
+    }
 }
 
-const char *XMLNode::GetAttributeByName(const char *name) {
-    for (int32_t i = 0; i < this->m_attributes.Count(); i++) {
-        auto &attribute = this->m_attributes[i];
-
-        if (!SStrCmpI(attribute.m_name.GetString(), name, STORM_MAX_STR)) {
-            return attribute.m_value.GetString();
+const char* XMLNode::GetAttributeByName(const char* name) {
+    for (uint32_t i = 0; i < m_attributes.Count(); i++) {
+        if (m_attributes[i].m_name.GetString() && strcmp(m_attributes[i].m_name.GetString(), name) == 0) {
+            return m_attributes[i].m_value.GetString();
         }
     }
-
     return nullptr;
 }
 
-const char *XMLNode::GetBody() const {
-    return this->m_body;
+const char* XMLNode::GetBody() const {
+    return m_body;
 }
 
-XMLNode *XMLNode::GetChildByName(const char *name) {
-    auto child = this->m_child;
-
-    if (!child) {
-        return nullptr;
-    }
-
-    while (SStrCmpI(child->m_name.GetString(), name, STORM_MAX_STR)) {
-        child = child->m_next;
-
-        if (!child) {
-            return nullptr;
+XMLNode* XMLNode::GetChildByName(const char* name) {
+    XMLNode* child = m_child;
+    while (child) {
+        if (child->m_name.GetString() && strcmp(child->m_name.GetString(), name) == 0) {
+            return child;
         }
+        child = child->m_next;
     }
-
-    return child;
+    return nullptr;
 }
 
-const char *XMLNode::GetName() {
-    return this->m_name.GetString();
+const char* XMLNode::GetName() {
+    return m_name.GetString();
 }
 
-void XMLNode::Init(XMLNode *parent, const char *name) {
-    RCString(this->m_name);
-    TSGrowableArray<XMLAttribute>(this->m_attributes);
-    this->m_parent = parent;
-    this->m_child = nullptr;
-    this->m_name.Copy(name);
-    this->m_body = nullptr;
-    this->m_bodyLen = 0;
+void XMLNode::Init(XMLNode* parent, const char* name) {
+    m_parent = parent;
+    m_name.Copy(name);
 
-    if (this->m_parent && this->m_parent->m_body) {
-        this->m_next = nullptr;
-        this->m_userData = nullptr;
-        this->m_offset = this->m_parent->m_bodyLen;
-    } else {
-        this->m_offset = 0;
-        this->m_next = nullptr;
-        this->m_userData = nullptr;
+    if (parent) {
+        m_next = parent->m_child;
+        parent->m_child = this;
     }
 }
 
-void XMLNode::SetAttribute(const char *name, const char *value) {
-    auto attributeCount = this->m_attributes.Count();
-
-    for (int32_t i = 0; i < attributeCount; i++) {
-        if (!SStrCmpI(name, this->m_attributes[i].m_name.GetString(), STORM_MAX_STR)) {
-            this->m_attributes[i].m_value.Copy(value);
+void XMLNode::SetAttribute(const char* name, const char* value) {
+    // Check if attribute already exists
+    for (uint32_t i = 0; i < m_attributes.Count(); i++) {
+        if (m_attributes[i].m_name.GetString() && strcmp(m_attributes[i].m_name.GetString(), name) == 0) {
+            m_attributes[i].m_value.Copy(value);
             return;
         }
     }
 
-    this->m_attributes.SetCount(attributeCount + 1);
-    this->m_attributes[attributeCount].m_name.Copy(name);
-    this->m_attributes[attributeCount].m_value.Copy(value);
+    // Add new attribute
+    XMLAttribute attr;
+    attr.m_name.Copy(name);
+    attr.m_value.Copy(value);
+
+    uint32_t newCount = m_attributes.Count() + 1;
+    m_attributes.SetCount(newCount);
+    m_attributes[newCount - 1] = attr;
 }

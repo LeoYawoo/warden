@@ -1,8 +1,8 @@
 #include "CStringManager.h"
 #include <climits>
 #include <cstring>
-#include <storm/Memory.h>
-#include <storm/String.h>
+#include "StormMac/Memory.h"
+#include "StormMac/String.h"
 
 CStringManager *CStringManager::s_stringManager;
 

@@ -1,63 +1,63 @@
 #include "MemChunk.h"
 #include "StormMac/Memory.h"
 
+// Reverse engineered from Warcraft III binary
 
-struct MemBlock {
-    void *next;
-};
+MemChunk::MemChunk(size_t blockSize, size_t a2)
+    : m_memblocks(nullptr),
+      m_free(nullptr),
+      m_unk2(0),
+      m_blockSize(blockSize),
+      m_numBlocks(a2) {
+    // Allocate memory blocks
+    size_t totalSize = blockSize * a2;
+    m_memblocks = SMemAlloc(totalSize, __FILE__, __LINE__, 0);
 
-MemChunk::MemChunk(size_t blockSize, size_t a2) {
-    this->m_blockSize = blockSize;
-    this->m_numBlocks = a2 / blockSize;
+    if (m_memblocks) {
+        // Initialize free list
+        uint8_t* ptr = static_cast<uint8_t*>(m_memblocks);
+        m_free = nullptr;
 
-    size_t v4 = blockSize * (a2 / blockSize);
-    this->m_unk2 = v4;
+        for (size_t i = 0; i < a2; i++) {
+            // Each block starts with a pointer to the next free block
+            *reinterpret_cast<void**>(ptr) = m_free;
+            m_free = ptr;
+            ptr += blockSize;
+        }
+    }
+}
 
-    void *data = SMemAlloc(v4, __FILE__, __LINE__, 0x0);
-    this->m_memblocks = data;
-    this->m_free = data;
-
-    auto bytes = static_cast<char *>(data);
-    auto last = &bytes[this->m_unk2 - this->m_blockSize];
-    MemBlock *block;
-
-    while ((uintptr_t) bytes < (uintptr_t) last) {
-        block = reinterpret_cast<MemBlock *>(bytes);
-
-        // Drop a pointer to the next block
-        block->next = &bytes[this->m_blockSize];
-
-        // Move to the next block
-        bytes += this->m_blockSize;
+bool MemChunk::Contains(void* ptr) {
+    if (!m_memblocks || !ptr) {
+        return false;
     }
 
-    // Drop null pointer in last block
-    block = reinterpret_cast<MemBlock *>(bytes);
-    block->next = nullptr;
+    uint8_t* blockPtr = static_cast<uint8_t*>(m_memblocks);
+    uint8_t* checkPtr = static_cast<uint8_t*>(ptr);
+
+    return checkPtr >= blockPtr && checkPtr < blockPtr + (m_blockSize * m_numBlocks);
 }
 
-bool MemChunk::Contains(void *ptr) {
-    return (uintptr_t) ptr >= (uintptr_t) this->m_memblocks &&
-           (uintptr_t) ptr < (uintptr_t) this->m_memblocks + this->m_unk2;
-}
-
-void *MemChunk::MemAlloc() {
-    auto block = reinterpret_cast<MemBlock *>(this->m_free);
-
-    if (block) {
-        this->m_free = block->next;
-        this->m_numBlocks--;
-        return static_cast<void *>(block);
-    } else {
+void* MemChunk::MemAlloc() {
+    if (!m_free) {
         return nullptr;
     }
+
+    // Get first free block
+    void* ptr = m_free;
+
+    // Update free list
+    m_free = *reinterpret_cast<void**>(ptr);
+
+    return ptr;
 }
 
-void MemChunk::MemFree(void *ptr) {
-    auto block = reinterpret_cast<MemBlock *>(ptr);
+void MemChunk::MemFree(void* ptr) {
+    if (!ptr) {
+        return;
+    }
 
-    block->next = this->m_free;
-    this->m_free = block;
-
-    this->m_numBlocks++;
+    // Add block to free list
+    *reinterpret_cast<void**>(ptr) = m_free;
+    m_free = ptr;
 }
