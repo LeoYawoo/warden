@@ -194,6 +194,9 @@ if(BUILD_TESTS)
                 Source/WorldEdit/CWeatherEmitter.cpp
                 Source/WorldEdit/CTerrainDeformation.cpp
                 Source/WorldEdit/MapInfoFile.cpp
+                Source/WorldEdit/CWorldObjects.cpp
+                Source/WorldEdit/CWeatherEffects.cpp
+                Source/WorldEdit/TextureUtilities.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -398,6 +401,7 @@ if(BUILD_TESTS)
                 tests/WorldEdit/TestTerrainVertex.cpp
                 tests/WorldEdit/TestWorldEditClasses.cpp
                 tests/WorldEdit/TestMoreWorldEditClasses.cpp
+                tests/WorldEdit/TestEvenMoreWorldEditClasses.cpp
         )
 
         target_link_libraries(worldedit_tests PRIVATE tempest_lib GTest::gtest_main)
