@@ -384,6 +384,7 @@ if(BUILD_TESTS)
                 tests/Gx/TestGraphicTypes.cpp
                 tests/Gx/TestC4Pixel.cpp
                 tests/Gx/TestGxuClasses.cpp
+                tests/Gx/TestGxComplete.cpp
         )
 
         target_link_libraries(gx_tests PRIVATE tempest_lib GTest::gtest_main)
