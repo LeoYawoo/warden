@@ -175,6 +175,16 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
                 Source/Engine/Source/Agile/Position.cpp
+                Source/Engine/Source/Agile/CPresenceRef.cpp
+                Source/Engine/Source/Agile/CAgentField.cpp
+                Source/Engine/Source/Agile/CRelation.cpp
+                Source/Engine/Source/Agile/CListener.cpp
+                Source/Engine/Source/Agile/CModifier.cpp
+                Source/Engine/Source/Agile/FloatListener.cpp
+                Source/Engine/Source/Agile/FloatModifier.cpp
+                Source/Engine/Source/Agile/IntegerListener.cpp
+                Source/Engine/Source/Agile/IntegerModifier.cpp
+                Source/Engine/Source/Agile/CAgent.cpp
                 Source/Engine/Source/Anim/Type.cpp
                 Source/Engine/Source/BLPFile/blp.cpp
                 Source/Engine/Source/BLPFile/IJG/jmemstorm.cpp
@@ -212,6 +222,7 @@ if(BUILD_TESTS)
                 tests/Agile/TestFloat.cpp
                 tests/Agile/TestInteger.cpp
                 tests/Agile/TestPosition.cpp
+                tests/Agile/TestAgileHierarchy.cpp
         )
 
         target_link_libraries(agile_tests PRIVATE tempest_lib GTest::gtest_main)
