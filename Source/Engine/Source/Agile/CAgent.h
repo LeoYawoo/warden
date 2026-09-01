@@ -3,12 +3,12 @@
 #include "CAgentField.h"
 #include "CListener.h"
 #include "CModifier.h"
+#include "CAgentTimer.h"
 
 // Reverse engineered from Warcraft III binary
 // CAgent is the base class for all agents in the game
 
 // Forward declarations
-class CAgentTimer;
 class CAgentField;
 
 // CAgentBaseAbs - Base class for all agent types
@@ -49,19 +49,4 @@ public:
 
 private:
     T* m_agent;
-};
-
-// CAgentTimer - Timer for agent operations
-class CAgentTimer {
-public:
-    CAgentTimer();
-    CAgentTimer(const CAgentTimer& other);
-    ~CAgentTimer();
-
-    CAgentTimer& operator=(const CAgentTimer& other);
-
-    void EventId();
-
-private:
-    // Timer data
 };
