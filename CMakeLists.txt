@@ -211,6 +211,10 @@ if(BUILD_TESTS)
                 Source/WorldEdit/TestGameFile.cpp
                 Source/WorldEdit/WEPreferences.cpp
                 Source/WorldEdit/WEUtilities.cpp
+                Source/Engine/Source/Gxu/GxuFont.cpp
+                Source/Engine/Source/Gxu/GxuFontUtil.cpp
+                Source/Engine/Source/Gxu/GxuLight.cpp
+                Source/Engine/Source/Gxu/IGxuFontGlyph.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -379,6 +383,7 @@ if(BUILD_TESTS)
         add_executable(gx_tests
                 tests/Gx/TestGraphicTypes.cpp
                 tests/Gx/TestC4Pixel.cpp
+                tests/Gx/TestGxuClasses.cpp
         )
 
         target_link_libraries(gx_tests PRIVATE tempest_lib GTest::gtest_main)

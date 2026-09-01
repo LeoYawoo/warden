@@ -1,4 +1,5 @@
 #include "IGxuFontGlyph.h"
 
-// TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for IGxuFontGlyph
+// Reverse engineered from Warcraft III binary
+
+// This is an interface class, implementation is provided by derived classes
