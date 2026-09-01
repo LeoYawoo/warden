@@ -215,6 +215,10 @@ if(BUILD_TESTS)
                 Source/Engine/Source/BLPFile/blp.cpp
                 Source/Engine/Source/BLPFile/IJG/jmemstorm.cpp
                 Source/Engine/Source/Base/CDataStore.cpp
+                Source/Engine/Source/Base/CDataStoreChunked.cpp
+                Source/Engine/Source/Base/CDataAllocator.cpp
+                Source/Engine/Source/Base/CDataRecycler.cpp
+                Source/Engine/Source/Base/FileCache.cpp
                 Source/Engine/Source/Base/MsgBuffer.cpp
                 Source/Engine/Source/Base/Status.cpp
                 Source/Engine/Source/Base/RCString.cpp
@@ -433,6 +437,7 @@ if(BUILD_TESTS)
                 tests/Base/TestMsgBuffer.cpp
                 tests/Base/TestStatus.cpp
                 tests/Base/TestRCString.cpp
+                tests/Base/TestMoreBaseClasses.cpp
         )
 
         target_link_libraries(base_tests PRIVATE tempest_lib GTest::gtest_main)
