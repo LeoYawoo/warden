@@ -195,6 +195,11 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Agile/CSLKDatabase.cpp
                 Source/Engine/Source/Agile/CHuffman.cpp
                 Source/Engine/Source/Agile/CBitInput.cpp
+                Source/Engine/Source/Agile/CAngle.cpp
+                Source/Engine/Source/Agile/SmartPosition.cpp
+                Source/Engine/Source/Agile/RangeListener.cpp
+                Source/Engine/Source/Agile/MovementModifier.cpp
+                Source/Engine/Source/Agile/ProjectilePosition.cpp
                 Source/Engine/Source/Anim/Type.cpp
                 Source/Engine/Source/BLPFile/blp.cpp
                 Source/Engine/Source/BLPFile/IJG/jmemstorm.cpp
@@ -234,6 +239,7 @@ if(BUILD_TESTS)
                 tests/Agile/TestPosition.cpp
                 tests/Agile/TestAgileHierarchy.cpp
                 tests/Agile/TestMoreClasses.cpp
+                tests/Agile/TestAngleAndPosition.cpp
         )
 
         target_link_libraries(agile_tests PRIVATE tempest_lib GTest::gtest_main)
