@@ -170,6 +170,9 @@ if(BUILD_TESTS)
                 Source/StormMac/String.cpp
                 Source/StormMac/string/bjhash.cpp
                 Source/StormMac/thread/SCritSect.cpp
+                Source/StormMac/big/BigBuffer.cpp
+                Source/StormMac/big/BigStack.cpp
+                Source/StormMac/big/BigData.cpp
                 Source/StormMac/thread/CCritSect.cpp
                 Source/StormMac/thread/SSyncObject.cpp
                 Source/StormMac/thread/SEvent.cpp
@@ -303,6 +306,7 @@ if(BUILD_TESTS)
                 tests/StormMac/TestCCritSect.cpp
                 tests/StormMac/TestDebug.cpp
                 tests/StormMac/TestError.cpp
+                tests/StormMac/TestMoreStormMacClasses.cpp
         )
 
         target_link_libraries(stormmac_tests PRIVATE tempest_lib GTest::gtest_main)

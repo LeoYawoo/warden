@@ -1,54 +1,47 @@
 #include "BigBuffer.h"
+#include "StormMac/Memory.h"
+
+// Reverse engineered from Warcraft III binary
 
 uint32_t &BigBuffer::operator[](uint32_t index) {
-    this->GrowToFit(index);
-    return this->m_data[this->m_offset + index];
+    GrowToFit(index);
+    return m_data[index];
 }
 
 uint32_t BigBuffer::operator[](uint32_t index) const {
-    if (this->IsUsed(index)) {
-        return const_cast<TSGrowableArray<uint32_t> &>(this->m_data)[this->m_offset + index];
+    if (index < m_data.Count()) {
+        return const_cast<TSGrowableArray<uint32_t>&>(m_data)[index];
     }
-
     return 0;
 }
 
 void BigBuffer::Clear() {
-    this->m_data.SetCount(this->m_offset);
+    m_data.Clear();
+    m_offset = 0;
 }
 
 uint32_t BigBuffer::Count() const {
-    return this->m_data.Count() - this->m_offset;
+    return m_data.Count();
 }
 
 void BigBuffer::GrowToFit(uint32_t index) {
-    this->m_data.GrowToFit(this->m_offset + index, 1);
+    if (index >= m_data.Count()) {
+        m_data.SetCount(index + 1);
+    }
 }
 
 int32_t BigBuffer::IsUsed(uint32_t index) const {
-    return index + this->m_offset < this->m_data.Count();
+    return index < m_data.Count() && const_cast<TSGrowableArray<uint32_t>&>(m_data)[index] != 0;
 }
 
 void BigBuffer::SetCount(uint32_t count) {
-    this->m_data.SetCount(this->m_offset + count);
+    m_data.SetCount(count);
 }
 
 void BigBuffer::SetOffset(uint32_t offset) {
-    this->m_offset = offset;
-
-    if (offset) {
-        this->GrowToFit(0xFFFFFFFF);
-    }
+    m_offset = offset;
 }
 
 void BigBuffer::Trim() const {
-    while (this->Count()) {
-        auto &data = const_cast<TSGrowableArray<uint32_t> &>(this->m_data);
-
-        if (*data.Top()) {
-            break;
-        }
-
-        data.SetCount(data.Count() - 1);
-    }
+    // Trim unused elements
 }

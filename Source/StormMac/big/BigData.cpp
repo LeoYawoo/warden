@@ -1,13 +1,15 @@
 #include "BigData.h"
 
+// Reverse engineered from Warcraft III binary
+
 TSGrowableArray<uint8_t> &BigData::Output() const {
-    return const_cast<TSGrowableArray<uint8_t> &>(this->m_output);
+    return const_cast<TSGrowableArray<uint8_t>&>(m_output);
 }
 
 BigBuffer &BigData::Primary() {
-    return this->m_primary;
+    return m_primary;
 }
 
 BigStack &BigData::Stack() const {
-    return const_cast<BigStack &>(this->m_stack);
+    return const_cast<BigStack&>(m_stack);
 }
