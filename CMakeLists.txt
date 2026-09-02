@@ -215,6 +215,11 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Gxu/GxuFontUtil.cpp
                 Source/Engine/Source/Gxu/GxuLight.cpp
                 Source/Engine/Source/Gxu/IGxuFontGlyph.cpp
+                Source/Engine/Source/Images/CWar3Image.cpp
+                Source/Engine/Source/Images/CTgaTexture.cpp
+                Source/Engine/Source/Images/CBlpTexture.cpp
+                Source/Engine/Source/Images/funcs.cpp
+                Source/Engine/Source/Images/tga.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -485,6 +490,17 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(blp_tests)
+
+        # Images tests
+        add_executable(images_tests
+                tests/Images/TestImagesClasses.cpp
+        )
+
+        target_link_libraries(images_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(images_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
+
+        include(GoogleTest)
+        gtest_discover_tests(images_tests)
 
         # Base tests
         add_executable(base_tests
