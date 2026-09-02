@@ -220,6 +220,8 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Images/CBlpTexture.cpp
                 Source/Engine/Source/Images/funcs.cpp
                 Source/Engine/Source/Images/tga.cpp
+                Source/Engine/Source/FrameDef/FrameDef.cpp
+                Source/Engine/Source/FrameDef/SetupFrame.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -516,6 +518,17 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(base_tests)
+
+        # FrameDef tests
+        add_executable(framedef_tests
+                tests/FrameDef/TestFrameDefClasses.cpp
+        )
+
+        target_link_libraries(framedef_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(framedef_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
+
+        include(GoogleTest)
+        gtest_discover_tests(framedef_tests)
 
         # Unit tests
         add_executable(unit_tests
