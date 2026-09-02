@@ -236,6 +236,13 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Services/Texture.cpp
                 Source/Engine/Source/Services/Tokenizer.cpp
                 Source/Engine/Source/SRP/SHA.cpp
+                Source/Engine/Source/Net/NetClient.cpp
+                Source/Engine/Source/Net/NetCommon.cpp
+                Source/Engine/Source/Net/NetProvider.cpp
+                Source/Engine/Source/Net/NetProviderBNET.cpp
+                Source/Engine/Source/Net/NetProviderLOOP.cpp
+                Source/Engine/Source/Net/NetProviderLTCP.cpp
+                Source/Engine/Source/Net/NetRouter.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -565,6 +572,17 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(srp_tests)
+
+        # Net tests
+        add_executable(net_engine_tests
+                tests/Net/TestNetClasses.cpp
+        )
+
+        target_link_libraries(net_engine_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(net_engine_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
+
+        include(GoogleTest)
+        gtest_discover_tests(net_engine_tests)
 
         # Unit tests
         add_executable(unit_tests
