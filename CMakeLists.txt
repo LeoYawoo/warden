@@ -222,6 +222,19 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Images/tga.cpp
                 Source/Engine/Source/FrameDef/FrameDef.cpp
                 Source/Engine/Source/FrameDef/SetupFrame.cpp
+                Source/Engine/Source/Services/AsyncFile.cpp
+                Source/Engine/Source/Services/Database.cpp
+                Source/Engine/Source/Services/GfxSingletonManager.cpp
+                Source/Engine/Source/Services/Lightning.cpp
+                Source/Engine/Source/Services/Profile.cpp
+                Source/Engine/Source/Services/ProfileInternal.cpp
+                Source/Engine/Source/Services/SprAnimList.cpp
+                Source/Engine/Source/Services/SprLinkTable.cpp
+                Source/Engine/Source/Services/Sprite.cpp
+                Source/Engine/Source/Services/SysMessage.cpp
+                Source/Engine/Source/Services/TextBlock.cpp
+                Source/Engine/Source/Services/Texture.cpp
+                Source/Engine/Source/Services/Tokenizer.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -529,6 +542,17 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(framedef_tests)
+
+        # Services tests
+        add_executable(services_tests
+                tests/Services/TestServicesClasses.cpp
+        )
+
+        target_link_libraries(services_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(services_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
+
+        include(GoogleTest)
+        gtest_discover_tests(services_tests)
 
         # Unit tests
         add_executable(unit_tests
