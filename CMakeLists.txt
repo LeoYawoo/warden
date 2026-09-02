@@ -235,6 +235,7 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Services/TextBlock.cpp
                 Source/Engine/Source/Services/Texture.cpp
                 Source/Engine/Source/Services/Tokenizer.cpp
+                Source/Engine/Source/SRP/SHA.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -553,6 +554,17 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(services_tests)
+
+        # SRP tests
+        add_executable(srp_tests
+                tests/SRP/TestSRPClasses.cpp
+        )
+
+        target_link_libraries(srp_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(srp_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
+
+        include(GoogleTest)
+        gtest_discover_tests(srp_tests)
 
         # Unit tests
         add_executable(unit_tests
