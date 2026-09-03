@@ -292,6 +292,14 @@ if(BUILD_TESTS)
                 Source/Game/CMultiboardWar3.cpp
                 Source/Game/CSelectionWar3.cpp
                 Source/Game/CPreloadManager.cpp
+                Source/Glue/CGlueMgr.cpp
+                Source/Glue/CMainMenu.cpp
+                Source/Glue/CCharacterSelection.cpp
+                Source/Glue/COptionsMenu.cpp
+                Source/Glue/CLoading.cpp
+                Source/Glue/CScoreScreen.cpp
+                Source/Glue/CRealmList.cpp
+                Source/Glue/CTitle.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -547,6 +555,7 @@ if(BUILD_TESTS)
         # Glue tests
         add_executable(glue_tests
                 tests/Glue/TestCGlueMgr.cpp
+                tests/Glue/TestGlueClasses.cpp
         )
 
         target_link_libraries(glue_tests PRIVATE tempest_lib GTest::gtest_main)

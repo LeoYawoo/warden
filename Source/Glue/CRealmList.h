@@ -1,33 +1,50 @@
 #pragma once
 
 #include <cstdint>
-#include "Common/TSGrowableArray.h"
+#include <string>
+#include <vector>
 
-
-class Cfg_CategoriesRec;
-
-struct RealmCategory {
-    Cfg_CategoriesRec *m_category;
-    TSGrowableArray <uint32_t> m_realms;
-    uint32_t uint14;
-};
+// Reverse engineered from Warcraft III binary
+// CRealmList manages the realm list
 
 class CRealmList {
 public:
-    // Static variables
-    static float s_avgLoad;
-    static TSFixedArray<RealmCategory *> s_categories;
-    static int32_t s_preferredCategory;
-    static int32_t s_selectedCategory;
+    CRealmList();
+    ~CRealmList();
 
-    // Static functions
-    static void Initialize();
+    // Realm operations
+    bool Initialize();
+    void Shutdown();
+    bool IsInitialized() const;
 
-    static void SetPreferredInfo(uint32_t index, int32_t pvp, int32_t rp);
+    // Realm management
+    void AddRealm(const char* name, const char* address, int32_t port);
+    void RemoveRealm(const char* name);
+    void ClearRealms();
 
-    static uint32_t Sub4DE910(uint32_t a1);
+    // Realm queries
+    size_t GetRealmCount() const;
+    const char* GetRealmName(size_t index) const;
+    const char* GetRealmAddress(size_t index) const;
+    int32_t GetRealmPort(size_t index) const;
 
-    static void UpdateList();
+    // Realm selection
+    int32_t GetSelectedRealmIndex() const;
+    void SetSelectedRealmIndex(int32_t index);
+
+    // Realm state
+    bool IsVisible() const;
+    void SetVisible(bool visible);
+
+protected:
+    struct Realm {
+        std::string name;
+        std::string address;
+        int32_t port;
+    };
+
+    bool m_initialized;
+    bool m_visible;
+    int32_t m_selectedRealmIndex;
+    std::vector<Realm> m_realms;
 };
-
-

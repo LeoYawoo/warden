@@ -1,25 +1,45 @@
 #pragma once
 
+#include <cstdint>
+#include <string>
+#include <vector>
 
-#include "Common/TSGrowableArray.h"
-
-
-class CSimpleModelFFX;
-
-struct CharacterSelectionDisplay {
-    // TODO
-};
+// Reverse engineered from Warcraft III binary
+// CCharacterSelection manages character selection
 
 class CCharacterSelection {
 public:
-    // Static variables
-    static TSGrowableArray<CharacterSelectionDisplay> s_characterList;
-    static CSimpleModelFFX *s_modelFrame;
+    CCharacterSelection();
+    ~CCharacterSelection();
 
-    // Static functions
-    static void RenderPrep();
+    // Selection operations
+    bool Initialize();
+    void Shutdown();
+    bool IsInitialized() const;
 
-    static void SetBackgroundModel(const char *modelPath);
+    // Character operations
+    void SelectCharacter(int32_t characterId);
+    void CreateCharacter(const char* name, int32_t classId);
+    void DeleteCharacter(int32_t characterId);
+
+    // Character properties
+    int32_t GetSelectedCharacterId() const;
+    const char* GetCharacterName(int32_t characterId) const;
+    size_t GetCharacterCount() const;
+
+    // Selection state
+    bool IsVisible() const;
+    void SetVisible(bool visible);
+
+protected:
+    struct Character {
+        int32_t id;
+        std::string name;
+        int32_t classId;
+    };
+
+    bool m_initialized;
+    bool m_visible;
+    int32_t m_selectedCharacterId;
+    std::vector<Character> m_characters;
 };
-
-
