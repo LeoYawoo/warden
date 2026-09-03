@@ -284,6 +284,14 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Ipse/CRlAgentDef.cpp
                 Source/Engine/Source/Ipse/CRlProperty.cpp
                 Source/Engine/Source/Ipse/CThreadData.cpp
+                Source/Game/CGameState.cpp
+                Source/Game/CGameWar3.cpp
+                Source/Game/CPlayerWar3.cpp
+                Source/Game/CGroup.cpp
+                Source/Game/CLeaderboardWar3.cpp
+                Source/Game/CMultiboardWar3.cpp
+                Source/Game/CSelectionWar3.cpp
+                Source/Game/CPreloadManager.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -467,6 +475,7 @@ if(BUILD_TESTS)
         add_executable(game_tests
                 tests/Game/TestGameTypes.cpp
                 tests/Game/TestCBoundingBox.cpp
+                tests/Game/TestGameClasses.cpp
         )
 
         target_link_libraries(game_tests PRIVATE tempest_lib GTest::gtest_main)
