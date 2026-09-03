@@ -7,7 +7,8 @@
 
 
 GruntLogin::~GruntLogin() {
-    // TODO
+    // Cleanup login resources
+    m_loggedOn = false;
 }
 
 bool GruntLogin::Connected(const NETADDR &addr) {
