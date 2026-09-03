@@ -16,7 +16,8 @@ void *SMemAlloc(size_t bytes, const char *filename, int32_t linenumber, uint32_t
     if (result) {
         return result;
     } else {
-        // TODO handle errors
+        // Memory allocation failed - report error
+        SErrSetLastError(ERROR_NOT_ENOUGH_MEMORY);
         return nullptr;
     }
 }
