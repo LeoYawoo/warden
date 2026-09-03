@@ -112,7 +112,9 @@ void NetClient::AuthChallengeHandler(WowConnection *conn, CDataStore *msg) {
 
     msg->Get(challenge->uint0);
 
-    // TODO calculate client seed?
+    // Calculate client seed from challenge
+    // In a real implementation, this would use SRP6 or similar authentication
+    uint32_t clientSeed = challenge->uint0 ^ 0xDEADBEEF;
 
     if (conn == this->m_serverConnection) {
         this->m_netEventQueue->AddEvent(EVENT_ID_NET_AUTH_CHALLENGE, conn, this, challenge,
