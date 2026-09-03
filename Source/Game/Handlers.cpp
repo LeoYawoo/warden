@@ -7,7 +7,11 @@
 namespace {
 
     int32_t OnChar(const EVENT_DATA_CHAR *data, void *param) {
-        // TODO
+        // Handle character input event
+        if (data && ConsoleGetActive()) {
+            // Forward character to console
+            ConsoleOnChar(data->character);
+        }
         return 1;
     }
 
