@@ -3,26 +3,28 @@
 // Reverse engineered from Warcraft III binary
 
 TestGameFile::TestGameFile() : m_loaded(false), m_valid(false) {}
-TestGameFile::~TestGameFile() {}
+TestGameFile::~TestGameFile() { Close(); }
 
 const char* TestGameFile::GetFileName() const { return m_fileName.c_str(); }
 void TestGameFile::SetFileName(const char* fileName) { m_fileName = fileName ? fileName : ""; }
+
 bool TestGameFile::IsLoaded() const { return m_loaded; }
 void TestGameFile::SetLoaded(bool loaded) { m_loaded = loaded; }
+
 bool TestGameFile::IsValid() const { return m_valid; }
 
 bool TestGameFile::Load(const char* fileName) {
     if (!fileName) return false;
     m_fileName = fileName;
-    // TODO: Implement file loading
+    // TODO: Implement actual file loading
     m_loaded = true;
     m_valid = true;
     return true;
 }
 
 bool TestGameFile::Save(const char* fileName) {
-    if (!fileName) return false;
-    // TODO: Implement file saving
+    (void)fileName;
+    // TODO: Implement actual file saving
     return true;
 }
 

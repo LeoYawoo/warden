@@ -4,7 +4,7 @@
 #include <string>
 
 // Reverse engineered from Warcraft III binary
-// TestGameFile manages test game file operations
+// TestGameFile manages test game files
 
 class TestGameFile {
 public:
@@ -23,7 +23,7 @@ public:
 
     // File operations
     bool Load(const char* fileName);
-    bool Save(const char* fileName);
+    bool Save(const char* fileName = nullptr);
     void Close();
 
 protected:

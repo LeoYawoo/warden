@@ -327,6 +327,9 @@ if(BUILD_TESTS)
                 Source/Unit/NetUnit.cpp
                 Source/World/WorldCampaign.cpp
                 Source/World/WorldLoad.cpp
+                Source/WorldEdit/MapInfoFile.cpp
+                Source/WorldEdit/TestGameFile.cpp
+                Source/WorldEdit/TextureUtilities.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -537,6 +540,7 @@ if(BUILD_TESTS)
                 tests/WorldEdit/TestWorldEditClasses.cpp
                 tests/WorldEdit/TestMoreWorldEditClasses.cpp
                 tests/WorldEdit/TestEvenMoreWorldEditClasses.cpp
+                tests/WorldEdit/TestAllRemainingWorldEditClasses.cpp
                 tests/WorldEdit/TestAllRemainingWorldEditClasses.cpp
         )
 

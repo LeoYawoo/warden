@@ -1,107 +1,68 @@
 #include "TextureUtilities.h"
-#include <unordered_map>
-#include <cstring>
 
 // Reverse engineered from Warcraft III binary
 
-struct TextureData {
-    uint32_t width;
-    uint32_t height;
-    uint32_t format;
-    std::string name;
-    uint8_t* data;
-};
+namespace TextureUtils {
 
-static std::unordered_map<uint32_t, TextureData> s_textures;
-static uint32_t s_nextTextureId = 1;
-
-uint32_t TextureUtilities::LoadTexture(const char* fileName) {
-    if (!fileName) {
-        return 0;
-    }
-
-    // TODO: Implement actual texture loading
-    uint32_t id = s_nextTextureId++;
-    TextureData& tex = s_textures[id];
-    tex.name = fileName;
-    tex.width = 0;
-    tex.height = 0;
-    tex.format = FORMAT_RGBA8;
-    tex.data = nullptr;
-
-    return id;
+uint32_t GetTextureWidth(void* image) {
+    (void)image;
+    // TODO: Implement texture width query
+    return 0;
 }
 
-void TextureUtilities::UnloadTexture(uint32_t textureId) {
-    auto it = s_textures.find(textureId);
-    if (it != s_textures.end()) {
-        if (it->second.data) {
-            delete[] it->second.data;
+uint32_t GetTextureHeight(void* image) {
+    (void)image;
+    // TODO: Implement texture height query
+    return 0;
+}
+
+bool ConvertToRGBA(const uint8_t* src, uint8_t* dst, uint32_t width, uint32_t height, uint32_t srcFormat) {
+    if (!src || !dst) return false;
+
+    uint32_t pixelCount = width * height;
+
+    switch (srcFormat) {
+        case FORMAT_RGB8:
+            for (uint32_t i = 0; i < pixelCount; i++) {
+                dst[i * 4 + 0] = src[i * 3 + 0]; // R
+                dst[i * 4 + 1] = src[i * 3 + 1]; // G
+                dst[i * 4 + 2] = src[i * 3 + 2]; // B
+                dst[i * 4 + 3] = 255;             // A
+            }
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+bool ScaleTexture(const uint8_t* src, uint8_t* dst, uint32_t srcWidth, uint32_t srcHeight, uint32_t dstWidth, uint32_t dstHeight) {
+    if (!src || !dst || srcWidth == 0 || srcHeight == 0 || dstWidth == 0 || dstHeight == 0) {
+        return false;
+    }
+
+    float scaleX = static_cast<float>(srcWidth) / dstWidth;
+    float scaleY = static_cast<float>(srcHeight) / dstHeight;
+
+    for (uint32_t y = 0; y < dstHeight; y++) {
+        for (uint32_t x = 0; x < dstWidth; x++) {
+            uint32_t srcX = static_cast<uint32_t>(x * scaleX);
+            uint32_t srcY = static_cast<uint32_t>(y * scaleY);
+
+            if (srcX >= srcWidth) srcX = srcWidth - 1;
+            if (srcY >= srcHeight) srcY = srcHeight - 1;
+
+            uint32_t srcOffset = (srcY * srcWidth + srcX) * 4;
+            uint32_t dstOffset = (y * dstWidth + x) * 4;
+
+            dst[dstOffset + 0] = src[srcOffset + 0];
+            dst[dstOffset + 1] = src[srcOffset + 1];
+            dst[dstOffset + 2] = src[srcOffset + 2];
+            dst[dstOffset + 3] = src[srcOffset + 3];
         }
-        s_textures.erase(it);
     }
+
+    return true;
 }
 
-uint32_t TextureUtilities::GetTextureWidth(uint32_t textureId) {
-    auto it = s_textures.find(textureId);
-    if (it != s_textures.end()) {
-        return it->second.width;
-    }
-    return 0;
-}
-
-uint32_t TextureUtilities::GetTextureHeight(uint32_t textureId) {
-    auto it = s_textures.find(textureId);
-    if (it != s_textures.end()) {
-        return it->second.height;
-    }
-    return 0;
-}
-
-const char* TextureUtilities::GetTextureName(uint32_t textureId) {
-    auto it = s_textures.find(textureId);
-    if (it != s_textures.end()) {
-        return it->second.name.c_str();
-    }
-    return nullptr;
-}
-
-bool TextureUtilities::SaveTexture(uint32_t textureId, const char* fileName) {
-    (void)textureId;
-    (void)fileName;
-    // TODO: Implement texture saving
-    return false;
-}
-
-bool TextureUtilities::CopyTexture(uint32_t srcId, uint32_t dstId) {
-    auto srcIt = s_textures.find(srcId);
-    auto dstIt = s_textures.find(dstId);
-    if (srcIt != s_textures.end() && dstIt != s_textures.end()) {
-        dstIt->second.width = srcIt->second.width;
-        dstIt->second.height = srcIt->second.height;
-        dstIt->second.format = srcIt->second.format;
-        return true;
-    }
-    return false;
-}
-
-uint32_t TextureUtilities::CreateTexture(uint32_t width, uint32_t height, uint32_t format) {
-    uint32_t id = s_nextTextureId++;
-    TextureData& tex = s_textures[id];
-    tex.width = width;
-    tex.height = height;
-    tex.format = format;
-    tex.data = new uint8_t[width * height * 4];
-    memset(tex.data, 0, width * height * 4);
-
-    return id;
-}
-
-uint32_t TextureUtilities::CreateTextureFromData(const void* data, uint32_t width, uint32_t height, uint32_t format) {
-    uint32_t id = CreateTexture(width, height, format);
-    if (id && data) {
-        TextureData& tex = s_textures[id];
-        memcpy(tex.data, data, width * height * 4);
-    }
-    return id;
-}
+} // namespace TextureUtils

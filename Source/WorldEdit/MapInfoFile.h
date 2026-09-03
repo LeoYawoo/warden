@@ -19,11 +19,11 @@ public:
     const char* GetMapName() const;
     void SetMapName(const char* name);
 
+    const char* GetMapAuthor() const;
+    void SetMapAuthor(const char* author);
+
     const char* GetMapDescription() const;
     void SetMapDescription(const char* description);
-
-    const char* GetAuthor() const;
-    void SetAuthor(const char* author);
 
     // Map settings
     int32_t GetMapVersion() const;
@@ -37,7 +37,8 @@ public:
 
     // File operations
     bool Load(const char* fileName);
-    bool Save(const char* fileName);
+    bool Save(const char* fileName = nullptr);
+    void Clear();
 
     // Validation
     bool IsValid() const;
@@ -45,8 +46,8 @@ public:
 protected:
     std::string m_fileName;
     std::string m_mapName;
+    std::string m_mapAuthor;
     std::string m_mapDescription;
-    std::string m_author;
     int32_t m_mapVersion;
     int32_t m_mapSize;
     int32_t m_mapFlags;

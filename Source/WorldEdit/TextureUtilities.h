@@ -3,32 +3,29 @@
 #include <cstdint>
 #include <string>
 
+// Forward declarations
+class CWar3Image;
+
 // Reverse engineered from Warcraft III binary
 // TextureUtilities provides texture utility functions
 
-class TextureUtilities {
-public:
+namespace TextureUtils {
     // Texture loading
-    static uint32_t LoadTexture(const char* fileName);
-    static void UnloadTexture(uint32_t textureId);
+    CWar3Image* LoadTexture(const char* fileName);
+    void UnloadTexture(CWar3Image* image);
 
     // Texture information
-    static uint32_t GetTextureWidth(uint32_t textureId);
-    static uint32_t GetTextureHeight(uint32_t textureId);
-    static const char* GetTextureName(uint32_t textureId);
+    uint32_t GetTextureWidth(CWar3Image* image);
+    uint32_t GetTextureHeight(CWar3Image* image);
 
     // Texture operations
-    static bool SaveTexture(uint32_t textureId, const char* fileName);
-    static bool CopyTexture(uint32_t srcId, uint32_t dstId);
+    bool ConvertToRGBA(const uint8_t* src, uint8_t* dst, uint32_t width, uint32_t height, uint32_t srcFormat);
+    bool ScaleTexture(const uint8_t* src, uint8_t* dst, uint32_t srcWidth, uint32_t srcHeight, uint32_t dstWidth, uint32_t dstHeight);
 
-    // Texture creation
-    static uint32_t CreateTexture(uint32_t width, uint32_t height, uint32_t format);
-    static uint32_t CreateTextureFromData(const void* data, uint32_t width, uint32_t height, uint32_t format);
-
-    // Texture formats
-    static const uint32_t FORMAT_RGBA8 = 0;
-    static const uint32_t FORMAT_RGB8 = 1;
-    static const uint32_t FORMAT_DXT1 = 2;
-    static const uint32_t FORMAT_DXT3 = 3;
-    static const uint32_t FORMAT_DXT5 = 4;
-};
+    // Format constants
+    const uint32_t FORMAT_RGBA8 = 0;
+    const uint32_t FORMAT_RGB8 = 1;
+    const uint32_t FORMAT_DXT1 = 2;
+    const uint32_t FORMAT_DXT3 = 3;
+    const uint32_t FORMAT_DXT5 = 4;
+}
