@@ -243,6 +243,8 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Net/NetProviderLOOP.cpp
                 Source/Engine/Source/Net/NetProviderLTCP.cpp
                 Source/Engine/Source/Net/NetRouter.cpp
+                Source/Engine/Source/FDFile/Handlers/FrameHashNode.cpp
+                Source/Engine/Source/FDFile/Handlers/MenuHashNode.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -462,6 +464,7 @@ if(BUILD_TESTS)
         # FDFile tests
         add_executable(fdfile_tests
                 tests/FDFile/TestFDFile.cpp
+                tests/FDFile/TestFDFileHandlers.cpp
         )
 
         target_link_libraries(fdfile_tests PRIVATE tempest_lib GTest::gtest_main)
