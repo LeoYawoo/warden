@@ -245,6 +245,8 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Net/NetRouter.cpp
                 Source/Engine/Source/FDFile/Handlers/FrameHashNode.cpp
                 Source/Engine/Source/FDFile/Handlers/MenuHashNode.cpp
+                Source/Engine/Source/BattleNet/BattleNetCache.cpp
+                Source/Engine/Source/BattleNet/BattleNetChat.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -586,6 +588,17 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(net_engine_tests)
+
+        # BattleNet tests
+        add_executable(bnet_tests
+                tests/BattleNet/TestBattleNetClasses.cpp
+        )
+
+        target_link_libraries(bnet_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(bnet_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
+
+        include(GoogleTest)
+        gtest_discover_tests(bnet_tests)
 
         # Unit tests
         add_executable(unit_tests
