@@ -247,6 +247,19 @@ if(BUILD_TESTS)
                 Source/Engine/Source/FDFile/Handlers/MenuHashNode.cpp
                 Source/Engine/Source/BattleNet/BattleNetCache.cpp
                 Source/Engine/Source/BattleNet/BattleNetChat.cpp
+                Source/Engine/Source/Frame/CFrame.cpp
+                Source/Engine/Source/Frame/CSimpleFrame.cpp
+                Source/Engine/Source/Frame/CControl.cpp
+                Source/Engine/Source/Frame/CButtonFrame.cpp
+                Source/Engine/Source/Frame/CCheckBox.cpp
+                Source/Engine/Source/Frame/CEditBox.cpp
+                Source/Engine/Source/Frame/CListBox.cpp
+                Source/Engine/Source/Frame/CScrollBar.cpp
+                Source/Engine/Source/Frame/CSlider.cpp
+                Source/Engine/Source/Frame/CTextArea.cpp
+                Source/Engine/Source/Frame/CTextFrame.cpp
+                Source/Engine/Source/Frame/CLayer.cpp
+                Source/Engine/Source/Frame/CDialog.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -599,6 +612,17 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(bnet_tests)
+
+        # Frame tests
+        add_executable(frame_tests
+                tests/Frame/TestFrameClasses.cpp
+        )
+
+        target_link_libraries(frame_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(frame_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
+
+        include(GoogleTest)
+        gtest_discover_tests(frame_tests)
 
         # Unit tests
         add_executable(unit_tests
