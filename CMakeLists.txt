@@ -278,6 +278,12 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Frame/CSimpleTop.cpp
                 Source/Engine/Source/Frame/CSpriteFrame.cpp
                 Source/Engine/Source/Frame/CTextButtonFrame.cpp
+                Source/Engine/Source/Ipse/CPoReal.cpp
+                Source/Engine/Source/Ipse/CPrRelation.cpp
+                Source/Engine/Source/Ipse/CRlAgent.cpp
+                Source/Engine/Source/Ipse/CRlAgentDef.cpp
+                Source/Engine/Source/Ipse/CRlProperty.cpp
+                Source/Engine/Source/Ipse/CThreadData.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -434,6 +440,7 @@ if(BUILD_TESTS)
                 tests/Ipse/TestCPoReal.cpp
                 tests/Ipse/TestCRlAgent.cpp
                 tests/Ipse/TestCRlAgentDef.cpp
+                tests/Ipse/TestIpseClasses.cpp
         )
 
         target_link_libraries(ipse_tests PRIVATE tempest_lib GTest::gtest_main)
