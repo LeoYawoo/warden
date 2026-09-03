@@ -260,6 +260,24 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Frame/CTextFrame.cpp
                 Source/Engine/Source/Frame/CLayer.cpp
                 Source/Engine/Source/Frame/CDialog.cpp
+                Source/Engine/Source/Frame/CBackdropGenerator.cpp
+                Source/Engine/Source/Frame/CChatDisplay.cpp
+                Source/Engine/Source/Frame/CControlSet.cpp
+                Source/Engine/Source/Frame/CFramePoint.cpp
+                Source/Engine/Source/Frame/CHighlightFrame.cpp
+                Source/Engine/Source/Frame/CMenu.cpp
+                Source/Engine/Source/Frame/CMessageFrame.cpp
+                Source/Engine/Source/Frame/CModelFrame.cpp
+                Source/Engine/Source/Frame/CPopupMenu.cpp
+                Source/Engine/Source/Frame/CScreenFrame.cpp
+                Source/Engine/Source/Frame/CSimpleButton.cpp
+                Source/Engine/Source/Frame/CSimpleCheckbox.cpp
+                Source/Engine/Source/Frame/CSimpleMessageFrame.cpp
+                Source/Engine/Source/Frame/CSimpleRender.cpp
+                Source/Engine/Source/Frame/CSimpleStatusBar.cpp
+                Source/Engine/Source/Frame/CSimpleTop.cpp
+                Source/Engine/Source/Frame/CSpriteFrame.cpp
+                Source/Engine/Source/Frame/CTextButtonFrame.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -616,6 +634,7 @@ if(BUILD_TESTS)
         # Frame tests
         add_executable(frame_tests
                 tests/Frame/TestFrameClasses.cpp
+                tests/Frame/TestMoreFrameClasses.cpp
         )
 
         target_link_libraries(frame_tests PRIVATE tempest_lib GTest::gtest_main)

@@ -1,9 +1,24 @@
 #pragma once
 
-// TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CHighlightFrame
+#include "CSimpleFrame.h"
+#include <cstdint>
 
-class CHighlightFrame {
+// Reverse engineered from Warcraft III binary
+// CHighlightFrame is a highlighted frame
+
+class CHighlightFrame : public CSimpleFrame {
 public:
-    // TODO: Implement methods
+    CHighlightFrame();
+    virtual ~CHighlightFrame();
+
+    // Highlight properties
+    bool IsHighlighted() const;
+    void SetHighlighted(bool highlighted);
+
+    uint32_t GetHighlightColor() const;
+    void SetHighlightColor(uint32_t color);
+
+protected:
+    bool m_highlighted;
+    uint32_t m_highlightColor;
 };
