@@ -300,6 +300,9 @@ if(BUILD_TESTS)
                 Source/Glue/CScoreScreen.cpp
                 Source/Glue/CRealmList.cpp
                 Source/Glue/CTitle.cpp
+                Source/System/PersistentPath.cpp
+                Source/System/MacShell/MainApp.cpp
+                Source/System/Utility/CFStringUtilities.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -563,6 +566,17 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(glue_tests)
+
+        # System tests
+        add_executable(system_tests
+                tests/System/TestSystemClasses.cpp
+        )
+
+        target_link_libraries(system_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(system_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
+
+        include(GoogleTest)
+        gtest_discover_tests(system_tests)
 
         # BLPFile tests
         add_executable(blp_tests
