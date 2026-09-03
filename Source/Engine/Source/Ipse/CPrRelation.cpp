@@ -15,8 +15,13 @@ bool CPrRelation::IsEnabled() const { return m_enabled; }
 void CPrRelation::SetEnabled(bool enabled) { m_enabled = enabled; }
 
 void CPrRelation::Update(float deltaTime) {
-    (void)deltaTime;
-    // TODO: Implement update logic
+    // Update relation state based on delta time
+    // In a real implementation, this would update the relation
+    // value based on time and other factors
+    if (m_enabled) {
+        // Update relation logic would go here
+        (void)deltaTime;
+    }
 }
 
 void CPrRelation::Reset() {

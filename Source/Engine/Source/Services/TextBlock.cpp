@@ -52,7 +52,15 @@ void TextBlock::SetVJust(int32_t just) {
 }
 
 void TextBlock::Update() {
-    // TODO: Implement text block update
-    m_width = 0;
-    m_height = 0;
+    // Update text block dimensions based on text content and font
+    // In a real implementation, this would calculate the actual text dimensions
+    // using the font metrics and text content
+    if (!m_text.empty()) {
+        // Simple approximation: assume each character is 8 pixels wide and 16 pixels high
+        m_width = static_cast<float>(m_text.length() * 8);
+        m_height = 16.0f;
+    } else {
+        m_width = 0;
+        m_height = 0;
+    }
 }

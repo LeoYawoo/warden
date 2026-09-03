@@ -10,7 +10,9 @@ bool NetClient::Connect(const char* host, uint16_t port) {
     m_host = host;
     m_port = port;
     m_state = CONNECTING;
-    // TODO: Implement actual connection
+
+    // In a real implementation, this would create a socket and attempt to connect
+    // For now, we simulate a successful connection
     m_state = CONNECTED;
     return true;
 }

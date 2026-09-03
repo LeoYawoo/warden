@@ -31,7 +31,45 @@ float GxuFontUtil::GetStringHeight(IGxuFont* font, const char* str) {
 }
 
 int32_t GxuFontUtil::WrapText(IGxuFont* font, const char* text, float maxWidth, float* heights) {
-    (void)font; (void)text; (void)maxWidth; (void)heights;
-    // TODO: Implement text wrapping
-    return 0;
+    if (!font || !text || maxWidth <= 0) return 0;
+
+    int32_t lineCount = 0;
+    float currentLineWidth = 0.0f;
+    float lineHeight = font->GetHeight() * font->GetScale();
+
+    const char* p = text;
+    while (*p) {
+        if (*p == '\n') {
+            // New line
+            if (heights && lineCount < 100) {
+                heights[lineCount] = lineHeight;
+            }
+            lineCount++;
+            currentLineWidth = 0.0f;
+            p++;
+        } else {
+            float charWidth = font->GetCharWidth(*p) * font->GetScale();
+            if (currentLineWidth + charWidth > maxWidth) {
+                // Wrap to new line
+                if (heights && lineCount < 100) {
+                    heights[lineCount] = lineHeight;
+                }
+                lineCount++;
+                currentLineWidth = charWidth;
+            } else {
+                currentLineWidth += charWidth;
+            }
+            p++;
+        }
+    }
+
+    // Add final line if there's remaining text
+    if (currentLineWidth > 0) {
+        if (heights && lineCount < 100) {
+            heights[lineCount] = lineHeight;
+        }
+        lineCount++;
+    }
+
+    return lineCount;
 }

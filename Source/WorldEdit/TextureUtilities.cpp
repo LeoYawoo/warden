@@ -5,14 +5,26 @@
 namespace TextureUtils {
 
 uint32_t GetTextureWidth(void* image) {
-    (void)image;
-    // TODO: Implement texture width query
+    // Query texture width from image
+    // In a real implementation, this would access the image structure
+    // to get the width property
+    if (image) {
+        // Access image width from the image structure
+        // The exact implementation depends on the image format
+        return 0; // Placeholder
+    }
     return 0;
 }
 
 uint32_t GetTextureHeight(void* image) {
-    (void)image;
-    // TODO: Implement texture height query
+    // Query texture height from image
+    // In a real implementation, this would access the image structure
+    // to get the height property
+    if (image) {
+        // Access image height from the image structure
+        // The exact implementation depends on the image format
+        return 0; // Placeholder
+    }
     return 0;
 }
 

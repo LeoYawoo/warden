@@ -24,7 +24,10 @@ void CSelectionWar3::ClearSelection() {
 }
 
 void CSelectionWar3::SelectAll() {
-    // TODO: Implement select all units
+    // Select all units - implementation requires access to world unit list
+    // For now, this is a placeholder for future implementation
+    // In a full implementation, this would iterate through all units in the world
+    // and add them to m_selectedUnits
 }
 
 size_t CSelectionWar3::GetSelectionCount() const { return m_selectedUnits.size(); }

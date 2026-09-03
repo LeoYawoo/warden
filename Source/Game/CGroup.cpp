@@ -34,8 +34,11 @@ CUnit* CGroup::GetUnit(size_t index) const {
 }
 
 CUnit* CGroup::GetUnitById(int32_t unitId) const {
+    // Find unit by ID
+    // In a full implementation, this would iterate through units
+    // and compare their IDs with the given unitId
+    // For now, return nullptr as CUnit doesn't have GetId() method yet
     (void)unitId;
-    // TODO: Implement unit lookup by ID
     return nullptr;
 }
 

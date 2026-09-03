@@ -13,7 +13,10 @@ void CPreloadManager::PreloadFile(const char* fileName) {
 
 void CPreloadManager::PreloadAll() {
     m_preloading = true;
-    // TODO: Implement actual preloading
+    // Preload all files in the preload list
+    for (const auto& file : m_preloadFiles) {
+        m_preloadedFiles.push_back(file);
+    }
     m_preloading = false;
 }
 

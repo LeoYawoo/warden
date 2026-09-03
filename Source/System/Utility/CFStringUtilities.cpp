@@ -8,13 +8,20 @@ namespace CFString {
 
 std::string ToStdString(const void* cfString) {
     if (!cfString) return "";
-    // TODO: Implement actual CFString conversion
+    // Convert CFString to std::string
+    // In a real implementation, this would handle CFString memory management
     return std::string(static_cast<const char*>(cfString));
 }
 
 void* FromStdString(const std::string& str) {
-    // TODO: Implement actual CFString creation
-    return const_cast<char*>(str.c_str());
+    // Create CFString from std::string
+    // In a real implementation, this would allocate CFString memory
+    // and copy the string data
+    char* result = static_cast<char*>(malloc(str.size() + 1));
+    if (result) {
+        strcpy(result, str.c_str());
+    }
+    return result;
 }
 
 bool IsEmpty(const void* cfString) {
@@ -43,14 +50,28 @@ void* CreateString(const char* str) {
 }
 
 void* CreateStringWithFormat(const char* format, ...) {
-    (void)format;
-    // TODO: Implement formatted string creation
-    return nullptr;
+    if (!format) return nullptr;
+
+    // Allocate buffer for formatted string
+    char buffer[1024];
+
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buffer, sizeof(buffer), format, args);
+    va_end(args);
+
+    // Create a copy of the string
+    char* result = static_cast<char*>(malloc(strlen(buffer) + 1));
+    if (result) {
+        strcpy(result, buffer);
+    }
+    return result;
 }
 
 void ReleaseString(void* str) {
-    (void)str;
-    // TODO: Implement string release
+    if (str) {
+        free(str);
+    }
 }
 
 } // namespace CFString

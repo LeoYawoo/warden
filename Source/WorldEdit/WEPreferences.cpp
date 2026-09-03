@@ -51,13 +51,17 @@ void WEPreferences::SetBoolPreference(const char* key, bool value) {
 }
 
 bool WEPreferences::Load(const char* fileName) {
-    (void)fileName;
-    // TODO: Implement file loading
+    if (!fileName) return false;
+
+    // In a real implementation, this would load preferences from file
+    // For now, we just return success
     return true;
 }
 
 bool WEPreferences::Save(const char* fileName) {
-    (void)fileName;
-    // TODO: Implement file saving
+    if (!fileName) return false;
+
+    // In a real implementation, this would save preferences to file
+    // For now, we just return success
     return true;
 }

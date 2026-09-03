@@ -54,13 +54,20 @@ void SetupFrame::Reset() {
 }
 
 void SetupFrame::SetParameter(const char* key, const char* value) {
-    (void)key;
-    (void)value;
-    // TODO: Implement parameter storage
+    if (!key || !value) return;
+
+    // Store parameter in internal map
+    // In a real implementation, this would use a hash map or similar structure
+    // For now, we just store the first parameter
+    m_parameters[key] = value;
 }
 
 const char* SetupFrame::GetParameter(const char* key) const {
-    (void)key;
-    // TODO: Implement parameter retrieval
+    if (!key) return nullptr;
+
+    auto it = m_parameters.find(key);
+    if (it != m_parameters.end()) {
+        return it->second.c_str();
+    }
     return nullptr;
 }

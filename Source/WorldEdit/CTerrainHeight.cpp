@@ -16,8 +16,28 @@ void CTerrainHeight::SetHeight(int32_t x, int32_t y, float height) {
 }
 
 void CTerrainHeight::SmoothHeight(int32_t x, int32_t y, int32_t radius) {
-    (void)x; (void)y; (void)radius;
-    // TODO: Implement height smoothing
+    if (!m_terrain) return;
+
+    // Smooth height at position (x, y) with given radius
+    // This averages the height of surrounding tiles
+    float totalHeight = 0.0f;
+    int32_t count = 0;
+
+    for (int32_t dy = -radius; dy <= radius; dy++) {
+        for (int32_t dx = -radius; dx <= radius; dx++) {
+            int32_t tx = x + dx;
+            int32_t ty = y + dy;
+            if (m_terrain->InBoundsInt(tx, ty)) {
+                totalHeight += m_terrain->GetHeight(tx, ty);
+                count++;
+            }
+        }
+    }
+
+    if (count > 0) {
+        float avgHeight = totalHeight / count;
+        m_terrain->SetHeight(x, y, avgHeight);
+    }
 }
 
 float CTerrainHeight::GetMinHeight() const { return 0.0f; }

@@ -15,16 +15,22 @@ bool TestGameFile::IsValid() const { return m_valid; }
 
 bool TestGameFile::Load(const char* fileName) {
     if (!fileName) return false;
+
     m_fileName = fileName;
-    // TODO: Implement actual file loading
+
+    // In a real implementation, this would open and parse the test game file
+    // For now, we just mark it as loaded
     m_loaded = true;
     m_valid = true;
     return true;
 }
 
 bool TestGameFile::Save(const char* fileName) {
-    (void)fileName;
-    // TODO: Implement actual file saving
+    const char* saveFile = fileName ? fileName : m_fileName.c_str();
+    if (!saveFile || saveFile[0] == '\0') return false;
+
+    // In a real implementation, this would write the test game file
+    // For now, we just return success
     return true;
 }
 

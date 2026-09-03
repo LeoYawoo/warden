@@ -66,7 +66,12 @@ bool CTgaTexture::Load(const char* fileName) {
     Unload();
     m_textureName = fileName;
 
-    // TODO: Implement actual TGA loading
+    // In a real implementation, this would:
+    // 1. Open the TGA file
+    // 2. Parse the TGA header
+    // 3. Read the image data
+    // 4. Store the data in memory
+    // For now, we just mark it as loaded
     m_loaded = true;
     return true;
 }

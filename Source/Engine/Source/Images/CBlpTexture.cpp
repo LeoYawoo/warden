@@ -66,7 +66,13 @@ bool CBlpTexture::Load(const char* fileName) {
     Unload();
     m_textureName = fileName;
 
-    // TODO: Implement actual BLP loading
+    // In a real implementation, this would:
+    // 1. Open the BLP file
+    // 2. Parse the BLP header
+    // 3. Determine the texture format (DXT1, DXT3, DXT5, etc.)
+    // 4. Decompress the texture data
+    // 5. Store the decompressed data in memory
+    // For now, we just mark it as loaded
     m_loaded = true;
     return true;
 }

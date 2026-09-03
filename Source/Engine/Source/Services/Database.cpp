@@ -57,13 +57,37 @@ void Database::Clear() {
 }
 
 bool Database::Save(const char* fileName) {
-    (void)fileName;
-    // TODO: Implement file saving
+    if (!fileName) return false;
+
+    std::ofstream file(fileName);
+    if (!file.is_open()) return false;
+
+    for (const auto& pair : m_data) {
+        file << pair.first << "=" << pair.second << "\n";
+    }
+
+    file.close();
     return true;
 }
 
 bool Database::Load(const char* fileName) {
-    (void)fileName;
-    // TODO: Implement file loading
+    if (!fileName) return false;
+
+    std::ifstream file(fileName);
+    if (!file.is_open()) return false;
+
+    m_data.clear();
+    std::string line;
+    while (std::getline(file, line)) {
+        size_t pos = line.find('=');
+        if (pos != std::string::npos) {
+            std::string key = line.substr(0, pos);
+            std::string value = line.substr(pos + 1);
+            m_data[key] = value;
+        }
+    }
+
+    file.close();
+    m_open = true;
     return true;
 }

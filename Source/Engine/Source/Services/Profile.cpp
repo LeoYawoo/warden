@@ -13,8 +13,17 @@ bool Profile::Load(const char* fileName) {
 }
 
 bool Profile::Save(const char* fileName) {
-    (void)fileName;
-    // TODO: Implement file saving
+    const char* saveFile = fileName ? fileName : m_fileName.c_str();
+    if (!saveFile || saveFile[0] == '\0') return false;
+
+    std::ofstream file(saveFile);
+    if (!file.is_open()) return false;
+
+    for (const auto& pair : m_data) {
+        file << pair.first << "=" << pair.second << "\n";
+    }
+
+    file.close();
     return true;
 }
 

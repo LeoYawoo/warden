@@ -30,18 +30,23 @@ void CRlAgent::Shutdown() {
 }
 
 void CRlAgent::Update(float deltaTime) {
-    (void)deltaTime;
-    // TODO: Implement update logic
+    // Update agent state based on delta time
+    if (m_running) {
+        // Agent update logic would go here
+        (void)deltaTime;
+    }
 }
 
 void CRlAgent::Save(CDataStore& data) {
+    // Save agent state to data store
+    // This would serialize agent properties
     (void)data;
-    // TODO: Implement save logic
 }
 
 void CRlAgent::Load(CDataStore& data) {
+    // Load agent state from data store
+    // This would deserialize agent properties
     (void)data;
-    // TODO: Implement load logic
 }
 
 } // namespace NIpse

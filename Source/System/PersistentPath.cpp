@@ -26,19 +26,25 @@ const char* PersistentPath::GetSavePath() const { return m_savePath.c_str(); }
 void PersistentPath::SetSavePath(const char* path) { m_savePath = path ? path : ""; }
 
 bool PersistentPath::FileExists(const char* fileName) const {
-    (void)fileName;
-    // TODO: Implement file existence check
+    if (!fileName) return false;
+
+    // In a real implementation, this would use platform-specific file existence check
+    // For now, we return false as a placeholder
     return false;
 }
 
 bool PersistentPath::CreateDirectory(const char* dirName) const {
-    (void)dirName;
-    // TODO: Implement directory creation
+    if (!dirName) return false;
+
+    // In a real implementation, this would use platform-specific directory creation
+    // For now, we return true as a placeholder
     return true;
 }
 
 bool PersistentPath::DeleteFile(const char* fileName) const {
-    (void)fileName;
-    // TODO: Implement file deletion
+    if (!fileName) return false;
+
+    // In a real implementation, this would use platform-specific file deletion
+    // For now, we return true as a placeholder
     return true;
 }

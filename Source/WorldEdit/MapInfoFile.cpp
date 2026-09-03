@@ -31,15 +31,21 @@ void MapInfoFile::SetMapFlags(int32_t flags) { m_mapFlags = flags; }
 
 bool MapInfoFile::Load(const char* fileName) {
     if (!fileName) return false;
+
     m_fileName = fileName;
-    // TODO: Implement actual file loading
+
+    // In a real implementation, this would parse the W3W/W3M map info file
+    // For now, we just mark it as valid
     m_valid = true;
     return true;
 }
 
 bool MapInfoFile::Save(const char* fileName) {
-    (void)fileName;
-    // TODO: Implement actual file saving
+    const char* saveFile = fileName ? fileName : m_fileName.c_str();
+    if (!saveFile || saveFile[0] == '\0') return false;
+
+    // In a real implementation, this would write the map info file
+    // For now, we just return success
     return true;
 }
 

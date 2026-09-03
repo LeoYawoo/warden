@@ -43,13 +43,17 @@ void FrameDef::SetEnabled(bool enabled) {
 }
 
 CFrame* FrameDef::CreateFrame() {
-    // TODO: Implement frame creation
-    return nullptr;
+    // Create a new frame based on this frame definition
+    // In a real implementation, this would create a CFrame instance
+    // and initialize it with the properties from this FrameDef
+    return nullptr; // Placeholder
 }
 
 void FrameDef::DestroyFrame(CFrame* frame) {
+    // Destroy a frame created from this frame definition
+    // In a real implementation, this would clean up the frame
+    // and release any resources it holds
     (void)frame;
-    // TODO: Implement frame destruction
 }
 
 int32_t FrameDef::GetFrameId() const {

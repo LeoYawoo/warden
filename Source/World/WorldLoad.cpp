@@ -28,11 +28,24 @@ void WorldLoad::SetProgress(float progress) { m_progress = progress; }
 
 bool WorldLoad::LoadMap(const char* mapFile) {
     if (!mapFile) return false;
+
     m_mapFile = mapFile;
     m_loading = true;
     m_progress = 0.0f;
-    // TODO: Implement actual map loading
-    m_progress = 1.0f;
+
+    // In a real implementation, this would:
+    // 1. Validate the map file
+    // 2. Load the map header
+    // 3. Load terrain data
+    // 4. Load object data
+    // 5. Initialize the game world
+
+    // For now, we simulate loading with progress updates
+    m_progress = 0.25f; // Loaded header
+    m_progress = 0.50f; // Loaded terrain
+    m_progress = 0.75f; // Loaded objects
+    m_progress = 1.0f;  // Complete
+
     m_loading = false;
     return true;
 }

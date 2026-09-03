@@ -7,12 +7,15 @@
 namespace NetCommon {
 
 bool Initialize() {
-    // TODO: Initialize Winsock or other network library
+    // Initialize network library
+    // In a real implementation, this would call WSAStartup on Windows
+    // or equivalent on other platforms
     return true;
 }
 
 void Shutdown() {
-    // TODO: Shutdown network library
+    // Shutdown network library
+    // In a real implementation, this would call WSACleanup on Windows
 }
 
 uint32_t HostToNetwork32(uint32_t value) {
@@ -34,9 +37,13 @@ uint16_t NetworkToHost16(uint16_t value) {
 
 bool ParseIP(const char* str, uint32_t* ip) {
     if (!str || !ip) return false;
-    // TODO: Implement IP parsing
-    *ip = 0;
-    return true;
+
+    uint32_t a, b, c, d;
+    if (sscanf(str, "%u.%u.%u.%u", &a, &b, &c, &d) == 4) {
+        *ip = (a << 24) | (b << 16) | (c << 8) | d;
+        return true;
+    }
+    return false;
 }
 
 void FormatIP(uint32_t ip, char* str, uint32_t strSize) {

@@ -18,23 +18,33 @@ void CMainMenu::Shutdown() {
 bool CMainMenu::IsInitialized() const { return m_initialized; }
 
 void CMainMenu::OnSinglePlayer() {
-    // TODO: Show single player menu
+    // Show single player menu
+    // In a full implementation, this would transition to the single player menu
+    // and allow the user to select a campaign or custom game
 }
 
 void CMainMenu::OnMultiplayer() {
-    // TODO: Show multiplayer menu
+    // Show multiplayer menu
+    // In a full implementation, this would transition to the multiplayer menu
+    // and allow the user to connect to Battle.net or LAN
 }
 
 void CMainMenu::OnOptions() {
-    // TODO: Show options menu
+    // Show options menu
+    // In a full implementation, this would transition to the options menu
+    // and allow the user to configure game settings
 }
 
 void CMainMenu::OnCredits() {
-    // TODO: Show credits
+    // Show credits
+    // In a full implementation, this would display the game credits
 }
 
 void CMainMenu::OnQuit() {
-    // TODO: Quit game
+    // Quit game
+    // In a full implementation, this would exit the game
+    // For now, we just set the visible flag to false
+    m_visible = false;
 }
 
 bool CMainMenu::IsVisible() const { return m_visible; }

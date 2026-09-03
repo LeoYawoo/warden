@@ -25,9 +25,15 @@ void BattleNetChat::LeaveChannel(const char* channelName) {
 }
 
 void BattleNetChat::SendMessage(const char* channel, const char* message) {
-    (void)channel;
-    (void)message;
-    // TODO: Implement message sending
+    // Send a chat message to the specified channel
+    // In a real implementation, this would:
+    // 1. Validate the channel
+    // 2. Format the message
+    // 3. Send it to the Battle.net server
+    // For now, we just add it to our local message list
+    if (channel && message) {
+        AddMessage("You", message, 0);
+    }
 }
 
 const char* BattleNetChat::GetCurrentChannel() const {

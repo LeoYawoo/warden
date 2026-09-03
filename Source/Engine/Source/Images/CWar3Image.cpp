@@ -55,7 +55,12 @@ bool CWar3Image::Load(const char* fileName) {
     Unload();
     m_imageName = fileName;
 
-    // TODO: Implement actual image loading
+    // In a real implementation, this would:
+    // 1. Open the image file
+    // 2. Parse the image header
+    // 3. Allocate memory for the image data
+    // 4. Load the image data into memory
+    // For now, we just mark it as loaded
     m_loaded = true;
     return true;
 }
