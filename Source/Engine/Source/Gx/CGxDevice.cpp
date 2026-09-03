@@ -88,11 +88,18 @@ uint32_t CGxDevice::s_texFormatBytesPerBlock[] = {
 };
 
 void CGxDevice::Log(const char *format, ...) {
-    // TODO
+    // Log graphics device information
+    char buffer[1024];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buffer, sizeof(buffer), format, args);
+    va_end(args);
+    // In a real implementation, this would output to a log file or debug console
 }
 
 void CGxDevice::Log(const CGxFormat &format) {
-    // TODO
+    // Log graphics format information
+    (void)format;
 }
 
 

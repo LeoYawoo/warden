@@ -36,8 +36,14 @@ void CM2Shared::LoadSucceededCallback(void *arg) {
         return;
     }
 
-    // TODO
-    // - allocate space for low priority sequence pointers
+    // Allocate space for low priority sequence pointers
+    if (shared->m_data && shared->m_data->sequences.Count() > 0) {
+        uint32_t seqCount = shared->m_data->sequences.Count();
+        shared->m_lowPrioritySequences.SetCount(seqCount);
+        for (uint32_t i = 0; i < seqCount; i++) {
+            shared->m_lowPrioritySequences[i] = nullptr;
+        }
+    }
 
     shared->m_m2DataLoaded = 1;
 }

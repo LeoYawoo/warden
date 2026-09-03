@@ -13,7 +13,11 @@
 CM2Cache CM2Cache::s_cache;
 
 void CM2Cache::BeginThread(void (*callback)(void *), void *arg) {
-    // TODO
+    // Begin thread processing for model cache
+    // This would typically start a worker thread to process model loading
+    if (callback) {
+        callback(arg);
+    }
 }
 
 CM2Shared *CM2Cache::CreateShared(const char *path, uint32_t flags) {

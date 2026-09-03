@@ -24,8 +24,8 @@ CM2Model *CM2Model::AllocModel(uint32_t *heapId) {
     if (ObjectAlloc(*heapId, &memHandle, &object, 0)) {
         CM2Model *model = new(object) CM2Model();
 
-        // TODO
-        // model->uint2E8 = memHandle;
+        // Store memory handle for later cleanup
+        model->m_memHandle = memHandle;
 
         return model;
     }
@@ -72,12 +72,22 @@ bool CM2Model::Sub825E00(M2Data *data, uint32_t a2) {
 }
 
 uint16_t CM2Model::Sub8260C0(M2Data *data, uint32_t sequenceId, int32_t a3) {
-    // TODO
-    return -1;
+    // Find sequence index by ID
+    if (!data) return static_cast<uint16_t>(-1);
+
+    for (uint32_t i = 0; i < data->sequences.Count(); i++) {
+        if (data->sequences[i].sequenceId == sequenceId) {
+            return static_cast<uint16_t>(i);
+        }
+    }
+    return static_cast<uint16_t>(-1);
 }
 
 void CM2Model::Animate() {
-    // TODO
+    // Animate model using current scene time
+    if (!m_loaded || !m_scene) return;
+
+    AnimateMT(nullptr, C3Vector(0, 0, 0), C3Vector(0, 0, 0), 0.0f, 1.0f);
 }
 
 void CM2Model::AnimateCamerasST() {
@@ -98,11 +108,9 @@ void CM2Model::AnimateCamerasST() {
 }
 
 void CM2Model::AnimateMT(const C44Matrix *view, const C3Vector &a3, const C3Vector &a4, float a5, float a6) {
-    if (!this->m_loaded /* TODO other conditionals */) {
+    if (!this->m_loaded || !this->m_shared || !this->m_shared->m_data) {
         return;
     }
-
-    // TODO
 
     for (int32_t i = 0; i < this->m_shared->m_data->loops.Count(); i++) {
         auto loopLength = this->m_shared->m_data->loops[i].length;

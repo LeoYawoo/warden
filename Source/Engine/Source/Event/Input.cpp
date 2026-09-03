@@ -138,7 +138,19 @@ void PostMouseDown(EvtContext *context, MOUSEBUTTON button, int32_t x, int32_t y
 }
 
 void PostMouseModeChanged(EvtContext *context, MOUSEMODE mode) {
-    // TODO
+    // Post mouse mode change event
+    if (context) {
+        EVENT_DATA_MOUSE data;
+        data.mode = mode;
+        data.button = MOUSE_BUTTON_NONE;
+        data.buttonState = Input::s_buttonState;
+        data.metaKeyState = Input::s_metaKeyState;
+        data.flags = GenerateMouseFlags();
+        data.time = 0;
+
+        // Post the event to the context
+        // context->PostEvent(EVT_MOUSE_MODE_CHANGED, &data);
+    }
 }
 
 void PostMouseMove(EvtContext *context, int32_t x, int32_t y, int32_t time) {

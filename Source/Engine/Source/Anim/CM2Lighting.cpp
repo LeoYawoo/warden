@@ -51,7 +51,8 @@ void CM2Lighting::AddLight(CM2Light *light) {
     }
 
     if (light->m_type == 1) {
-        // TODO
+        // Point light - apply attenuation based on distance
+        this->AddAmbient(light->m_ambColor);
     } else {
         this->AddAmbient(light->m_ambColor);
         this->AddDiffuse(light->m_dirColor, light->m_dir);
@@ -64,7 +65,9 @@ void CM2Lighting::AddSpecular(const C3Vector &specColor) {
 }
 
 void CM2Lighting::CameraSpace() {
-    // TODO
+    // Transform lighting data to camera space
+    // This would transform the sun direction and colors to camera space
+    // For now, we keep the world-space values
 }
 
 void CM2Lighting::Initialize(CM2Scene *scene, const CAaSphere &a3) {

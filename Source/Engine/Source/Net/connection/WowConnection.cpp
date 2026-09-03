@@ -77,7 +77,14 @@ WowConnection::SENDNODE::SENDNODE(void *data, int32_t size, uint8_t *buf, bool r
 int32_t WowConnection::CreateSocket() {
     int32_t sock = socket(AF_INET, SOCK_STREAM, 0);
 
-    // TODO
+    // Set socket to non-blocking mode
+    #ifdef _WIN32
+    u_long mode = 1;
+    ioctlsocket(sock, FIONBIO, &mode);
+    #else
+    int flags = fcntl(sock, F_GETFL, 0);
+    fcntl(sock, F_SETFL, flags | O_NONBLOCK);
+    #endif
 
     return sock;
 }

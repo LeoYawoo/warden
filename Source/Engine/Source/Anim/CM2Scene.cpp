@@ -15,7 +15,17 @@
 uint32_t CM2Scene::s_optFlags = 0xFFFFFFFF;
 
 void CM2Scene::AnimateThread(void *arg) {
-    // TODO
+    // Thread function for scene animation
+    // This would typically process model animations in parallel
+    CM2Scene *scene = static_cast<CM2Scene*>(arg);
+    if (scene) {
+        // Process animations for all models in the scene
+        for (auto& element : scene->m_elements) {
+            if (element.model) {
+                element.model->Animate();
+            }
+        }
+    }
 }
 
 void CM2Scene::ComputeElementShaders(M2Element *element) {
