@@ -97,7 +97,7 @@ void CM2SceneRender::Draw(M2PASS pass, M2Element *elements, uint32_t *indices, u
 
         CShaderEffect::UpdateProjMatrix();
 
-        // TODO
+        // Update shadow map for global lighting
         // CShadowCache::SetShadowMapGenericGlobal();
     }
 
