@@ -325,6 +325,8 @@ if(BUILD_TESTS)
                 Source/Unit/CUnitDatabase.cpp
                 Source/Unit/CUnitUI.cpp
                 Source/Unit/NetUnit.cpp
+                Source/World/WorldCampaign.cpp
+                Source/World/WorldLoad.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -600,6 +602,17 @@ if(BUILD_TESTS)
 
         include(GoogleTest)
         gtest_discover_tests(system_tests)
+
+        # World tests
+        add_executable(world_tests
+                tests/World/TestWorldClasses.cpp
+        )
+
+        target_link_libraries(world_tests PRIVATE tempest_lib GTest::gtest_main)
+        target_include_directories(world_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
+
+        include(GoogleTest)
+        gtest_discover_tests(world_tests)
 
         # BLPFile tests
         add_executable(blp_tests
