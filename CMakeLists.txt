@@ -303,6 +303,15 @@ if(BUILD_TESTS)
                 Source/System/PersistentPath.cpp
                 Source/System/MacShell/MainApp.cpp
                 Source/System/Utility/CFStringUtilities.cpp
+                Source/UI/CGameUI.cpp
+                Source/UI/CResourceBar.cpp
+                Source/UI/CHeroBar.cpp
+                Source/UI/CMinimap.cpp
+                Source/UI/CCommandBar.cpp
+                Source/UI/CPortraitButton.cpp
+                Source/UI/CProgressIndicator.cpp
+                Source/UI/CInfoBar.cpp
+                Source/UI/CInfoPanelUnitDetail.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp
@@ -446,6 +455,7 @@ if(BUILD_TESTS)
         add_executable(ui_tests
                 tests/UI/TestUITypes.cpp
                 tests/UI/TestFrameScript.cpp
+                tests/UI/TestUIClasses.cpp
         )
 
         target_link_libraries(ui_tests PRIVATE tempest_lib GTest::gtest_main)
