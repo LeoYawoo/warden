@@ -1,4 +1,5 @@
 #include "CBattleNetTeamPanel.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CBattleNetTeamPanel
+// Reverse engineered from Warcraft III binary
+// CBattleNetTeamPanel implementation

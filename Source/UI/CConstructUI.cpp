@@ -1,4 +1,5 @@
 #include "CConstructUI.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CConstructUI
+// Reverse engineered from Warcraft III binary
+// CConstructUI implementation

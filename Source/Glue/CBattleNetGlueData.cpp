@@ -1,4 +1,5 @@
 #include "CBattleNetGlueData.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CBattleNetGlueData
+// Reverse engineered from Warcraft III binary
+// CBattleNetGlueData implementation

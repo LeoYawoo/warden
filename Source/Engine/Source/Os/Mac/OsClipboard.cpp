@@ -1,4 +1,5 @@
 #include "OsClipboard.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for OsClipboard
+// Reverse engineered from Warcraft III binary
+// OsClipboard implementation

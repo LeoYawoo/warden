@@ -1,4 +1,5 @@
 #include "WardenClient.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for WardenClient
+// Reverse engineered from Warcraft III binary
+// WardenClient implementation

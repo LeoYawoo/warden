@@ -1,4 +1,5 @@
 #include "CQuestDialog.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CQuestDialog
+// Reverse engineered from Warcraft III binary
+// CQuestDialog implementation

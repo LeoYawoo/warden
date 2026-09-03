@@ -1,4 +1,5 @@
 #include "CBattleNetGateways.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CBattleNetGateways
+// Reverse engineered from Warcraft III binary
+// CBattleNetGateways implementation

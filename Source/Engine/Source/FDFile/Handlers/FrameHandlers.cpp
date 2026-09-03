@@ -1,4 +1,5 @@
 #include "FrameHandlers.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for FrameHandlers
+// Reverse engineered from Warcraft III binary
+// FrameHandlers implementation

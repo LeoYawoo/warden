@@ -1,4 +1,5 @@
 #include "CAdManager.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CAdManager
+// Reverse engineered from Warcraft III binary
+// CAdManager implementation

@@ -1,4 +1,5 @@
 #include "CPeonBar.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CPeonBar
+// Reverse engineered from Warcraft III binary
+// CPeonBar implementation

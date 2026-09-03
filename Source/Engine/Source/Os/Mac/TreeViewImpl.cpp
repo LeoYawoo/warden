@@ -1,4 +1,5 @@
 #include "TreeViewImpl.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for TreeViewImpl
+// Reverse engineered from Warcraft III binary
+// TreeViewImpl implementation

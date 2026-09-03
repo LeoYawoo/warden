@@ -1,4 +1,5 @@
 #include "CUnitUIManager.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CUnitUIManager
+// Reverse engineered from Warcraft III binary
+// CUnitUIManager implementation

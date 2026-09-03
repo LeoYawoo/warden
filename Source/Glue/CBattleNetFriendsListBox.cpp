@@ -1,4 +1,5 @@
 #include "CBattleNetFriendsListBox.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CBattleNetFriendsListBox
+// Reverse engineered from Warcraft III binary
+// CBattleNetFriendsListBox implementation

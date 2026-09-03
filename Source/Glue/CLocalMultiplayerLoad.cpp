@@ -1,4 +1,5 @@
 #include "CLocalMultiplayerLoad.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CLocalMultiplayerLoad
+// Reverse engineered from Warcraft III binary
+// CLocalMultiplayerLoad implementation

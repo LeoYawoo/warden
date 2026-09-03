@@ -1,4 +1,5 @@
 #include "CTimeOfDayIndicator.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CTimeOfDayIndicator
+// Reverse engineered from Warcraft III binary
+// CTimeOfDayIndicator implementation

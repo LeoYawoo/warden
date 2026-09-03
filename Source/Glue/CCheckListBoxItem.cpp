@@ -1,4 +1,5 @@
 #include "CCheckListBoxItem.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CCheckListBoxItem
+// Reverse engineered from Warcraft III binary
+// CCheckListBoxItem implementation

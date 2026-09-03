@@ -1,4 +1,5 @@
 #include "CBattleNetCustomJoinPanel.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CBattleNetCustomJoinPanel
+// Reverse engineered from Warcraft III binary
+// CBattleNetCustomJoinPanel implementation

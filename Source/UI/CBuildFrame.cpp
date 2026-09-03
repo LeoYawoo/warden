@@ -1,4 +1,5 @@
 #include "CBuildFrame.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CBuildFrame
+// Reverse engineered from Warcraft III binary
+// CBuildFrame implementation

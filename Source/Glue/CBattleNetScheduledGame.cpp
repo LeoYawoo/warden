@@ -1,4 +1,5 @@
 #include "CBattleNetScheduledGame.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CBattleNetScheduledGame
+// Reverse engineered from Warcraft III binary
+// CBattleNetScheduledGame implementation

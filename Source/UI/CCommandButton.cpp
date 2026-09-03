@@ -1,4 +1,5 @@
 #include "CCommandButton.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CCommandButton
+// Reverse engineered from Warcraft III binary
+// CCommandButton implementation

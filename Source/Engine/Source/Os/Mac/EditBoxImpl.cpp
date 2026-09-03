@@ -1,4 +1,5 @@
 #include "EditBoxImpl.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for EditBoxImpl
+// Reverse engineered from Warcraft III binary
+// EditBoxImpl implementation

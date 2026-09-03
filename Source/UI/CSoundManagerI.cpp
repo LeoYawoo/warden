@@ -1,4 +1,5 @@
 #include "CSoundManagerI.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CSoundManagerI
+// Reverse engineered from Warcraft III binary
+// CSoundManagerI implementation

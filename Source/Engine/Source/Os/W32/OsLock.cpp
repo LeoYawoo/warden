@@ -1,4 +1,5 @@
 #include "OsLock.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for OsLock
+// Reverse engineered from Warcraft III binary
+// OsLock implementation

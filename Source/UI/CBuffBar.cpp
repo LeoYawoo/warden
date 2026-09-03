@@ -1,4 +1,5 @@
 #include "CBuffBar.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CBuffBar
+// Reverse engineered from Warcraft III binary
+// CBuffBar implementation

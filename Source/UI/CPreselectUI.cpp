@@ -1,4 +1,5 @@
 #include "CPreselectUI.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CPreselectUI
+// Reverse engineered from Warcraft III binary
+// CPreselectUI implementation

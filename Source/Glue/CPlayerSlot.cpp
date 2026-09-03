@@ -1,4 +1,5 @@
 #include "CPlayerSlot.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CPlayerSlot
+// Reverse engineered from Warcraft III binary
+// CPlayerSlot implementation

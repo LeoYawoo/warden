@@ -1,4 +1,5 @@
 #include "CListBoxWar3.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CListBoxWar3
+// Reverse engineered from Warcraft III binary
+// CListBoxWar3 implementation

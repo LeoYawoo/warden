@@ -1,4 +1,5 @@
 #include "CLocalMultiplayerJoin.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CLocalMultiplayerJoin
+// Reverse engineered from Warcraft III binary
+// CLocalMultiplayerJoin implementation

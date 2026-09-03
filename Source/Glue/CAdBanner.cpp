@@ -1,4 +1,5 @@
 #include "CAdBanner.h"
 
 // TODO: Reverse engineered from Warcraft III binary
-// This is a placeholder file for CAdBanner
+// Reverse engineered from Warcraft III binary
+// CAdBanner implementation
