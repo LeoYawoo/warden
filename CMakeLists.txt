@@ -312,6 +312,19 @@ if(BUILD_TESTS)
                 Source/UI/CProgressIndicator.cpp
                 Source/UI/CInfoBar.cpp
                 Source/UI/CInfoPanelUnitDetail.cpp
+                Source/Unit/CAbilityAttack.cpp
+                Source/Unit/CAbilityMove.cpp
+                Source/Unit/CAbilitySilence.cpp
+                Source/Unit/CAbilityCriticalStrike.cpp
+                Source/Unit/CAbilityEvasion.cpp
+                Source/Unit/CAbilityCouple.cpp
+                Source/Unit/CAbilityMassTeleport.cpp
+                Source/Unit/CCustomData.cpp
+                Source/Unit/CDestructable.cpp
+                Source/Unit/CMissile.cpp
+                Source/Unit/CUnitDatabase.cpp
+                Source/Unit/CUnitUI.cpp
+                Source/Unit/NetUnit.cpp
                 Source/Engine/Source/Agile/CStatus.cpp
                 Source/Engine/Source/Agile/Float.cpp
                 Source/Engine/Source/Agile/Integer.cpp

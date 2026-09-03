@@ -1,156 +1,249 @@
 #include <gtest/gtest.h>
-#include "Unit/CUnit.h"
-#include "Unit/CItem.h"
-#include "Unit/CWidget.h"
+#include "Unit/CAbilityAttack.h"
+#include "Unit/CAbilityMove.h"
+#include "Unit/CAbilitySilence.h"
+#include "Unit/CAbilityCriticalStrike.h"
+#include "Unit/CAbilityEvasion.h"
+#include "Unit/CAbilityCouple.h"
+#include "Unit/CAbilityMassTeleport.h"
+#include "Unit/CCustomData.h"
+#include "Unit/CDestructable.h"
+#include "Unit/CMissile.h"
+#include "Unit/CUnitDatabase.h"
+#include "Unit/CUnitUI.h"
+#include "Unit/NetUnit.h"
 
-// Test CUnit
-TEST(CUnitTest, DefaultConstructor) {
-    CUnit unit;
-    EXPECT_EQ(unit.GetUnitId(), 0);
-    EXPECT_EQ(unit.GetLevel(), 0);
+// Test CAbilityAttack
+TEST(CAbilityAttackTest, DefaultConstructor) {
+    CAbilityAttack ability;
+    EXPECT_EQ(ability.GetAttackDamage(), 0);
+    EXPECT_FLOAT_EQ(ability.GetAttackRange(), 0.0f);
+    EXPECT_FALSE(ability.IsAttacking());
 }
 
-TEST(CUnitTest, DisplaysHP) {
-    CUnit unit;
-    EXPECT_TRUE(unit.DisplaysHP());
+TEST(CAbilityAttackTest, SetAttackDamage) {
+    CAbilityAttack ability;
+    ability.SetAttackDamage(100);
+    EXPECT_EQ(ability.GetAttackDamage(), 100);
 }
 
-TEST(CUnitTest, DisplaysMana) {
-    CUnit unit;
-    EXPECT_FALSE(unit.DisplaysMana());
+TEST(CAbilityAttackTest, SetAttackRange) {
+    CAbilityAttack ability;
+    ability.SetAttackRange(500.0f);
+    EXPECT_FLOAT_EQ(ability.GetAttackRange(), 500.0f);
 }
 
-TEST(CUnitTest, IsHeroUnit) {
-    CUnit unit;
-    EXPECT_FALSE(unit.IsHeroUnit());
+// Test CAbilityMove
+TEST(CAbilityMoveTest, DefaultConstructor) {
+    CAbilityMove ability;
+    EXPECT_FLOAT_EQ(ability.GetMoveSpeed(), 0.0f);
+    EXPECT_FALSE(ability.IsMoving());
 }
 
-TEST(CUnitTest, BaseDefense) {
-    CUnit unit;
-    EXPECT_EQ(unit.BaseDefense(), 0);
+TEST(CAbilityMoveTest, SetMoveSpeed) {
+    CAbilityMove ability;
+    ability.SetMoveSpeed(300.0f);
+    EXPECT_FLOAT_EQ(ability.GetMoveSpeed(), 300.0f);
 }
 
-TEST(CUnitTest, AcquireRange) {
-    CUnit unit;
-    EXPECT_FLOAT_EQ(unit.AcquireRange(), 0.0f);
+TEST(CAbilityMoveTest, SetTarget) {
+    CAbilityMove ability;
+    ability.SetTarget(100.0f, 200.0f);
+    EXPECT_FLOAT_EQ(ability.GetTargetX(), 100.0f);
+    EXPECT_FLOAT_EQ(ability.GetTargetY(), 200.0f);
 }
 
-TEST(CUnitTest, ClearIsDead) {
-    CUnit unit;
-    unit.ClearIsDead();
-    // Verify no crash
+// Test CAbilitySilence
+TEST(CAbilitySilenceTest, DefaultConstructor) {
+    CAbilitySilence ability;
+    EXPECT_FLOAT_EQ(ability.GetDuration(), 0.0f);
+    EXPECT_FALSE(ability.IsActive());
 }
 
-TEST(CUnitTest, SetRaiseable) {
-    CUnit unit;
-    unit.SetRaiseable(1);
-    // Verify no crash
+TEST(CAbilitySilenceTest, SetDuration) {
+    CAbilitySilence ability;
+    ability.SetDuration(5.0f);
+    EXPECT_FLOAT_EQ(ability.GetDuration(), 5.0f);
 }
 
-TEST(CUnitTest, TaskCompleted) {
-    CUnit unit;
-    unit.TaskCompleted();
-    // Verify no crash
+// Test CAbilityCriticalStrike
+TEST(CAbilityCriticalStrikeTest, DefaultConstructor) {
+    CAbilityCriticalStrike ability;
+    EXPECT_FLOAT_EQ(ability.GetChance(), 0.0f);
+    EXPECT_FLOAT_EQ(ability.GetMultiplier(), 1.0f);
+    EXPECT_FALSE(ability.IsCritical());
 }
 
-// Test CItem
-TEST(CItemTest, DefaultConstructor) {
-    CItem item;
-    EXPECT_EQ(item.GetItemId(), 0);
-    EXPECT_EQ(item.GetCharges(), 1);
+TEST(CAbilityCriticalStrikeTest, SetChance) {
+    CAbilityCriticalStrike ability;
+    ability.SetChance(0.25f);
+    EXPECT_FLOAT_EQ(ability.GetChance(), 0.25f);
 }
 
-TEST(CItemTest, SetItemId) {
-    CItem item;
-    item.SetItemId(100);
-    EXPECT_EQ(item.GetItemId(), 100);
+// Test CAbilityEvasion
+TEST(CAbilityEvasionTest, DefaultConstructor) {
+    CAbilityEvasion ability;
+    EXPECT_FLOAT_EQ(ability.GetChance(), 0.0f);
+    EXPECT_FALSE(ability.IsEvading());
 }
 
-TEST(CItemTest, SetItemType) {
-    CItem item;
-    item.SetItemType(2);
-    EXPECT_EQ(item.GetItemType(), 2);
+TEST(CAbilityEvasionTest, SetChance) {
+    CAbilityEvasion ability;
+    ability.SetChance(0.3f);
+    EXPECT_FLOAT_EQ(ability.GetChance(), 0.3f);
 }
 
-TEST(CItemTest, SetCharges) {
-    CItem item;
-    item.SetCharges(5);
-    EXPECT_EQ(item.GetCharges(), 5);
+// Test CAbilityCouple
+TEST(CAbilityCoupleTest, DefaultConstructor) {
+    CAbilityCouple ability;
+    EXPECT_EQ(ability.GetPartner(), nullptr);
+    EXPECT_FLOAT_EQ(ability.GetDistance(), 0.0f);
+    EXPECT_FALSE(ability.IsCoupled());
 }
 
-TEST(CItemTest, IsPermanent) {
-    CItem item;
-    EXPECT_FALSE(item.IsPermanent());
-
-    item.SetPermanent(true);
-    EXPECT_TRUE(item.IsPermanent());
+TEST(CAbilityCoupleTest, SetDistance) {
+    CAbilityCouple ability;
+    ability.SetDistance(500.0f);
+    EXPECT_FLOAT_EQ(ability.GetDistance(), 500.0f);
 }
 
-TEST(CItemTest, IsOwned) {
-    CItem item;
-    EXPECT_FALSE(item.IsOwned());
+// Test CAbilityMassTeleport
+TEST(CAbilityMassTeleportTest, DefaultConstructor) {
+    CAbilityMassTeleport ability;
+    EXPECT_FLOAT_EQ(ability.GetRadius(), 0.0f);
+    EXPECT_FALSE(ability.IsCasting());
 }
 
-TEST(CItemTest, IsDisposed) {
-    CItem item;
-    EXPECT_FALSE(item.IsDisposed());
-
-    item.SetDisposed(true);
-    EXPECT_TRUE(item.IsDisposed());
+TEST(CAbilityMassTeleportTest, SetRadius) {
+    CAbilityMassTeleport ability;
+    ability.SetRadius(1000.0f);
+    EXPECT_FLOAT_EQ(ability.GetRadius(), 1000.0f);
 }
 
-TEST(CItemTest, GetPosition) {
-    CItem item;
-    const Position& pos = item.GetPosition();
-    (void)pos;
-    // Verify no crash
+TEST(CAbilityMassTeleportTest, SetTarget) {
+    CAbilityMassTeleport ability;
+    ability.SetTarget(500.0f, 500.0f);
+    EXPECT_FLOAT_EQ(ability.GetTargetX(), 500.0f);
+    EXPECT_FLOAT_EQ(ability.GetTargetY(), 500.0f);
 }
 
-// Test CWidget
-TEST(CWidgetTest, DefaultConstructor) {
-    CWidget widget;
-    EXPECT_EQ(widget.GetWidgetId(), 0);
-    EXPECT_EQ(widget.GetWidgetType(), 0);
+// Test CCustomData
+TEST(CCustomDataTest, DefaultConstructor) {
+    CCustomData data;
+    EXPECT_EQ(data.GetCount(), 0u);
 }
 
-TEST(CWidgetTest, SetWidgetId) {
-    CWidget widget;
-    widget.SetWidgetId(42);
-    EXPECT_EQ(widget.GetWidgetId(), 42);
+TEST(CCustomDataTest, SetGetData) {
+    CCustomData data;
+    data.SetData("key1", "value1");
+    std::string value;
+    EXPECT_TRUE(data.GetData("key1", value));
+    EXPECT_STREQ(value.c_str(), "value1");
 }
 
-TEST(CWidgetTest, SetWidgetType) {
-    CWidget widget;
-    widget.SetWidgetType(3);
-    EXPECT_EQ(widget.GetWidgetType(), 3);
+TEST(CCustomDataTest, HasData) {
+    CCustomData data;
+    data.SetData("key1", "value1");
+    EXPECT_TRUE(data.HasData("key1"));
+    EXPECT_FALSE(data.HasData("key2"));
 }
 
-TEST(CWidgetTest, IsVisible) {
-    CWidget widget;
-    EXPECT_FALSE(widget.IsVisible());
-
-    widget.SetVisible(true);
-    EXPECT_TRUE(widget.IsVisible());
+TEST(CCustomDataTest, RemoveData) {
+    CCustomData data;
+    data.SetData("key1", "value1");
+    EXPECT_TRUE(data.RemoveData("key1"));
+    EXPECT_FALSE(data.HasData("key1"));
 }
 
-TEST(CWidgetTest, IsEnabled) {
-    CWidget widget;
-    EXPECT_FALSE(widget.IsEnabled());
-
-    widget.SetEnabled(true);
-    EXPECT_TRUE(widget.IsEnabled());
+// Test CDestructable
+TEST(CDestructableTest, DefaultConstructor) {
+    CDestructable dest;
+    EXPECT_EQ(dest.GetDestructableId(), 0);
+    EXPECT_EQ(dest.GetHealth(), 0);
+    EXPECT_FALSE(dest.IsInvulnerable());
 }
 
-TEST(CWidgetTest, SetPosition) {
-    CWidget widget;
-    widget.SetPosition(10.0f, 20.0f);
-    EXPECT_FLOAT_EQ(widget.GetX(), 10.0f);
-    EXPECT_FLOAT_EQ(widget.GetY(), 20.0f);
+TEST(CDestructableTest, SetHealth) {
+    CDestructable dest;
+    dest.SetHealth(500);
+    EXPECT_EQ(dest.GetHealth(), 500);
 }
 
-TEST(CWidgetTest, SetSize) {
-    CWidget widget;
-    widget.SetSize(100.0f, 50.0f);
-    EXPECT_FLOAT_EQ(widget.GetWidth(), 100.0f);
-    EXPECT_FLOAT_EQ(widget.GetHeight(), 50.0f);
+TEST(CDestructableTest, SetPosition) {
+    CDestructable dest;
+    dest.SetPosition(100.0f, 200.0f);
+    EXPECT_FLOAT_EQ(dest.GetX(), 100.0f);
+    EXPECT_FLOAT_EQ(dest.GetY(), 200.0f);
+}
+
+// Test CMissile
+TEST(CMissileTest, DefaultConstructor) {
+    CMissile missile;
+    EXPECT_EQ(missile.GetMissileId(), 0);
+    EXPECT_FLOAT_EQ(missile.GetSpeed(), 0.0f);
+    EXPECT_FALSE(missile.IsActive());
+}
+
+TEST(CMissileTest, SetPosition) {
+    CMissile missile;
+    missile.SetPosition(10.0f, 20.0f, 30.0f);
+    EXPECT_FLOAT_EQ(missile.GetX(), 10.0f);
+    EXPECT_FLOAT_EQ(missile.GetY(), 20.0f);
+    EXPECT_FLOAT_EQ(missile.GetZ(), 30.0f);
+}
+
+// Test CUnitDatabase
+TEST(CUnitDatabaseTest, DefaultConstructor) {
+    CUnitDatabase db;
+    EXPECT_FALSE(db.IsInitialized());
+    EXPECT_EQ(db.GetUnitTypeCount(), 0);
+}
+
+TEST(CUnitDatabaseTest, Initialize) {
+    CUnitDatabase db;
+    EXPECT_TRUE(db.Initialize());
+    EXPECT_TRUE(db.IsInitialized());
+}
+
+TEST(CUnitDatabaseTest, RegisterUnitType) {
+    CUnitDatabase db;
+    db.Initialize();
+    EXPECT_TRUE(db.RegisterUnitType(1, "Footman"));
+    EXPECT_TRUE(db.HasUnitType(1));
+    EXPECT_STREQ(db.GetUnitTypeName(1), "Footman");
+}
+
+// Test CUnitUI
+TEST(CUnitUITest, DefaultConstructor) {
+    CUnitUI ui;
+    EXPECT_EQ(ui.GetUnit(), nullptr);
+    EXPECT_FALSE(ui.IsSelected());
+    EXPECT_FALSE(ui.IsHighlighted());
+    EXPECT_TRUE(ui.IsVisible());
+}
+
+TEST(CUnitUITest, SetSelected) {
+    CUnitUI ui;
+    ui.SetSelected(true);
+    EXPECT_TRUE(ui.IsSelected());
+}
+
+// Test NetUnit
+TEST(NetUnitTest, DefaultConstructor) {
+    NetUnit unit;
+    EXPECT_EQ(unit.GetNetId(), 0);
+    EXPECT_EQ(unit.GetOwnerId(), 0);
+    EXPECT_FALSE(unit.IsSynced());
+}
+
+TEST(NetUnitTest, SetNetId) {
+    NetUnit unit;
+    unit.SetNetId(42);
+    EXPECT_EQ(unit.GetNetId(), 42);
+}
+
+TEST(NetUnitTest, SetOwnerId) {
+    NetUnit unit;
+    unit.SetOwnerId(1);
+    EXPECT_EQ(unit.GetOwnerId(), 1);
 }
