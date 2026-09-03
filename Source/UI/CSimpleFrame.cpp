@@ -41,8 +41,8 @@ void CSimpleFrame::RegisterScriptMethods(lua_State *L) {
 }
 
 CSimpleFrame::CSimpleFrame(CSimpleFrame *parent) : CScriptRegion() {
-    // TODO
-    // other constructor logic
+    // Initialize frame with default values
+    memset(this->m_drawenabled, 0, sizeof(this->m_drawenabled));
 
     this->m_top = CSimpleTop::s_instance;
     this->m_top->RegisterFrame(this);
