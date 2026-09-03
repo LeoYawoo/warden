@@ -20,8 +20,7 @@ Grunt::Command<Grunt::ClientLink> Grunt::s_clientCommands[] = {
 };
 
 Grunt::ClientLink::ClientLink(Grunt::ClientResponse &clientResponse) {
-    // TODO
-
+    // Initialize client link with response handler
     this->m_clientResponse = &clientResponse;
 
     this->SetState(0);
