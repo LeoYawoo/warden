@@ -564,10 +564,14 @@ bool JpegDecoder::Decode(const uint8_t* data, size_t dataSize,
 
     std::vector<int16_t> blockBuffer(64);
 
-    // Allocate component buffers
-    std::vector<int16_t> yBuffer(mcuWidth * mcuHeight * mcusX * mcusY);
-    std::vector<int16_t> cbBuffer(mcuWidth * mcuHeight * mcusX * mcusY);
-    std::vector<int16_t> crBuffer(mcuWidth * mcuHeight * mcusX * mcusY);
+    // Allocate component buffers (up to 4 components for YUVA)
+    int pixelCount = width * height;
+    fprintf(stderr, "DEBUG: width=%u, height=%u, numComponents=%d, pixelCount=%d\n",
+            width, height, m_numComponents, pixelCount);
+    std::vector<int16_t> compBuffers[4];
+    for (int i = 0; i < m_numComponents && i < 4; i++) {
+        compBuffers[i].resize(pixelCount);
+    }
 
     BitReader br;
     br.Init(m_scanData, m_scanSize);
@@ -652,9 +656,12 @@ bool JpegDecoder::Decode(const uint8_t* data, size_t dataSize,
                                 if (bx < width && by < height)
                                 {
                                     int idx = by * width + bx;
-                                    if (comp == 0) yBuffer[idx] = spatial[sy * 8 + sx];
-                                    else if (comp == 1) cbBuffer[idx] = spatial[sy * 8 + sx];
-                                    else if (comp == 2) crBuffer[idx] = spatial[sy * 8 + sx];
+                                    if (comp < 4 && idx < pixelCount) {
+                                        compBuffers[comp][idx] = spatial[sy * 8 + sx];
+                                    } else {
+                                        fprintf(stderr, "DEBUG OOB: comp=%d, idx=%d, pixelCount=%d, bx=%d, by=%d\n",
+                                                comp, idx, pixelCount, bx, by);
+                                    }
                                 }
                             }
                         }
@@ -664,22 +671,54 @@ bool JpegDecoder::Decode(const uint8_t* data, size_t dataSize,
         }
     }
 
-    // BLP1 JPEG: components are raw BGRA, not YCbCr
-    // No color transform needed - IDCT output is used directly as pixel values
-    // Component order: comp0=B, comp1=G, comp2=R (swap B↔R for standard output)
+    // BLP1 JPEG with 4 components (YUVA)
+    // Component order: comp0=Y, comp1=U, comp2=V, comp3=A
+    // Convert YUVA to BGRA
     for (int y = 0; y < (int)height; y++)
     {
         for (int x = 0; x < (int)width; x++)
         {
-            int idx = (y * width + x) * 4;
-            int comp0 = yBuffer[y * width + x] + 128; // B channel
-            int comp1 = cbBuffer[y * width + x] + 128; // G channel
-            int comp2 = crBuffer[y * width + x] + 128; // R channel
+            int pixelIdx = y * width + x;  // Index for component buffers
+            int outIdx = pixelIdx * 4;      // Index for output buffer
 
-            output[idx + 0] = static_cast<uint8_t>(std::max(0, std::min(255, comp2))); // R
-            output[idx + 1] = static_cast<uint8_t>(std::max(0, std::min(255, comp1))); // G
-            output[idx + 2] = static_cast<uint8_t>(std::max(0, std::min(255, comp0))); // B
-            output[idx + 3] = 255; // A
+            if (m_numComponents >= 4) {
+                // YUVA to BGRA conversion
+                int yVal = compBuffers[0][pixelIdx] + 128;
+                int uVal = compBuffers[1][pixelIdx] + 128;
+                int vVal = compBuffers[2][pixelIdx] + 128;
+                int aVal = compBuffers[3][pixelIdx] + 128;
+
+                // YUV to RGB conversion
+                int r = yVal + (int)(1.402 * (vVal - 128));
+                int g = yVal - (int)(0.344 * (uVal - 128)) - (int)(0.714 * (vVal - 128));
+                int b = yVal + (int)(1.772 * (uVal - 128));
+
+                output[outIdx + 0] = static_cast<uint8_t>(std::max(0, std::min(255, b))); // B
+                output[outIdx + 1] = static_cast<uint8_t>(std::max(0, std::min(255, g))); // G
+                output[outIdx + 2] = static_cast<uint8_t>(std::max(0, std::min(255, r))); // R
+                output[outIdx + 3] = static_cast<uint8_t>(std::max(0, std::min(255, aVal))); // A
+            } else if (m_numComponents == 3) {
+                // Standard YCbCr to BGRA
+                int yVal = compBuffers[0][pixelIdx] + 128;
+                int uVal = compBuffers[1][pixelIdx] + 128;
+                int vVal = compBuffers[2][pixelIdx] + 128;
+
+                int r = yVal + (int)(1.402 * (vVal - 128));
+                int g = yVal - (int)(0.344 * (uVal - 128)) - (int)(0.714 * (vVal - 128));
+                int b = yVal + (int)(1.772 * (uVal - 128));
+
+                output[outIdx + 0] = static_cast<uint8_t>(std::max(0, std::min(255, b))); // B
+                output[outIdx + 1] = static_cast<uint8_t>(std::max(0, std::min(255, g))); // G
+                output[outIdx + 2] = static_cast<uint8_t>(std::max(0, std::min(255, r))); // R
+                output[outIdx + 3] = 255; // A
+            } else {
+                // Grayscale
+                int yVal = compBuffers[0][pixelIdx] + 128;
+                output[outIdx + 0] = static_cast<uint8_t>(std::max(0, std::min(255, yVal)));
+                output[outIdx + 1] = static_cast<uint8_t>(std::max(0, std::min(255, yVal)));
+                output[outIdx + 2] = static_cast<uint8_t>(std::max(0, std::min(255, yVal)));
+                output[outIdx + 3] = 255;
+            }
         }
     }
 
