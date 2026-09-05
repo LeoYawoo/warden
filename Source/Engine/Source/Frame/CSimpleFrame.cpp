@@ -6,8 +6,7 @@ CSimpleFrame::CSimpleFrame()
     : m_frameLevel(0), m_mouseEnabled(true), m_keyboardEnabled(true) {
 }
 
-CSimpleFrame::~CSimpleFrame() {
-}
+// ~CSimpleFrame() is defined in Source/UI/CSimpleFrame.cpp
 
 int32_t CSimpleFrame::GetFrameLevel() const { return m_frameLevel; }
 void CSimpleFrame::SetFrameLevel(int32_t level) { m_frameLevel = level; }

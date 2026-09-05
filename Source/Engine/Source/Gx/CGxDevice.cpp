@@ -4,12 +4,15 @@
 #include "Shader.h"
 #include "texture/CGxTex.h"
 #include "CGxBatch.h"
+#include "gll/CGxDeviceGLL.h"
+#include "StormMac/SFile.h"
 #include <algorithm>
+#include <cstdarg>
 #include <cstring>
 #include <limits>
 #include <new>
-#include <storm/Error.h>
-#include <storm/Memory.h>
+#include <StormMac/Error.h>
+#include <StormMac/Memory.h>
 #include "gll/CGxDeviceGLL.h"
 
 

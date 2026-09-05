@@ -15,7 +15,7 @@
 #include "CSimpleTop.h"
 #include "CSimpleTitleRegion.h"
 #include "CBackdropGenerator.h"
-#include "Engine/Source/Gx/Coordinate.h>
+#include "Engine/Source/Gx/Coordinate.h"
 
 
 int32_t CSimpleFrame::s_metatable;

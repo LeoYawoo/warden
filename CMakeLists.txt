@@ -13,6 +13,8 @@ set(CMAKE_CXX_STANDARD 20)
 add_definitions(-DWIN32_LEAN_AND_MEAN)
 if (WIN32 AND MSVC)
     add_compile_options(/wd4819)
+else ()
+    add_compile_options(-Wno-invalid-offsetof)
 endif ()
 
 file(GLOB_RECURSE dir_src
@@ -41,6 +43,8 @@ file(GLOB_RECURSE dir_src
         "Source/Engine/Source/Frame/*.cpp"
         "Source/Engine/Source/FrameDef/*.h"
         "Source/Engine/Source/FrameDef/*.cpp"
+        "Source/Engine/Source/Gx/*.h"
+        "Source/Engine/Source/Gx/*.cpp"
         "Source/Engine/Source/Gx/**/*.h"
         "Source/Engine/Source/Gx/**/*.cpp"
         "Source/Engine/Source/Gxu/*.h"
@@ -55,8 +59,12 @@ file(GLOB_RECURSE dir_src
         "Source/Engine/Source/Model/*.cpp"
         "Source/Engine/Source/Net/*.h"
         "Source/Engine/Source/Net/*.cpp"
+        "Source/Engine/Source/Net/*.h"
+        "Source/Engine/Source/Net/*.cpp"
         "Source/Engine/Source/Net/**/*.h"
         "Source/Engine/Source/Net/**/*.cpp"
+        "Source/Engine/Source/Os/*.h"
+        "Source/Engine/Source/Os/*.cpp"
         "Source/Engine/Source/Os/**/*.h"
         "Source/Engine/Source/Os/**/*.cpp"
         "Source/Engine/Source/SRP/*.h"
@@ -80,8 +88,14 @@ file(GLOB_RECURSE dir_src
         "Source/Glue/*.cpp"
         "Source/Net/*.h"
         "Source/Net/*.cpp"
+        "Source/StormMac/*.h"
+        "Source/StormMac/*.cpp"
         "Source/StormMac/**/*.h"
         "Source/StormMac/**/*.cpp"
+        "Source/Terrain/*.h"
+        "Source/Terrain/*.cpp"
+        "Source/System/*.h"
+        "Source/System/*.cpp"
         "Source/System/**/*.h"
         "Source/System/**/*.cpp"
         "Source/UI/*.h"
@@ -115,6 +129,10 @@ target_include_directories(warden PRIVATE "/")
 target_include_directories(warden PRIVATE ${CMAKE_SOURCE_DIR})
 target_include_directories(warden PRIVATE ${CMAKE_SOURCE_DIR}/Source)
 target_include_directories(warden PRIVATE ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
+target_include_directories(warden PRIVATE ${CMAKE_SOURCE_DIR}/Source/Glue)
+target_include_directories(warden PRIVATE ${CMAKE_SOURCE_DIR}/Source/Game)
+target_include_directories(warden PRIVATE ${CMAKE_SOURCE_DIR}/Source/UI)
+target_include_directories(warden PRIVATE ${CMAKE_SOURCE_DIR}/Source/Net)
 target_include_directories(warden PRIVATE "external/freetype-2.0.9/include")
 target_include_directories(warden PRIVATE "external/")
 target_include_directories(warden PRIVATE "external/lua-5.1.3/src")
@@ -181,7 +199,6 @@ if(BUILD_TESTS)
                 Source/StormMac/thread/SSyncObject.cpp
                 Source/StormMac/thread/SEvent.cpp
                 Source/Engine/Source/Common/Hashkey.cpp
-                Source/Engine/Source/Common/RCString.cpp
                 Source/Engine/Source/Agile/CStringManager.cpp
                 Source/Engine/Source/Agile/CStringMemory.cpp
                 Source/Unit/CUnit.cpp
@@ -236,7 +253,6 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Services/Texture.cpp
                 Source/Engine/Source/Services/Tokenizer.cpp
                 Source/Engine/Source/SRP/SHA.cpp
-                Source/Engine/Source/Net/NetClient.cpp
                 Source/Engine/Source/Net/NetCommon.cpp
                 Source/Engine/Source/Net/NetProvider.cpp
                 Source/Engine/Source/Net/NetProviderBNET.cpp
@@ -248,8 +264,8 @@ if(BUILD_TESTS)
                 Source/Engine/Source/BattleNet/BattleNetCache.cpp
                 Source/Engine/Source/BattleNet/BattleNetChat.cpp
                 Source/Engine/Source/Frame/CFrame.cpp
-                Source/Engine/Source/Frame/CSimpleFrame.cpp
-                Source/Engine/Source/Frame/CControl.cpp
+
+
                 Source/Engine/Source/Frame/CButtonFrame.cpp
                 Source/Engine/Source/Frame/CCheckBox.cpp
                 Source/Engine/Source/Frame/CEditBox.cpp
@@ -260,7 +276,6 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Frame/CTextFrame.cpp
                 Source/Engine/Source/Frame/CLayer.cpp
                 Source/Engine/Source/Frame/CDialog.cpp
-                Source/Engine/Source/Frame/CBackdropGenerator.cpp
                 Source/Engine/Source/Frame/CChatDisplay.cpp
                 Source/Engine/Source/Frame/CControlSet.cpp
                 Source/Engine/Source/Frame/CFramePoint.cpp
@@ -270,12 +285,9 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Frame/CModelFrame.cpp
                 Source/Engine/Source/Frame/CPopupMenu.cpp
                 Source/Engine/Source/Frame/CScreenFrame.cpp
-                Source/Engine/Source/Frame/CSimpleButton.cpp
-                Source/Engine/Source/Frame/CSimpleCheckbox.cpp
                 Source/Engine/Source/Frame/CSimpleMessageFrame.cpp
                 Source/Engine/Source/Frame/CSimpleRender.cpp
                 Source/Engine/Source/Frame/CSimpleStatusBar.cpp
-                Source/Engine/Source/Frame/CSimpleTop.cpp
                 Source/Engine/Source/Frame/CSpriteFrame.cpp
                 Source/Engine/Source/Frame/CTextButtonFrame.cpp
                 Source/Engine/Source/Ipse/CPoReal.cpp
@@ -354,7 +366,6 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Agile/CSLKDatabase.cpp
                 Source/Engine/Source/Agile/CHuffman.cpp
                 Source/Engine/Source/Agile/CBitInput.cpp
-                Source/Engine/Source/Agile/CAngle.cpp
                 Source/Engine/Source/Agile/SmartPosition.cpp
                 Source/Engine/Source/Agile/RangeListener.cpp
                 Source/Engine/Source/Agile/MovementModifier.cpp
@@ -368,7 +379,6 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Agile/CAgentWar3.cpp
                 Source/Engine/Source/Agile/AgentRefMini.cpp
                 Source/Engine/Source/Agile/AgentRef.cpp
-                Source/Engine/Source/Agile/CEvent.cpp
                 Source/Engine/Source/Agile/CListenerEvent.cpp
                 Source/Engine/Source/Anim/Type.cpp
                 Source/Engine/Source/BLPFile/blp.cpp
@@ -381,7 +391,6 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Base/Param.cpp
                 Source/Engine/Source/Base/MsgBuffer.cpp
                 Source/Engine/Source/Base/Status.cpp
-                Source/Engine/Source/Base/RCString.cpp
                 Source/Engine/Source/FDFile/FDFile.cpp
         )
 

@@ -141,7 +141,7 @@ VertexBufDesc Buffer::s_vertexBufDesc[] = {
                                      GxPrim_TexCoord0 | GxPrim_TexCoord1}
 };
 
-int32_t Buffer::s_vertexBufOffset[GxVertexBufferFormats_Last][GxVAs_Last] = {
+int32_t Buffer::s_vertexBufOffset[GxVertexBufferFormats_Last][GxVertexBufferFormats_Last] = {
         // GxVBF_P
         {0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
 

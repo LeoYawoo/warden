@@ -1,4 +1,6 @@
 #include "StormMac/Memory.h"
+#include "StormMac/Error.h"
+#include "StormMac/SErrMac.h"
 
 constexpr size_t ALIGNMENT = 8;
 

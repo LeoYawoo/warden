@@ -8,7 +8,7 @@
 #include "CM2Model.h"
 #include "CM2Shared.h"
 #include "M2Types.h"
-#include "../Tempest/CMathi.h>
+#include "../Tempest/CMathi.h"
 
 C44Matrix CM2SceneRender::s_identity;
 

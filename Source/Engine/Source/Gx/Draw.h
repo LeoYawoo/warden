@@ -3,8 +3,8 @@
 #include "CGxBatch.h"
 #include "Types.h"
 #include <cstdint>
-#include "../Tempest/CImVector.h>
-#include "../Tempest/C3Vector.h>
+#include "../Tempest/CImVector.h"
+#include "../Tempest/C3Vector.h"
 
 using namespace Tempest;
 

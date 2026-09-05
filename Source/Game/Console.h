@@ -20,4 +20,6 @@ void ConsoleSetHotKey(KEY hotkey);
 
 void ConsoleSetResizeState(CONSOLERESIZESTATE state);
 
+void ConsoleOnChar(uint32_t character);
+
 

@@ -2,7 +2,7 @@
 #include "net/connection/RealmResponse.h"
 #include "net/Types.h"
 #include "StormMac/thread/SCritSect.h"
-#include "Common/datastore/CDataStore.h"
+#include "../../Base/CDataStore.h"
 #include "StormMac/String.h"
 #include "Common/SHA1.h"
 

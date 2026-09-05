@@ -2,7 +2,7 @@
 
 #include "datamgr/CDataMgr.h"
 #include "StormMac/Handle.h"
-#include "Engine/Source/Tempest/C3Vector.h>
+#include "Engine/Source/Tempest/C3Vector.h"
 
 typedef HOBJECT HDATAMGR;
 using namespace Tempest;

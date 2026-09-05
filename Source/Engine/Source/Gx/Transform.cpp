@@ -3,7 +3,7 @@
 #include "Types.h"
 #include <algorithm>
 #include <cmath>
-#include <storm/Error.h>
+#include <StormMac/Error.h>
 
 
 void GxXformPop(EGxXform xf) {

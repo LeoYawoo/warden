@@ -4,7 +4,7 @@
 #include "Common/TSLinkedNode.h"
 #include "event/EvtContext.h"
 #include "StormMac/thread/SEvent.h"
-#include <storm/Thread.h>
+#include <StormMac/Thread.h>
 
 class EvtThread : public TSLinkedNode<EvtThread> {
 public:

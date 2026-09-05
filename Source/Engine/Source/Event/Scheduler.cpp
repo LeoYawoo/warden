@@ -14,9 +14,9 @@
 #include "StormMac/Time.h"
 #include "Common/Call.h"
 #include <common/Prop.h>
-#include <storm/Memory.h>
-#include <storm/String.h>
-#include <storm/Thread.h>
+#include <StormMac/Memory.h>
+#include <StormMac/String.h>
+#include <StormMac/Thread.h>
 
 
 void DestroySchedulerThread(uint32_t a1) {

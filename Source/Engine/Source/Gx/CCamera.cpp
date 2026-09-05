@@ -2,10 +2,10 @@
 #include "Transform.h"
 #include "../Gx/shader/CShaderEffect.h"
 #include <cmath>
-#include "../Tempest/C3Vector.h>
-#include "../Tempest/C44Matrix.h>
-#include "../Tempest/CMathi.h>
-#include "../Tempest/CRect.h>
+#include "../Tempest/C3Vector.h"
+#include "../Tempest/C44Matrix.h"
+#include "../Tempest/CMathi.h"
+#include "../Tempest/CRect.h"
 
 using namespace Tempest;
 

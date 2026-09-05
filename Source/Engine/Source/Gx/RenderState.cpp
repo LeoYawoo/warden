@@ -3,7 +3,7 @@
 #include "Device.h"
 #include "Types.h"
 #include "texture/CGxTex.h"
-#include <storm/Error.h>
+#include <StormMac/Error.h>
 
 void GxRsPop() {
     g_theGxDevicePtr->RsPop();

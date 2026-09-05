@@ -8,7 +8,7 @@
 #include <new>
 #include <StormMac/Memory.h>
 #include <StormMac/String.h>
-#include "../Tempest/CAaBox.h>
+#include "../Tempest/CAaBox.h"
 
 CM2Cache CM2Cache::s_cache;
 

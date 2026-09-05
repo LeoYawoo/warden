@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CEvent.h"
+#include "Event/CEvent.h"
 
 // Reverse engineered from Warcraft III binary
 // Address: 0x738F53

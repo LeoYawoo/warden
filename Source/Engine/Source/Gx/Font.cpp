@@ -14,12 +14,12 @@
 #include <algorithm>
 #include <cstring>
 #include <new>
-#include <storm/Error.h>
-#include <storm/Memory.h>
-#include <storm/String.h>
-#include <storm/Unicode.h>
-#include "../Tempest/CImVector.h>
-#include "../Tempest/CRect.h>
+#include <StormMac/Error.h>
+#include <StormMac/Memory.h>
+#include <StormMac/String.h>
+#include <StormMac/Unicode.h>
+#include "../Tempest/CImVector.h"
+#include "../Tempest/CRect.h"
 
 using namespace Tempest;
 
@@ -1027,4 +1027,16 @@ void TextBlockUpdateColor(HTEXTBLOCK stringHandle, const CImVector &color) {
     STORM_ASSERT(stringHandle);
 
     GxuFontSetStringColor(TextBlockGetStringPtr(stringHandle), color);
+}
+
+// TODO: Reverse engineer from IDA
+void BATCHEDRENDERFONTDESC::Initialize() {
+    // TODO: Reverse engineer from IDA
+}
+
+// TODO: Reverse engineer from IDA
+void CalcWrapPoint(CGxFont * /*font*/, char const * /*text*/, float /*fontHeight*/, float /*maxWidth*/,
+                   void * /*a5*/, float * /*a6*/, char const ** /*a7*/, unsigned int /*a8*/, unsigned int /*flags*/,
+                   void * /*a10*/, void * /*a11*/, float /*scale*/) {
+    // TODO: Reverse engineer from IDA
 }

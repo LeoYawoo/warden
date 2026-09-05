@@ -2,8 +2,8 @@
 
 #include <cstdint>
 #include "Common/DataMgr.h"
-#include "../Tempest/CRect.h>
-#include "../Tempest/C2Vector.h>
+#include "../Tempest/CRect.h"
+#include "../Tempest/C2Vector.h"
 
 using namespace Tempest;
 

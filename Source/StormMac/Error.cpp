@@ -2,7 +2,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
-#include <Windows.h>
+#include <windows.h>
 
 
 static uint32_t s_lasterror = ERROR_SUCCESS;

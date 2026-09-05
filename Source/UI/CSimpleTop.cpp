@@ -10,7 +10,7 @@
 #include "Common/CSimpleSortedArray.h"
 #include "Engine/Source/Tempest/CMath.h"
 #include <cstring>
-#include "Engine/Source/Gx/Camera.h>
+#include "Engine/Source/Gx/Camera.h"
 using namespace Tempest;
 
 CSimpleTop *CSimpleTop::s_instance;

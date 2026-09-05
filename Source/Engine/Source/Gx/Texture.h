@@ -4,7 +4,9 @@
 #include "texture/CGxTex.h"
 #include "texture/CTexture.h"
 #include "StormMac/Handle.h"
-#include "../Tempest/CImVector.h>
+#include "../Tempest/CImVector.h"
+#include "../Tempest/CiRect.h"
+#include "../Agile/CStatus.h"
 
 using namespace Tempest;
 

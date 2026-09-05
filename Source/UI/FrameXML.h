@@ -8,6 +8,7 @@
 #include "StormMac/xml/XMLNode.h"
 #include "Engine/Source/Agile/CStatus.h"
 #include "StormMac/xml/XMLTree.h"
+#include "StormMac/SFile.h"
 
 class CSimpleFrame;
 

@@ -1,14 +1,16 @@
 #pragma once
 
 #include <cstdint>
-#include "../Tempest/CRect.h>
-#include "../Tempest/C3Vector.h>
+#include "../Tempest/CRect.h"
+#include "../Tempest/C3Vector.h"
 #include "Common/datamgr/TManaged.h"
 #include "Common/datamgr/CDataMgr.h"
 
 using namespace Tempest;
 
 
+// NOTE: This CAngle is different from Agile/CAngle.h - it inherits from TManaged<float>
+// Both Camera.cpp and CCamera.cpp include this header, so all members must be inline
 class CAngle : public TManaged<float> {
 public:
     // Static functions
@@ -22,9 +24,11 @@ public:
     virtual void Set(const float &angle);
 
     // Member functions
-    CAngle(float angle) {
+    inline CAngle(float angle) : m_cos(0.0f), m_sin(0.0f) {
         this->Set(angle);
     };
+
+    inline ~CAngle() {};
 };
 
 class CCamera : public CDataMgr {

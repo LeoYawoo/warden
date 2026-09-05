@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include "Common/TSTimerPriority.h"
 
 // Reverse engineered from Warcraft III binary
 // EvtTimer manages event timers
@@ -26,6 +27,12 @@ public:
 
     // Timer update
     void Update(float deltaTime);
+
+    // Timer link for priority queue
+    void *link;
+
+    // Target time for scheduling
+    TSTimerPriority<uint32_t> targetTime;
 
 protected:
     float m_timeout;

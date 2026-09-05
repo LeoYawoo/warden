@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Tempest/C4Plane.h>
-#include "../Tempest/CAaSphere.h>
-#include "../Tempest/C3Vector.h>
+#include "../Tempest/C4Plane.h"
+#include "../Tempest/CAaSphere.h"
+#include "../Tempest/C3Vector.h"
 #include <cstdint>
 
 using namespace Tempest;

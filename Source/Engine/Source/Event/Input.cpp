@@ -7,8 +7,8 @@
 #include "../Gx/Window.h"
 #include "Common/Prop.h"
 #include "../Tempest/C2Vector.h"
-#include <storm/String.h>
-#include <storm/Unicode.h>
+#include <StormMac/String.h>
+#include <StormMac/Unicode.h>
 #include "Common/offset_of.h"
 #include <windows.h>
 

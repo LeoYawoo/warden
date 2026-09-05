@@ -1,7 +1,7 @@
 #include "event/Queue.h"
 #include "event/EvtContext.h"
 #include "event/EvtHandler.h"
-#include <storm/Error.h>
+#include <StormMac/Error.h>
 
 void IEvtQueueDispatch(EvtContext* context, EVENTID id, const void* data) {
     STORM_ASSERT(context);

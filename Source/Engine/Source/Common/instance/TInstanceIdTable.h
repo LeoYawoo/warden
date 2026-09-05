@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <storm/Thread.h>
+#include <StormMac/Thread.h>
 #include "StormMac/thread/CSRWLock.h"
 #include "Common/TSList.h"
 #include "Common/TSGetLink.h"

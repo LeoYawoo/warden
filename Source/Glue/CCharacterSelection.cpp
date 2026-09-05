@@ -3,6 +3,10 @@
 
 // Reverse engineered from Warcraft III binary
 
+// Static member variable definitions
+CSimpleModelFFX *CCharacterSelection::s_modelFrame = nullptr;
+TSGrowableArray<CharListEntry> CCharacterSelection::s_characterList;
+
 CCharacterSelection::CCharacterSelection()
     : m_initialized(false), m_visible(true), m_selectedCharacterId(-1) {
 }
@@ -55,3 +59,29 @@ size_t CCharacterSelection::GetCharacterCount() const { return m_characters.size
 
 bool CCharacterSelection::IsVisible() const { return m_visible; }
 void CCharacterSelection::SetVisible(bool visible) { m_visible = visible; }
+
+// TODO: Reverse engineer from IDA
+void CCharacterSelection::SetBackgroundModel(const char * /*modelPath*/) {
+    // TODO: Reverse engineer from IDA
+}
+
+// TODO: Reverse engineer from IDA
+void CCharacterSelection::RenderPrep() {
+    // TODO: Reverse engineer from IDA
+}
+
+// TODO: Reverse engineer from IDA
+void CCharacterSelection::UpdateSelectionCustomizationScene() {
+    // TODO: Reverse engineer from IDA
+}
+
+// TODO: Reverse engineer from IDA
+void CCharacterSelection::SelectCharacterByIndex(int32_t /*index*/) {
+    // TODO: Reverse engineer from IDA
+}
+
+// TODO: Reverse engineer from IDA
+int32_t CCharacterSelection::GetCharacterCreateData(int32_t /*index*/, void * /*data*/) {
+    // TODO: Reverse engineer from IDA
+    return 0;
+}

@@ -3,12 +3,13 @@
 #include "Gx.h"
 #include "texture/CBLPFile.h"
 #include "StormMac/Filesystem.h"
+#include "StormMac/SFile.h"
 #include <algorithm>
 #include <cstring>
 #include <new>
-#include <storm/Error.h>
-#include <storm/Memory.h>
-#include <storm/String.h>
+#include <StormMac/Error.h>
+#include <StormMac/Memory.h>
+#include <StormMac/String.h>
 
 namespace Texture {
     int32_t s_createBlpAsync; // Invented name
@@ -584,7 +585,7 @@ void UpdateBlpTextureAsync(EGxTexCommand cmd, uint32_t w, uint32_t h, uint32_t d
 int32_t PumpBlpTextureAsync(CTexture *texture, void *buf) {
     CBLPFile image;
 
-    if (!image.Source(buf)) {
+    if (!image.LoadFromBuffer(buf)) {
         texture->loadStatus.Add(
                 STATUS_FATAL,
                 "BLP Texture failure: \"%s\" invalid file version\n",

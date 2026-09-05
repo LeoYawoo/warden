@@ -10,7 +10,7 @@
 #include "M2Sort.h"
 #include <algorithm>
 #include <cassert>
-#include "../Tempest/CMathi.h>
+#include "../Tempest/CMathi.h"
 
 uint32_t CM2Scene::s_optFlags = 0xFFFFFFFF;
 
@@ -20,7 +20,8 @@ void CM2Scene::AnimateThread(void *arg) {
     CM2Scene *scene = static_cast<CM2Scene*>(arg);
     if (scene) {
         // Process animations for all models in the scene
-        for (auto& element : scene->m_elements) {
+        for (uint32_t i = 0; i < scene->m_elements.Count(); i++) {
+            auto &element = scene->m_elements[i];
             if (element.model) {
                 element.model->Animate();
             }

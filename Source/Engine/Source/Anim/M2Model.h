@@ -3,8 +3,8 @@
 #include "../Gx/Camera.h"
 #include "CM2Light.h"
 #include <cstdint>
-#include "../Tempest/C4Quaternion.h>
-#include "../Tempest/C3Vector.h>
+#include "../Tempest/C4Quaternion.h"
+#include "../Tempest/C3Vector.h"
 
 template<class T>
 class M2Track;

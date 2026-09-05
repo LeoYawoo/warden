@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Types.h"
-#include "../Tempest/C44Matrix.h>
-#include "../Tempest/C3Vector.h>
+#include "../Tempest/C44Matrix.h"
+#include "../Tempest/C3Vector.h"
 
 using namespace Tempest;
 

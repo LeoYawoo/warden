@@ -6,8 +6,8 @@
 #include <cstring>
 #include <new>
 #include <common/ObjectAlloc.h>
-#include <storm/Memory.h>
-#include <storm/String.h>
+#include <StormMac/Memory.h>
+#include <StormMac/String.h>
 
 static CVar *s_M2UseZFillVar;
 static CVar *s_M2UseClipPlanesVar;

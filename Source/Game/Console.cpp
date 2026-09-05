@@ -36,3 +36,8 @@ void ConsoleSetHotKey(KEY hotkey) {
 void ConsoleSetResizeState(CONSOLERESIZESTATE state) {
     s_consoleResizeState = state;
 }
+
+// TODO: Reverse engineer from IDA
+void ConsoleOnChar(uint32_t /*character*/) {
+    // TODO: Reverse engineer from IDA
+}

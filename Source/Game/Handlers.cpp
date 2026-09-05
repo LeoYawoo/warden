@@ -10,7 +10,7 @@ namespace {
         // Handle character input event
         if (data && ConsoleGetActive()) {
             // Forward character to console
-            ConsoleOnChar(data->character);
+            ConsoleOnChar(data->ch);
         }
         return 1;
     }

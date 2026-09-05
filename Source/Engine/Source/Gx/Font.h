@@ -3,14 +3,17 @@
 #include <cstdint>
 #include "font/FreeType.h"
 #include "font/Types.h"
+#include "font/CGxFont.h"
+#include "font/CGxString.h"
+#include "font/CGxStringBatch.h"
 #include "Types.h"
 #include "../Agile/CHandleObject.h"
 #include "Common/TSList.h"
 #include "Common/Hashkey.h"
 #include "Common/TSHashObject.h"
-#include "../Tempest/CImVector.h>
-#include "../Tempest/C2Vector.h>
-#include "../Tempest/C3Vector.h>
+#include "../Tempest/CImVector.h"
+#include "../Tempest/C2Vector.h"
+#include "../Tempest/C3Vector.h"
 
 using namespace Tempest;
 
@@ -156,5 +159,13 @@ float ScreenToPixelHeight(int32_t, float);
 float ScreenToPixelWidth(int32_t, float);
 
 float Sub6C2280(FT_Face, float);
+
+// Forward declarations for missing types
+class BATCHEDRENDERFONTDESC {
+public:
+    static void Initialize();
+};
+
+void CalcWrapPoint(CGxFont*, char const*, float, float, void*, float*, char const**, unsigned int, unsigned int, void*, void*, float);
 
 

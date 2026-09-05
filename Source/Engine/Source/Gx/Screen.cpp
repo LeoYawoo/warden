@@ -7,12 +7,13 @@
 #include "Common/TSExplicitList.h"
 #include "StormMac/Filesystem.h"
 #include "Common/Region.h"
-#include <storm/String.h>
+#include <StormMac/String.h>
 #include "Game/CWorld.h"
 #include "Terrain/CTerrain.h"
 #include "../Gx/Gx.h"
 #include "../Gx/CCamera.h"
 #include "../Gx/gll/GLDevice.h"
+#include <glad/glad.h>
 #include "glad/glad.h"
 #include <cstdio>
 

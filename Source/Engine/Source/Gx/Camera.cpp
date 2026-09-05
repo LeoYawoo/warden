@@ -3,7 +3,7 @@
 #include "Device.h"
 #include "Transform.h"
 #include "StormMac/Handle.h"
-#include <storm/Error.h>
+#include <StormMac/Error.h>
 
 HCAMERA CameraCreate() {
     auto m = SMemAlloc(sizeof(CCamera), __FILE__, __LINE__, 0x0);

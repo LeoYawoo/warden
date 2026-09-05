@@ -1,7 +1,7 @@
 #include "event/Timer.h"
 #include "event/EvtContext.h"
 #include "event/EvtTimer.h"
-#include <storm/Error.h>
+#include <StormMac/Error.h>
 
 int32_t IEvtTimerDispatch(EvtContext* context) {
     // TODO

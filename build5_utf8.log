@@ -1,0 +1,1089 @@
+﻿﻿[  0%] Built target expat-2.0_autogen_timestamp_deps
+[  0%] Built target expat-2.0_autogen
+[  1%] Built target expat-2.0
+[  1%] Built target lua-5.1_autogen_timestamp_deps
+[  1%] Built target lua-5.1_autogen
+[  8%] Built target lua-5.1
+[  8%] Built target freetype-2.0_autogen_timestamp_deps
+[  8%] Built target freetype-2.0_autogen
+[ 13%] Built target freetype-2.0
+[ 13%] Built target warden_autogen_timestamp_deps
+[ 13%] Automatic MOC and UIC for target warden
+[ 13%] Built target warden_autogen
+[ 13%] Building CXX object CMakeFiles/warden.dir/warden_autogen/mocs_compilation.cpp.obj
+[ 13%] Building CXX object CMakeFiles/warden.dir/Source/main.cpp.obj
+[ 13%] Building C object CMakeFiles/warden.dir/external/glad/src/glad.c.obj
+[ 13%] Building CXX object CMakeFiles/warden.dir/Source/AI/CCaptainAI.cpp.obj
+[ 13%] Building CXX object CMakeFiles/warden.dir/Source/Engine.cpp.obj
+[ 13%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/AgentRef.cpp.obj
+[ 13%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/AgentRefListener.cpp.obj
+[ 15%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/AgentRefMini.cpp.obj
+[ 15%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/Agile.cpp.obj
+[ 15%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CAbility.cpp.obj
+[ 15%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CAbilityBaseBuild.cpp.obj
+[ 15%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CAbilityBaseSell.cpp.obj
+[ 15%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CAbilityInterfaced.cpp.obj
+[ 15%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CAgent.cpp.obj
+[ 15%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CAgentBase.cpp.obj
+[ 15%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CAgentField.cpp.obj
+[ 17%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CAgentFieldMini.cpp.obj
+[ 17%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CAgentTimer.cpp.obj
+[ 17%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CAgentTimerEvent.cpp.obj
+[ 17%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CAgentWar3.cpp.obj
+[ 17%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CAngle.cpp.obj
+[ 17%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CBitInput.cpp.obj
+[ 17%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CDBDatabase.cpp.obj
+[ 17%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CDatabaseBase.cpp.obj
+[ 17%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CEvent.cpp.obj
+[ 17%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CEventTimer.cpp.obj
+[ 18%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CEventTimerEvent.cpp.obj
+[ 18%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CHuffman.cpp.obj
+[ 18%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CLeaveEvent.cpp.obj
+[ 18%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CListener.cpp.obj
+[ 18%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CListenerEvent.cpp.obj
+[ 18%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CModifier.cpp.obj
+[ 18%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CObserver.cpp.obj
+[ 18%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CPresenceRef.cpp.obj
+[ 18%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CRelation.cpp.obj
+[ 18%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CSLKDatabase.cpp.obj
+[ 20%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CStatus.cpp.obj
+[ 20%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CStringManager.cpp.obj
+[ 20%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CStringMemory.cpp.obj
+[ 20%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/CUnitRefList.cpp.obj
+[ 20%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/Float.cpp.obj
+[ 20%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/FloatListener.cpp.obj
+[ 20%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/FloatModifier.cpp.obj
+[ 20%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/FloatProp.cpp.obj
+[ 20%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/Integer.cpp.obj
+[ 20%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/IntegerListener.cpp.obj
+[ 22%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/IntegerModifier.cpp.obj
+[ 22%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/MovementModifier.cpp.obj
+[ 22%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/Position.cpp.obj
+[ 22%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/ProjectilePosition.cpp.obj
+[ 22%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/RangeListener.cpp.obj
+[ 22%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/SmartPosition.cpp.obj
+[ 22%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Agile/TInstanceCache.cpp.obj
+[ 22%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Anim/CM2Cache.cpp.obj
+[ 22%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Anim/CM2Light.cpp.obj
+[ 24%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Anim/CM2Lighting.cpp.obj
+[ 24%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Anim/CM2Model.cpp.obj
+[ 24%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Anim/CM2Scene.cpp.obj
+[ 24%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Anim/CM2SceneRender.cpp.obj
+[ 24%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Anim/CM2Shared.cpp.obj
+[ 24%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Anim/Interp.cpp.obj
+[ 24%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Anim/M2Init.cpp.obj
+[ 24%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Anim/M2Internal.cpp.obj
+[ 24%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Anim/M2Sort.cpp.obj
+[ 24%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Anim/MdlAnim.cpp.obj
+[ 25%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Anim/Model2.cpp.obj
+[ 25%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Anim/Type.cpp.obj
+[ 25%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Anim/WorldMatrix.cpp.obj
+[ 25%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/BLPFile/IJG/jmemstorm.cpp.obj
+[ 25%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/BLPFile/blp.cpp.obj
+[ 25%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Base/CDataAllocator.cpp.obj
+[ 25%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Base/CDataRecycler.cpp.obj
+[ 25%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Base/CDataStore.cpp.obj
+[ 25%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Base/CDataStoreChunked.cpp.obj
+[ 25%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Base/FileCache.cpp.obj
+[ 27%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Base/MsgBuffer.cpp.obj
+[ 27%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Base/Param.cpp.obj
+[ 27%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Base/Prop.cpp.obj
+[ 27%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Base/RCString.cpp.obj
+[ 27%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Base/Status.cpp.obj
+[ 27%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/BattleNet/BattleNetCache.cpp.obj
+[ 27%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/BattleNet/BattleNetChat.cpp.obj
+[ 27%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Common/CSBaseArray.cpp.obj
+[ 27%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Common/CSBasePriority.cpp.obj
+[ 29%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Common/CSBasePriorityQueue.cpp.obj
+[ 29%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Common/Call.cpp.obj
+[ 29%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Common/DataMgr.cpp.obj
+[ 29%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Common/Hashkey.cpp.obj
+[ 29%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Common/ObjectAlloc.cpp.obj
+[ 29%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Common/Prop.cpp.obj
+[ 29%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Common/RCString.cpp.obj
+[ 29%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Common/Region.cpp.obj
+cmake.exe : In file included from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/x86_64-w64-mingw32/includ
+e/stdint.h:32,
+所在位置 行:1 字符: 1
++ & "C:\Program Files\JetBrains\CLion 2026.2.1\bin\cmake\win\x64\bin\cm ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (In file include...int.h:32,:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/stdint.h:11,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/c++/cstdint:47,
+                 from D:\workcode\game\warden\Source\Engine\Source\Common\Region.h:3,
+                 from D:\workcode\game\warden\Source\Engine\Source\Common\Region.cpp:1:
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h: In instantiation of 'class TSHashTable<RGN, 
+HASHKEY_NONE>':
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTableReuse.h:10:7:   required from 'cla
+ss TSHashTableReuse<RGN, HASHKEY_NONE>'
+   10 | class TSHashTableReuse : public TSHashTable<T, TKey> {
+      |       ^~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSExportTableSimpleReuse.h:7:7:   required from '[01
+mclass TSExportTableSimpleReuse<RGN, HSRGN__*>'
+    7 | class TSExportTableSimpleReuse : public TSHashTableReuse<T, HASHKEY_NONE> {
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSExportTableSyncReuse.h:8:7:   required from '
+[Kclass TSExportTableSyncReuse<RGN, HSRGN__*, HLOCKEDRGN__*, CCritSect>'
+    8 | class TSExportTableSyncReuse : public TSExportTableSimpleReuse<T, THandle> {
+      |       ^~~~~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\Region.cpp:9:66:   required from here
+    9 | static TSExportTableSyncReuse<RGN, HSRGN, HLOCKEDRGN, CCritSect> s_rgntable;
+      |                                                                  ^~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:41:25: warning: '
+offsetof' within non-standard-layout type 'RGN' is conditionally-supported [-Winvalid
+-offsetof]
+   41 |     STORM_EXPLICIT_LIST(T, m_linktofull) m_fulllist;
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:41:5: note: in expansi
+on of macro 'STORM_EXPLICIT_LIST'
+   41 |     STORM_EXPLICIT_LIST(T, m_linktofull) m_fulllist;
+      |     ^~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:41: warning: '
+offsetof' within non-standard-layout type 'RGN' is conditionally-supported [-Winvalid
+-offsetof]
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:21: note: in expans
+ion of macro 'STORM_EXPLICIT_LIST'
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+      |                     ^~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:41: warning: '
+offsetof' within non-standard-layout type 'RGN' is conditionally-supported [-Winvalid
+-offsetof]
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:21: note: in expans
+ion of macro 'STORM_EXPLICIT_LIST'
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+      |                     ^~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:41: warning: '
+offsetof' within non-standard-layout type 'RGN' is conditionally-supported [-Winvalid
+-offsetof]
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:21: note: in expans
+ion of macro 'STORM_EXPLICIT_LIST'
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+      |                     ^~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h: In instantiation of 'class TSHashTableReuse<
+RGN, HASHKEY_NONE>':
+D:\workcode\game\warden\Source\Engine\Source\Common\TSExportTableSimpleReuse.h:7:7:   required from '[01
+mclass TSExportTableSimpleReuse<RGN, HSRGN__*>'
+    7 | class TSExportTableSimpleReuse : public TSHashTableReuse<T, HASHKEY_NONE> {
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSExportTableSyncReuse.h:8:7:   required from '
+[Kclass TSExportTableSyncReuse<RGN, HSRGN__*, HLOCKEDRGN__*, CCritSect>'
+    8 | class TSExportTableSyncReuse : public TSExportTableSimpleReuse<T, THandle> {
+      |       ^~~~~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\Region.cpp:9:66:   required from here
+    9 | static TSExportTableSyncReuse<RGN, HSRGN, HLOCKEDRGN, CCritSect> s_rgntable;
+      |                                                                  ^~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:41: warning: '
+offsetof' within non-standard-layout type 'RGN' is conditionally-supported [-Winvalid
+-offsetof]
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:21: note: in expans
+ion of macro 'STORM_EXPLICIT_LIST'
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+      |                     ^~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTableReuse.h:23:25: warning: '
+offsetof' within non-standard-layout type 'TSHashObjectChunk<RGN, HASHKEY_NONE>' is conditi
+onally-supported [-Winvalid-offsetof]
+   23 |     STORM_EXPLICIT_LIST(object_chunk_t, m_link) m_chunkList;
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTableReuse.h:23:5: note: in ex
+pansion of macro 'STORM_EXPLICIT_LIST'
+   23 |     STORM_EXPLICIT_LIST(object_chunk_t, m_link) m_chunkList;
+      |     ^~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:41: warning: '
+offsetof' within non-standard-layout type 'RGN' is conditionally-supported [-Winvalid
+-offsetof]
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:21: note: in expans
+ion of macro 'STORM_EXPLICIT_LIST'
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+      |                     ^~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:41: warning: '
+offsetof' within non-standard-layout type 'RGN' is conditionally-supported [-Winvalid
+-offsetof]
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:21: note: in expans
+ion of macro 'STORM_EXPLICIT_LIST'
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+      |                     ^~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h: In instantiation of 'T* TSHashTable<T, TKey>
+::InternalNewNode(uint32_t, size_t, uint32_t) [with T = RGN; TKey = HASHKEY_NONE; uint32_t = u
+nsigned int; size_t = long long unsigned int]':
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:231:20:   required from 'T* TSH
+ashTable<T, TKey>::New(uint32_t, const TKey&, size_t, uint32_t) [with T = RGN; TKey = HASHKEY_
+NONE; uint32_t = unsigned int; size_t = long long unsigned int]'
+  231 |     T *ptr = this->InternalNewNode(hashval, extrabytes, flags);
+      |              ~~~~~~^~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSExportTableSimpleReuse.h:61:51:   required from '[
+01mT* TSExportTableSimpleReuse<T, THandle>::New(THandle*) [with T = RGN; THandle = HSRGN__*
+]'
+   61 |     return this->TSHashTable<T, HASHKEY_NONE>::New(hashval, this->m_key, 0, 0x0);
+      |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSExportTableSyncReuse.h:74:21:   required from '[01
+mT* TSExportTableSyncReuse<T, THandle, TLockedHandle, TSync>::NewLock(THandle*, TLockedHandle*) [3
+5m[with T = RGN; THandle = HSRGN__*; TLockedHandle = HLOCKEDRGN__*; TSync = CCritSect]'
+   74 |     return this->New(handlePtr);
+      |            ~~~~~~~~~^~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\Region.cpp:200:34:   required from here
+  200 |     auto rgn = s_rgntable.NewLock(handlePtr, &lockedHandle);
+      |                ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:41: warning: '
+offsetof' within non-standard-layout type 'RGN' is conditionally-supported [-Winvalid
+-offsetof]
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:21: note: in expans
+ion of macro 'STORM_EXPLICIT_LIST'
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+      |                     ^~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h: In instantiation of 'void TSHashTable<T, TKe
+y>::Initialize() [with T = RGN; TKey = HASHKEY_NONE]':
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:190:15:   required from 'T* TSH
+ashTable<T, TKey>::InternalNewNode(uint32_t, size_t, uint32_t) [with T = RGN; TKey = HASHKEY_N
+ONE; uint32_t = unsigned int; size_t = long long unsigned int]'
+  190 |         this->Initialize();
+      |         ~~~~~~^~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:231:20:   required from 'T* TSH
+ashTable<T, TKey>::New(uint32_t, const TKey&, size_t, uint32_t) [with T = RGN; TKey = HASHKEY_
+NONE; uint32_t = unsigned int; size_t = long long unsigned int]'
+  231 |     T *ptr = this->InternalNewNode(hashval, extrabytes, flags);
+      |              ~~~~~~^~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSExportTableSimpleReuse.h:61:51:   required from '[
+01mT* TSExportTableSimpleReuse<T, THandle>::New(THandle*) [with T = RGN; THandle = HSRGN__*
+]'
+   61 |     return this->TSHashTable<T, HASHKEY_NONE>::New(hashval, this->m_key, 0, 0x0);
+      |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSExportTableSyncReuse.h:74:21:   required from '[01
+mT* TSExportTableSyncReuse<T, THandle, TLockedHandle, TSync>::NewLock(THandle*, TLockedHandle*) [3
+5m[with T = RGN; THandle = HSRGN__*; TLockedHandle = HLOCKEDRGN__*; TSync = CCritSect]'
+   74 |     return this->New(handlePtr);
+      |            ~~~~~~~~~^~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\Region.cpp:200:34:   required from here
+  200 |     auto rgn = s_rgntable.NewLock(handlePtr, &lockedHandle);
+      |                ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:41: warning: '
+offsetof' within non-standard-layout type 'RGN' is conditionally-supported [-Winvalid
+-offsetof]
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:21: note: in expans
+ion of macro 'STORM_EXPLICIT_LIST'
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+      |                     ^~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h: In instantiation of 'T* TSHashTable<T, TKey>
+::InternalNew(TSExplicitList<T, offsetof(T, m_linktoslot)>*, size_t, uint32_t) [with T = RGN; 
+TKey = HASHKEY_NONE; size_t = long long unsigned int; uint32_t = unsigned int]':
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:200:19:   required from 'T* TSH
+ashTable<T, TKey>::InternalNewNode(uint32_t, size_t, uint32_t) [with T = RGN; TKey = HASHKEY_N
+ONE; uint32_t = unsigned int; size_t = long long unsigned int]'
+  200 |     T *v8 = this->InternalNew(v7, extrabytes, flags);
+      |             ~~~~~~^~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:231:20:   required from 'T* TSH
+ashTable<T, TKey>::New(uint32_t, const TKey&, size_t, uint32_t) [with T = RGN; TKey = HASHKEY_
+NONE; uint32_t = unsigned int; size_t = long long unsigned int]'
+  231 |     T *ptr = this->InternalNewNode(hashval, extrabytes, flags);
+      |              ~~~~~~^~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSExportTableSimpleReuse.h:61:51:   required from '[
+01mT* TSExportTableSimpleReuse<T, THandle>::New(THandle*) [with T = RGN; THandle = HSRGN__*
+]'
+   61 |     return this->TSHashTable<T, HASHKEY_NONE>::New(hashval, this->m_key, 0, 0x0);
+      |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSExportTableSyncReuse.h:74:21:   required from '[01
+mT* TSExportTableSyncReuse<T, THandle, TLockedHandle, TSync>::NewLock(THandle*, TLockedHandle*) [3
+5m[with T = RGN; THandle = HSRGN__*; TLockedHandle = HLOCKEDRGN__*; TSync = CCritSect]'
+   74 |     return this->New(handlePtr);
+      |            ~~~~~~~~~^~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\Region.cpp:200:34:   required from here
+  200 |     auto rgn = s_rgntable.NewLock(handlePtr, &lockedHandle);
+      |                ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:41: warning: '
+offsetof' within non-standard-layout type 'RGN' is conditionally-supported [-Winvalid
+-offsetof]
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:21: note: in expans
+ion of macro 'STORM_EXPLICIT_LIST'
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+      |                     ^~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h: In instantiation of 'int32_t TSHashTable<T, 
+TKey>::GetLinkOffset() [with T = RGN; TKey = HASHKEY_NONE; int32_t = int]':
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:117:29:   required from 'void T
+SHashTable<T, TKey>::Initialize() [with T = RGN; TKey = HASHKEY_NONE]'
+  117 |     int32_t linkOfs = this->GetLinkOffset();
+      |                       ~~~~~~^~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:190:15:   required from 'T* TSH
+ashTable<T, TKey>::InternalNewNode(uint32_t, size_t, uint32_t) [with T = RGN; TKey = HASHKEY_N
+ONE; uint32_t = unsigned int; size_t = long long unsigned int]'
+  190 |         this->Initialize();
+      |         ~~~~~~^~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:231:20:   required from 'T* TSH
+ashTable<T, TKey>::New(uint32_t, const TKey&, size_t, uint32_t) [with T = RGN; TKey = HASHKEY_
+NONE; uint32_t = unsigned int; size_t = long long unsigned int]'
+  231 |     T *ptr = this->InternalNewNode(hashval, extrabytes, flags);
+      |              ~~~~~~^~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSExportTableSimpleReuse.h:61:51:   required from '[
+01mT* TSExportTableSimpleReuse<T, THandle>::New(THandle*) [with T = RGN; THandle = HSRGN__*
+]'
+   61 |     return this->TSHashTable<T, HASHKEY_NONE>::New(hashval, this->m_key, 0, 0x0);
+      |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSExportTableSyncReuse.h:74:21:   required from '[01
+mT* TSExportTableSyncReuse<T, THandle, TLockedHandle, TSync>::NewLock(THandle*, TLockedHandle*) [3
+5m[with T = RGN; THandle = HSRGN__*; TLockedHandle = HLOCKEDRGN__*; TSync = CCritSect]'
+   74 |     return this->New(handlePtr);
+      |            ~~~~~~~~~^~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\Region.cpp:200:34:   required from here
+  200 |     auto rgn = s_rgntable.NewLock(handlePtr, &lockedHandle);
+      |                ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:104:26: warning: '[01
+moffsetof' within non-standard-layout type 'RGN' is conditionally-supported [-Winvali
+d-offsetof]
+  104 |     return STRUCT_OFFSET(T, m_linktoslot);
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:104:12: note: in expan
+sion of macro 'STRUCT_OFFSET'
+  104 |     return STRUCT_OFFSET(T, m_linktoslot);
+      |            ^~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h: In instantiation of 'T* TSHashTableReuse<T, 
+TKey>::InternalNew(TSExplicitList<T, offsetof(T, m_linktoslot)>*, size_t, uint32_t) [with T = 
+RGN; TKey = HASHKEY_NONE; size_t = long long unsigned int; uint32_t = unsigned int]':
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTableReuse.h:59:4:   required from here
+   59 | T *TSHashTableReuse<T, TKey>::InternalNew(STORM_EXPLICIT_LIST(T, m_linktoslot) *listptr, size_
+t extrabytes,
+      |    ^~~~~~~~~~~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:41: warning: '
+offsetof' within non-standard-layout type 'RGN' is conditionally-supported [-Winvalid
+-offsetof]
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+D:\workcode\game\warden\Source\Engine\Source\Common\TSHashTable.h:49:21: note: in expans
+ion of macro 'STORM_EXPLICIT_LIST'
+   49 |     TSGrowableArray<STORM_EXPLICIT_LIST(T, m_linktoslot) > m_slotlistarray;
+      |                     ^~~~~~~~~~~~~~~~~~~
+[ 29%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Common/SHA1.cpp.obj
+[ 29%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Common/datamgr/CDataMgr.cpp.obj
+[ 31%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Common/objectalloc/CObjectHeap.cpp.obj
+[ 31%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Common/objectalloc/CObjectHeapList.cpp.obj
+[ 31%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Common/objectalloc/ObjAllocGlobals.cpp.obj
+[ 31%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Common/softfloat.cpp.obj
+[ 31%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Event/CEvent.cpp.obj
+[ 31%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Event/CInputObserver.cpp.obj
+[ 31%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Event/Context.cpp.obj
+In file included from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/x86_64-w64-mingw32/include/stdint.h:3
+2,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/stdint.h:11,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/c++/cstdint:47,
+                 from D:/workcode/game/warden/Source/Engine/Source/event/Types.h:3,
+                 from D:/workcode/game/warden/Source/Engine/Source/event/Context.h:3,
+                 from D:\workcode\game\warden\Source\Engine\Source\Event\Context.cpp:1:
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:74: warning: '[
+Koffsetof' within non-standard-layout type 'TInstanceId<EvtContext>' is conditionally-supported [[
+01;35m-Winvalid-offsetof]
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContext>, m_id)> {
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:60: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContex
+t>, m_id)> {
+      |                                                            ^~~~~~~~~~~~~
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:46: warning: '[
+Koffsetof' within non-standard-layout type 'EvtMessage' is conditionally-supported [-Win
+valid-offsetof]
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:32: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+      |                                ^~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Event\Context.cpp: In function 'void* Att
+achContextToThread(EvtContext*)':
+D:\workcode\game\warden\Source\Engine\Source\Event\Context.cpp:25:56: warning: '
+offsetof' within non-standard-layout type 'EvtContext' is conditionally-supported [-Winv
+alid-offsetof]
+   25 |         TSingletonInstanceId<EvtContext, STRUCT_OFFSET(EvtContext, m_id)>::s_idTable.Insert(context);
+D:\workcode\game\warden\Source\Engine\Source\Event\Context.cpp:25:42: note: in expansion
+ of macro 'STRUCT_OFFSET'
+   25 |         TSingletonInstanceId<EvtContext, STRUCT_OFFSET(EvtContext, m_id)>::s_idTable.Insert(co
+ntext);
+      |                                          ^~~~~~~~~~~~~
+[ 31%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Event/Event.cpp.obj
+In file included from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/x86_64-w64-mingw32/include/stdint.h:3
+2,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/stdint.h:11,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/c++/cstdint:47,
+                 from D:/workcode/game/warden/Source/Engine/Source/event/Types.h:3,
+                 from D:/workcode/game/warden/Source/Engine/Source/event/CEvent.h:3,
+                 from D:/workcode/game/warden/Source/Engine/Source/event/Event.h:3,
+                 from D:\workcode\game\warden\Source\Engine\Source\Event\Event.cpp:1:
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:74: warning: '[
+Koffsetof' within non-standard-layout type 'TInstanceId<EvtContext>' is conditionally-supported [[
+01;35m-Winvalid-offsetof]
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContext>, m_id)> {
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:60: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContex
+t>, m_id)> {
+      |                                                            ^~~~~~~~~~~~~
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:46: warning: '[
+Koffsetof' within non-standard-layout type 'EvtMessage' is conditionally-supported [-Win
+valid-offsetof]
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:32: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+      |                                ^~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Event\Event.cpp: In function 'void EventP
+ostCloseEx(HEVENTCONTEXT)':
+D:\workcode\game\warden\Source\Engine\Source\Event\Event.cpp:90:78: warning: 'of
+fsetof' within non-standard-layout type 'EvtContext' is conditionally-supported [-Winval
+id-offsetof]
+   90 |         EvtContext *context = TSingletonInstanceId<EvtContext, STRUCT_OFFSET(EvtContext, m_id)>::s_idTable.Ptr(
+D:\workcode\game\warden\Source\Engine\Source\Event\Event.cpp:90:64: note: in expansion o
+f macro 'STRUCT_OFFSET'
+   90 |         EvtContext *context = TSingletonInstanceId<EvtContext, STRUCT_OFFSET(EvtContext, m_id)
+>::s_idTable.Ptr(
+      |                                                                ^~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Event\Event.cpp:106:64: warning: 'o
+ffsetof' within non-standard-layout type 'EvtContext' is conditionally-supported [-Winva
+lid-offsetof]
+  106 |                 TSingletonInstanceId<EvtContext, STRUCT_OFFSET(EvtContext, m_id)>::s_idTable.Unlock(
+D:\workcode\game\warden\Source\Engine\Source\Event\Event.cpp:106:50: note: in expansion 
+of macro 'STRUCT_OFFSET'
+  106 |                 TSingletonInstanceId<EvtContext, STRUCT_OFFSET(EvtContext, m_id)>::s_idTable.U
+nlock(
+      |                                                  ^~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Event\Event.cpp: In function 'void EventR
+egisterEx(EVENTID, EVENTHANDLERFUNC, void*, float)':
+D:\workcode\game\warden\Source\Engine\Source\Event\Event.cpp:132:74: warning: 'o
+ffsetof' within non-standard-layout type 'EvtContext' is conditionally-supported [-Winva
+lid-offsetof]
+  132 |     EvtContext *context = TSingletonInstanceId<EvtContext, STRUCT_OFFSET(EvtContext, m_id)>::s_idTable.Ptr(
+D:\workcode\game\warden\Source\Engine\Source\Event\Event.cpp:132:60: note: in expansion 
+of macro 'STRUCT_OFFSET'
+  132 |     EvtContext *context = TSingletonInstanceId<EvtContext, STRUCT_OFFSET(EvtContext, m_id)>::s
+_idTable.Ptr(
+      |                                                            ^~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Event\Event.cpp:142:60: warning: 'o
+ffsetof' within non-standard-layout type 'EvtContext' is conditionally-supported [-Winva
+lid-offsetof]
+  142 |             TSingletonInstanceId<EvtContext, STRUCT_OFFSET(EvtContext, m_id)>::s_idTable.Unlock(
+D:\workcode\game\warden\Source\Engine\Source\Event\Event.cpp:142:46: note: in expansion 
+of macro 'STRUCT_OFFSET'
+  142 |             TSingletonInstanceId<EvtContext, STRUCT_OFFSET(EvtContext, m_id)>::s_idTable.Unloc
+k(
+      |                                              ^~~~~~~~~~~~~
+[ 31%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Event/EvtContext.cpp.obj
+In file included from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/x86_64-w64-mingw32/include/stdint.h:3
+2,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/stdint.h:11,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/c++/cstdint:47,
+                 from D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:3,
+                 from D:\workcode\game\warden\Source\Engine\Source\Event\EvtContext.cpp:1:
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:74: warning: '[
+Koffsetof' within non-standard-layout type 'TInstanceId<EvtContext>' is conditionally-supported [[
+01;35m-Winvalid-offsetof]
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContext>, m_id)> {
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:60: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContex
+t>, m_id)> {
+      |                                                            ^~~~~~~~~~~~~
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:46: warning: '[
+Koffsetof' within non-standard-layout type 'EvtMessage' is conditionally-supported [-Win
+valid-offsetof]
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:32: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+      |                                ^~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Event\EvtContext.cpp: In constructor 'EvtContext::[
+01;32mEvtContext(uint32_t, uint32_t, uint32_t, void*, int32_t)':
+D:\workcode\game\warden\Source\Engine\Source\Event\EvtContext.cpp:8:56: warning: '
+[Koffsetof' within non-standard-layout type 'TInstanceId<EvtContext>' is conditionally-supported [
+[01;35m-Winvalid-offsetof]
+    8 |         TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContext>, m_id)>(),
+D:\workcode\game\warden\Source\Engine\Source\Event\EvtContext.cpp:8:42: note: in expansi
+on of macro 'STRUCT_OFFSET'
+    8 |         TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContext>, m_id)>(),
+      |                                          ^~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Event\EvtContext.cpp: In constructor 'EvtContextQueu
+e::EvtContextQueue()':
+D:\workcode\game\warden\Source\Engine\Source\Event\EvtContext.cpp:32:80: warning: '
+offsetof' within non-standard-layout type 'EvtContext' is conditionally-supported [-W
+invalid-offsetof]
+   32 | EvtContextQueue::EvtContextQueue() : TSPriorityQueue<EvtContext>(STRUCT_OFFSET(EvtContext, m_schedNextWakeTime)
+) {
+D:\workcode\game\warden\Source\Engine\Source\Event\EvtContext.cpp:32:66: note: in expans
+ion of macro 'STRUCT_OFFSET'
+   32 | EvtContextQueue::EvtContextQueue() : TSPriorityQueue<EvtContext>(STRUCT_OFFSET(EvtContext, m_s
+chedNextWakeTime)) {
+      |                                                                  ^~~~~~~~~~~~~
+[ 31%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Event/EvtSched.cpp.obj
+[ 32%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Event/EvtThread.cpp.obj
+In file included from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/x86_64-w64-mingw32/include/stdint.h:3
+2,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/stdint.h:11,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/c++/cstdint:47,
+                 from D:/workcode/game/warden/Source/Engine/Source/event/EvtThread.h:3,
+                 from D:\workcode\game\warden\Source\Engine\Source\Event\EvtThread.cpp:1:
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:74: warning: '[
+Koffsetof' within non-standard-layout type 'TInstanceId<EvtContext>' is conditionally-supported [[
+01;35m-Winvalid-offsetof]
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContext>, m_id)> {
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:60: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContex
+t>, m_id)> {
+      |                                                            ^~~~~~~~~~~~~
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:46: warning: '[
+Koffsetof' within non-standard-layout type 'EvtMessage' is conditionally-supported [-Win
+valid-offsetof]
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:32: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+      |                                ^~~~~~~~~~~~~
+[ 32%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Event/EvtTimer.cpp.obj
+[ 32%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Event/Input.cpp.obj
+In file included from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/x86_64-w64-mingw32/include/stdint.h:3
+2,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/stdint.h:11,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/c++/cstdint:47,
+                 from D:/workcode/game/warden/Source/Engine/Source/event/Types.h:3,
+                 from D:/workcode/game/warden/Source/Engine/Source/event/Input.h:3,
+                 from D:\workcode\game\warden\Source\Engine\Source\Event\Input.cpp:1:
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:74: warning: '[
+Koffsetof' within non-standard-layout type 'TInstanceId<EvtContext>' is conditionally-supported [[
+01;35m-Winvalid-offsetof]
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContext>, m_id)> {
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:60: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContex
+t>, m_id)> {
+      |                                                            ^~~~~~~~~~~~~
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:46: warning: '[
+Koffsetof' within non-standard-layout type 'EvtMessage' is conditionally-supported [-Win
+valid-offsetof]
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:32: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+      |                                ^~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Event\Input.cpp: In function 'void EventS
+etMouseMode(MOUSEMODE, uint32_t)':
+D:\workcode\game\warden\Source\Engine\Source\Event\Input.cpp:375:67: warning: 'o
+ffsetof' within non-standard-layout type 'EvtContext' is conditionally-supported [-Winva
+lid-offsetof]
+  375 |     auto context = TSingletonInstanceId<EvtContext, STRUCT_OFFSET(EvtContext, m_id)>::s_idTable.Ptr(
+D:\workcode\game\warden\Source\Engine\Source\Event\Input.cpp:375:53: note: in expansion 
+of macro 'STRUCT_OFFSET'
+  375 |     auto context = TSingletonInstanceId<EvtContext, STRUCT_OFFSET(EvtContext, m_id)>::s_idTabl
+e.Ptr(
+      |                                                     ^~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Engine\Source\Event\Input.cpp:385:60: warning: 'o
+ffsetof' within non-standard-layout type 'EvtContext' is conditionally-supported [-Winva
+lid-offsetof]
+  385 |             TSingletonInstanceId<EvtContext, STRUCT_OFFSET(EvtContext, m_id)>::s_idTable.Unlock(
+D:\workcode\game\warden\Source\Engine\Source\Event\Input.cpp:385:46: note: in expansion 
+of macro 'STRUCT_OFFSET'
+  385 |             TSingletonInstanceId<EvtContext, STRUCT_OFFSET(EvtContext, m_id)>::s_idTable.Unloc
+k(
+      |                                              ^~~~~~~~~~~~~
+[ 32%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Event/Queue.cpp.obj
+In file included from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/x86_64-w64-mingw32/include/stdint.h:3
+2,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/stdint.h:11,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/c++/cstdint:47,
+                 from D:/workcode/game/warden/Source/Engine/Source/event/Types.h:3,
+                 from D:/workcode/game/warden/Source/Engine/Source/event/Queue.h:3,
+                 from D:\workcode\game\warden\Source\Engine\Source\Event\Queue.cpp:1:
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:74: warning: '[
+Koffsetof' within non-standard-layout type 'TInstanceId<EvtContext>' is conditionally-supported [[
+01;35m-Winvalid-offsetof]
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContext>, m_id)> {
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:60: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContex
+t>, m_id)> {
+      |                                                            ^~~~~~~~~~~~~
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:46: warning: '[
+Koffsetof' within non-standard-layout type 'EvtMessage' is conditionally-supported [-Win
+valid-offsetof]
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:32: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+      |                                ^~~~~~~~~~~~~
+[ 32%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Event/Scheduler.cpp.obj
+In file included from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/x86_64-w64-mingw32/include/stdint.h:3
+2,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/stdint.h:11,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/c++/cstdint:47,
+                 from D:/workcode/game/warden/Source/Engine/Source/event/Scheduler.h:3,
+                 from D:\workcode\game\warden\Source\Engine\Source\Event\Scheduler.cpp:5:
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:74: warning: '[
+Koffsetof' within non-standard-layout type 'TInstanceId<EvtContext>' is conditionally-supported [[
+01;35m-Winvalid-offsetof]
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContext>, m_id)> {
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:60: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContex
+t>, m_id)> {
+      |                                                            ^~~~~~~~~~~~~
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:46: warning: '[
+Koffsetof' within non-standard-layout type 'EvtMessage' is conditionally-supported [-Win
+valid-offsetof]
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:32: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+      |                                ^~~~~~~~~~~~~
+[ 32%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Event/Synthesize.cpp.obj
+In file included from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/x86_64-w64-mingw32/include/stdint.h:3
+2,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/stdint.h:11,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/c++/cstdint:47,
+                 from D:/workcode/game/warden/Source/Engine/Source/event/Synthesize.h:3,
+                 from D:\workcode\game\warden\Source\Engine\Source\Event\Synthesize.cpp:1:
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:74: warning: '[
+Koffsetof' within non-standard-layout type 'TInstanceId<EvtContext>' is conditionally-supported [[
+01;35m-Winvalid-offsetof]
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContext>, m_id)> {
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:60: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContex
+t>, m_id)> {
+      |                                                            ^~~~~~~~~~~~~
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:46: warning: '[
+Koffsetof' within non-standard-layout type 'EvtMessage' is conditionally-supported [-Win
+valid-offsetof]
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:32: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+      |                                ^~~~~~~~~~~~~
+[ 32%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Event/Timer.cpp.obj
+In file included from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/x86_64-w64-mingw32/include/stdint.h:3
+2,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/stdint.h:11,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/c++/cstdint:47,
+                 from D:/workcode/game/warden/Source/Engine/Source/event/Timer.h:3,
+                 from D:\workcode\game\warden\Source\Engine\Source\Event\Timer.cpp:1:
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:74: warning: '[
+Koffsetof' within non-standard-layout type 'TInstanceId<EvtContext>' is conditionally-supported [[
+01;35m-Winvalid-offsetof]
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContext>, m_id)> {
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:25:60: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   25 | class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContex
+t>, m_id)> {
+      |                                                            ^~~~~~~~~~~~~
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:46: warning: '[
+Koffsetof' within non-standard-layout type 'EvtMessage' is conditionally-supported [-Win
+valid-offsetof]
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+D:/workcode/game/warden/Source/Engine/Source/event/EvtContext.h:48:32: note: in expansio
+n of macro 'STRUCT_OFFSET'
+   48 |     TSExplicitList<EvtMessage, STRUCT_OFFSET(EvtMessage, link)> m_queueMessageList;
+      |                                ^~~~~~~~~~~~~
+[ 32%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Event/win/Input.cpp.obj
+[ 32%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/FDFile/FDFile.cpp.obj
+[ 34%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/FDFile/Handlers/EditBoxHandlers.cpp.obj
+[ 34%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/FDFile/Handlers/FrameHandlers.cpp.obj
+[ 34%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/FDFile/Handlers/FrameHashNode.cpp.obj
+[ 34%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/FDFile/Handlers/MenuHashNode.cpp.obj
+[ 34%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/FDFile/Handlers/TextFrameHandlers.cpp.obj
+[ 34%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/FDFile/IFDFile.cpp.obj
+[ 34%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CBackdropGenerator.cpp.obj
+[ 34%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CButtonFrame.cpp.obj
+[ 34%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CChatDisplay.cpp.obj
+[ 34%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CCheckBox.cpp.obj
+[ 36%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CControl.cpp.obj
+[ 36%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CControlSet.cpp.obj
+[ 36%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CDialog.cpp.obj
+[ 36%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CEditBox.cpp.obj
+[ 36%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CFrame.cpp.obj
+[ 36%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CFramePoint.cpp.obj
+[ 36%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CHighlightFrame.cpp.obj
+[ 36%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CLayer.cpp.obj
+[ 36%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CListBox.cpp.obj
+[ 36%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CMenu.cpp.obj
+[ 37%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CMessageFrame.cpp.obj
+[ 37%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CModelFrame.cpp.obj
+[ 37%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CPopupMenu.cpp.obj
+[ 37%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CScreenFrame.cpp.obj
+[ 37%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CScrollBar.cpp.obj
+[ 37%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CSimpleButton.cpp.obj
+[ 37%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CSimpleCheckbox.cpp.obj
+[ 37%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CSimpleFrame.cpp.obj
+[ 37%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CSimpleMessageFrame.cpp.obj
+[ 39%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CSimpleRender.cpp.obj
+[ 39%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CSimpleStatusBar.cpp.obj
+[ 39%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CSimpleTop.cpp.obj
+[ 39%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CSlider.cpp.obj
+[ 39%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CSpriteFrame.cpp.obj
+[ 39%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CTextArea.cpp.obj
+[ 39%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CTextButtonFrame.cpp.obj
+[ 39%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Frame/CTextFrame.cpp.obj
+[ 39%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/FrameDef/FrameDef.cpp.obj
+[ 39%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/FrameDef/SetupFrame.cpp.obj
+[ 41%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Gxu/GxuFont.cpp.obj
+[ 41%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Gxu/GxuFontUtil.cpp.obj
+[ 41%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Gxu/GxuLight.cpp.obj
+[ 41%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Gxu/IGxuFontGlyph.cpp.obj
+[ 41%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Images/CBlpTexture.cpp.obj
+[ 41%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Images/CTgaTexture.cpp.obj
+[ 41%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Images/CWar3Image.cpp.obj
+[ 41%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Images/funcs.cpp.obj
+[ 41%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Images/tga.cpp.obj
+[ 41%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Ipse/CPoReal.cpp.obj
+[ 43%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Ipse/CPrRelation.cpp.obj
+[ 43%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Ipse/CRlAgent.cpp.obj
+[ 43%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Ipse/CRlAgentDef.cpp.obj
+[ 43%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Ipse/CRlProperty.cpp.obj
+[ 43%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Ipse/CThreadData.cpp.obj
+[ 43%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Jass2/Compile.cpp.obj
+[ 43%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Jass2/Instance.cpp.obj
+[ 43%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Jass2/Jass.cpp.obj
+[ 43%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Jass2/parser.cpp.obj
+[ 44%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Jass2/scanner.cpp.obj
+[ 44%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Model/ModelCreate.cpp.obj
+[ 44%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/NetClient.cpp.obj
+[ 44%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/NetCommon.cpp.obj
+[ 44%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/NetProvider.cpp.obj
+[ 44%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/NetProviderBNET.cpp.obj
+[ 44%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/NetProviderLOOP.cpp.obj
+[ 44%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/NetProviderLTCP.cpp.obj
+[ 44%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/NetRouter.cpp.obj
+[ 44%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/Poll.cpp.obj
+[ 46%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/connection/ClientConnection.cpp.obj
+[ 46%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/connection/NetClient.cpp.obj
+D:\workcode\game\warden\Source\Engine\Source\Net\connection\NetClient.cpp:3:10: fatal error: 
+[m../Base/CDataStore.h: No such file or directory
+    3 | #include "../Base/CDataStore.h"
+      |          ^~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+mingw32-make[3]: *** [CMakeFiles\warden.dir\build.make:2809: CMakeFiles/warden.dir/Source/Engine/Source/Net/connection/
+NetClient.cpp.obj] Error 1
+[ 46%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/connection/RealmConnection.cpp.obj
+D:\workcode\game\warden\Source\Engine\Source\Net\connection\RealmConnection.cpp:5:10: fatal er
+ror: ../Base/CDataStore.h: No such file or directory
+    5 | #include "../Base/CDataStore.h"
+      |          ^~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+mingw32-make[3]: *** [CMakeFiles\warden.dir\build.make:2824: CMakeFiles/warden.dir/Source/Engine/Source/Net/connection/
+RealmConnection.cpp.obj] Error 1
+[ 46%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/connection/WowConnection.cpp.obj
+D:\workcode\game\warden\Source\Engine\Source\Net\connection\WowConnection.cpp:12:10: fatal err
+or: ../Base/CDataStore.h: No such file or directory
+   12 | #include "../Base/CDataStore.h"
+      |          ^~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+mingw32-make[3]: *** [CMakeFiles\warden.dir\build.make:2839: CMakeFiles/warden.dir/Source/Engine/Source/Net/connection/
+WowConnection.cpp.obj] Error 1
+[ 46%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/connection/WowConnectionNet.cpp.obj
+[ 46%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/connection/winsock/WowConnectionNet.cpp.obj
+[ 46%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/grunt/ClientLink.cpp.obj
+In file included from D:\workcode\game\warden\Source\Engine\Source\Net\grunt\ClientLink.cpp:1:
+D:/workcode/game/warden/Source/Engine/Source/net/grunt/ClientLink.h:9:10: fatal error: .
+./Base/CDataStore.h: No such file or directory
+    9 | #include "../Base/CDataStore.h"
+      |          ^~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+mingw32-make[3]: *** [CMakeFiles\warden.dir\build.make:2884: CMakeFiles/warden.dir/Source/Engine/Source/Net/grunt/Clien
+tLink.cpp.obj] Error 1
+[ 46%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/grunt/Grunt.cpp.obj
+[ 46%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/grunt/Timer.cpp.obj
+In file included from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/x86_64-w64-mingw32/include/stdint.h:3
+2,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/stdint.h:11,
+                 from C:/Program Files/JetBrains/CLion 2026.2.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/15.2.0/inc
+lude/c++/cstdint:47,
+                 from D:/workcode/game/warden/Source/StormMac/thread/SSyncObject.h:3,
+                 from D:/workcode/game/warden/Source/StormMac/thread/SEvent.h:3,
+                 from D:/workcode/game/warden/Source/Engine/Source/net/grunt/Timer.h:4,
+                 from D:\workcode\game\warden\Source\Engine\Source\Net\grunt\Timer.cpp:1:
+D:/workcode/game/warden/Source/Engine/Source/net/grunt/Timer.h:33:25: warning: '
+offsetof' within non-standard-layout type 'Grunt::Timer::Event' is conditionally-supported [[01;35
+m-Winvalid-offsetof]
+   33 |     STORM_EXPLICIT_LIST(Event, m_link) m_eventList;
+D:/workcode/game/warden/Source/Engine/Source/net/grunt/Timer.h:33:5: note: in expansion 
+of macro 'STORM_EXPLICIT_LIST'
+   33 |     STORM_EXPLICIT_LIST(Event, m_link) m_eventList;
+      |     ^~~~~~~~~~~~~~~~~~~
+[ 46%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/login/GruntLogin.cpp.obj
+In file included from D:\workcode\game\warden\Source\Engine\Source\Net\login\GruntLogin.cpp:2:
+D:/workcode/game/warden/Source/Engine/Source/net/grunt/ClientLink.h:9:10: fatal error: .
+./Base/CDataStore.h: No such file or directory
+    9 | #include "../Base/CDataStore.h"
+      |          ^~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+mingw32-make[3]: *** [CMakeFiles\warden.dir\build.make:2929: CMakeFiles/warden.dir/Source/Engine/Source/Net/login/Grunt
+Login.cpp.obj] Error 1
+[ 48%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/login/Login.cpp.obj
+D:\workcode\game\warden\Source\Engine\Source\Net\login\Login.cpp:5:10: fatal error: ../B
+ase/CDataStore.h: No such file or directory
+    5 | #include "../Base/CDataStore.h"
+      |          ^~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+mingw32-make[3]: *** [CMakeFiles\warden.dir\build.make:2944: CMakeFiles/warden.dir/Source/Engine/Source/Net/login/Login
+.cpp.obj] Error 1
+[ 48%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/login/LoginResponse.cpp.obj
+D:\workcode\game\warden\Source\Engine\Source\Net\login\LoginResponse.cpp:3:10: fatal error: [
+m../Base/CDataStore.h: No such file or directory
+    3 | #include "../Base/CDataStore.h"
+      |          ^~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+mingw32-make[3]: *** [CMakeFiles\warden.dir\build.make:2959: CMakeFiles/warden.dir/Source/Engine/Source/Net/login/Login
+Response.cpp.obj] Error 1
+[ 48%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/srp/SRP6_Client.cpp.obj
+[ 48%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Net/srp/SRP6_Random.cpp.obj
+[ 48%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Os/Mac/CoreAudio/MIDIPlayer.cpp.obj
+[ 48%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Os/Mac/CoreAudio/StreamingCache.cpp.obj
+[ 48%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Os/Mac/CoreAudio/WAVPlayerCoreAudio.cpp.obj
+[ 48%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Os/Mac/EditBoxImpl.cpp.obj
+[ 48%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Os/Mac/MainApp.cpp.obj
+[ 50%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Os/Mac/OsBattleNet.cpp.obj
+[ 50%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Os/Mac/OsClipboard.cpp.obj
+[ 50%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Os/Mac/OsGui.cpp.obj
+[ 50%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Os/Mac/TreeViewImpl.cpp.obj
+[ 50%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Os/W32/OSSystem.cpp.obj
+[ 50%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Os/W32/OsLock.cpp.obj
+[ 50%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Os/W32/OsTcp.cpp.obj
+[ 50%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/SRP/SHA.cpp.obj
+[ 50%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Scrn/CONSOLE.CPP.obj
+[ 50%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Services/AsyncFile.cpp.obj
+[ 51%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Services/Database.cpp.obj
+[ 51%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Services/GfxSingletonManager.cpp.obj
+[ 51%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Services/Lightning.cpp.obj
+[ 51%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Services/Profile.cpp.obj
+D:\workcode\game\warden\Source\Engine\Source\Services\Profile.cpp: In member function 'bool Profi
+le::Save(const char*)':
+D:\workcode\game\warden\Source\Engine\Source\Services\Profile.cpp:19:32: error: variable
+ 'std::ofstream file' has initializer but incomplete type
+   19 |     std::ofstream file(saveFile);
+      |                                ^
+D:\workcode\game\warden\Source\Engine\Source\Services\Profile.cpp:2:1: note: 'st
+d::ofstream' is defined in header '<fstream>'; this is probably fixable by adding '#include
+ <fstream>'
+    1 | #include "Profile.h"
+  +++ |+#include <fstream>
+    2 | 
+mingw32-make[3]: *** [CMakeFiles\warden.dir\build.make:3274: CMakeFiles/warden.dir/Source/Engine/Source/Services/Profil
+e.cpp.obj] Error 1
+[ 51%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Services/ProfileInternal.cpp.obj
+[ 51%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Services/SprAnimList.cpp.obj
+[ 51%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Services/SprLinkTable.cpp.obj
+[ 51%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Services/Sprite.cpp.obj
+[ 51%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Services/SysMessage.cpp.obj
+[ 51%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Services/TextBlock.cpp.obj
+[ 53%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Services/Texture.cpp.obj
+[ 53%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Services/Tokenizer.cpp.obj
+[ 53%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Sound/SI2.cpp.obj
+[ 53%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Sound/SI2Script.cpp.obj
+[ 53%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Tempest/C22uMatrix.cpp.obj
+[ 53%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Tempest/C2Vector.cpp.obj
+[ 53%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Tempest/C2iVector.cpp.obj
+[ 53%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Tempest/C33Matrix.cpp.obj
+[ 53%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Tempest/C3Vector.cpp.obj
+[ 55%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Tempest/C44Matrix.cpp.obj
+[ 55%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Tempest/C4Plane.cpp.obj
+[ 55%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Tempest/C4Quaternion.cpp.obj
+[ 55%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Tempest/C4Vector.cpp.obj
+[ 55%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Tempest/CAaSphere.cpp.obj
+[ 55%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Tempest/CDynParms.cpp.obj
+[ 55%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Tempest/CMathi.cpp.obj
+[ 55%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Tempest/CPresenceSys.cpp.obj
+[ 55%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Tempest/CPresenceSysTagged.cpp.obj
+[ 55%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Tempest/CRect.cpp.obj
+[ 56%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/Tempest/CiRect.cpp.obj
+[ 56%] Building CXX object CMakeFiles/warden.dir/Source/Engine/Source/WardenClient/WardenClient.cpp.obj
+[ 56%] Building CXX object CMakeFiles/warden.dir/Source/Game/CDialogButtonEventReg.cpp.obj
+In file included from D:\workcode\game\warden\Source\Game\CDialogButtonEventReg.cpp:1:
+D:\workcode\game\warden\Source\Game\CDialogButtonEventReg.h:27:10: error: 'vecto
+r' in namespace 'std' does not name a template type
+   27 |     std::vector<ButtonEvent> m_registrations;
+      |          ^~~~~~
+D:\workcode\game\warden\Source\Game\CDialogButtonEventReg.h:4:1: note: 'std::vec
+tor' is defined in header '<vector>'; this is probably fixable by adding '#include <vector>
+'
+    3 | #include <cstdint>
+  +++ |+#include <vector>
+    4 | 
+D:\workcode\game\warden\Source\Game\CDialogButtonEventReg.cpp: In member function 'void CDialogBu
+ttonEventReg::RegisterButton(int32_t, int32_t)':
+D:\workcode\game\warden\Source\Game\CDialogButtonEventReg.cpp:9:5: error: 'm_reg
+istrations' was not declared in this scope
+    9 |     m_registrations.push_back({buttonId, eventId});
+      |     ^~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Game\CDialogButtonEventReg.cpp: In member function 'void CDialogBu
+ttonEventReg::UnregisterButton(int32_t)':
+D:\workcode\game\warden\Source\Game\CDialogButtonEventReg.cpp:13:5: error: 'm_re
+gistrations' was not declared in this scope
+   13 |     m_registrations.erase(
+      |     ^~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Game\CDialogButtonEventReg.cpp:14:14: error: 'rem
+ove_if' is not a member of 'std'
+   14 |         std::remove_if(m_registrations.begin(), m_registrations.end(),
+      |              ^~~~~~~~~
+D:\workcode\game\warden\Source\Game\CDialogButtonEventReg.cpp: In member function 'int32_t CDialo
+gButtonEventReg::GetEventId(int32_t) const':
+D:\workcode\game\warden\Source\Game\CDialogButtonEventReg.cpp:20:28: error: 'm_r
+egistrations' was not declared in this scope
+   20 |     for (const auto& reg : m_registrations) {
+      |                            ^~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Game\CDialogButtonEventReg.cpp: In member function 'bool CDialogBu
+ttonEventReg::IsRegistered(int32_t) const':
+D:\workcode\game\warden\Source\Game\CDialogButtonEventReg.cpp:29:28: error: 'm_r
+egistrations' was not declared in this scope
+   29 |     for (const auto& reg : m_registrations) {
+      |                            ^~~~~~~~~~~~~~~
+mingw32-make[3]: *** [CMakeFiles\warden.dir\build.make:3694: CMakeFiles/warden.dir/Source/Game/CDialogButtonEventReg.cp
+p.obj] Error 1
+[ 56%] Building CXX object CMakeFiles/warden.dir/Source/Game/CDialogEventReg.cpp.obj
+In file included from D:\workcode\game\warden\Source\Game\CDialogEventReg.cpp:1:
+D:\workcode\game\warden\Source\Game\CDialogEventReg.h:27:10: error: 'vector[
+K' in namespace 'std' does not name a template type
+   27 |     std::vector<DialogEvent> m_registrations;
+      |          ^~~~~~
+D:\workcode\game\warden\Source\Game\CDialogEventReg.h:4:1: note: 'std::vector
+' is defined in header '<vector>'; this is probably fixable by adding '#include <vector>
+'
+    3 | #include <cstdint>
+  +++ |+#include <vector>
+    4 | 
+D:\workcode\game\warden\Source\Game\CDialogEventReg.cpp: In member function 'void CDialogEventReg
+::RegisterDialog(int32_t, int32_t)':
+D:\workcode\game\warden\Source\Game\CDialogEventReg.cpp:9:5: error: 'm_registrat
+ions' was not declared in this scope
+    9 |     m_registrations.push_back({dialogId, eventId});
+      |     ^~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Game\CDialogEventReg.cpp: In member function 'void CDialogEventReg
+::UnregisterDialog(int32_t)':
+D:\workcode\game\warden\Source\Game\CDialogEventReg.cpp:13:5: error: 'm_registra
+tions' was not declared in this scope
+   13 |     m_registrations.erase(
+      |     ^~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Game\CDialogEventReg.cpp:14:14: error: 'remove_if
+' is not a member of 'std'
+   14 |         std::remove_if(m_registrations.begin(), m_registrations.end(),
+      |              ^~~~~~~~~
+D:\workcode\game\warden\Source\Game\CDialogEventReg.cpp: In member function 'int32_t CDialogEvent
+Reg::GetEventId(int32_t) const':
+D:\workcode\game\warden\Source\Game\CDialogEventReg.cpp:20:28: error: 'm_registr
+ations' was not declared in this scope
+   20 |     for (const auto& reg : m_registrations) {
+      |                            ^~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Game\CDialogEventReg.cpp: In member function 'bool CDialogEventReg
+::IsRegistered(int32_t) const':
+D:\workcode\game\warden\Source\Game\CDialogEventReg.cpp:29:28: error: 'm_registr
+ations' was not declared in this scope
+   29 |     for (const auto& reg : m_registrations) {
+      |                            ^~~~~~~~~~~~~~~
+mingw32-make[3]: *** [CMakeFiles\warden.dir\build.make:3709: CMakeFiles/warden.dir/Source/Game/CDialogEventReg.cpp.obj]
+ Error 1
+[ 56%] Building CXX object CMakeFiles/warden.dir/Source/Game/CFogOfWarMap.cpp.obj
+[ 56%] Building CXX object CMakeFiles/warden.dir/Source/Game/CGameState.cpp.obj
+[ 56%] Building CXX object CMakeFiles/warden.dir/Source/Game/CGameWar3.cpp.obj
+[ 56%] Building CXX object CMakeFiles/warden.dir/Source/Game/CGroup.cpp.obj
+[ 56%] Building CXX object CMakeFiles/warden.dir/Source/Game/CLeaderboardWar3.cpp.obj
+[ 56%] Building CXX object CMakeFiles/warden.dir/Source/Game/CMultiboardWar3.cpp.obj
+[ 58%] Building CXX object CMakeFiles/warden.dir/Source/Game/CPathingFootprint.cpp.obj
+[ 58%] Building CXX object CMakeFiles/warden.dir/Source/Game/CPlayerWar3.cpp.obj
+[ 58%] Building CXX object CMakeFiles/warden.dir/Source/Game/CPreferencesWar3.cpp.obj
+[ 58%] Building CXX object CMakeFiles/warden.dir/Source/Game/CPreloadManager.cpp.obj
+[ 58%] Building CXX object CMakeFiles/warden.dir/Source/Game/CSelectionWar3.cpp.obj
+[ 58%] Building CXX object CMakeFiles/warden.dir/Source/Game/CTimerDialogWar3.cpp.obj
+[ 58%] Building CXX object CMakeFiles/warden.dir/Source/Game/CWorld.cpp.obj
+D:\workcode\game\warden\Source\Game\CWorld.cpp: In static member function 'static void CWorld::[
+01;32mInitialize()':
+D:\workcode\game\warden\Source\Game\CWorld.cpp:42:20: error: 'InitShaderSystem[
+m' is not a member of 'CShaderEffect'
+   42 |     CShaderEffect::InitShaderSystem(
+      |                    ^~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Game\CWorld.cpp:48:34: error: invalid use of incomplete t
+ype 'class CTerrain'
+   48 |         s_terrain = new CTerrain();
+      |                                  ^
+In file included from D:\workcode\game\warden\Source\Game\CWorld.cpp:1:
+D:\workcode\game\warden\Source\Game\CWorld.h:5:7: note: forward declaration of '
+class CTerrain'
+    5 | class CTerrain;
+      |       ^~~~~~~~
+D:\workcode\game\warden\Source\Game\CWorld.cpp:51:18: error: invalid use of incomplete t
+ype 'class CTerrain'
+   51 |         s_terrain->Initialize(64, 64, 0.0f, 0.0f);
+      |                  ^~
+D:\workcode\game\warden\Source\Game\CWorld.h:5:7: note: forward declaration of '
+class CTerrain'
+    5 | class CTerrain;
+      |       ^~~~~~~~
+D:\workcode\game\warden\Source\Game\CWorld.cpp:54:32: error: invalid use of incomplete t
+ype 'class CTerrain'
+   54 |         uint32_t gx = s_terrain->GetCellsPerRow() + 1;
+      |                                ^~
+D:\workcode\game\warden\Source\Game\CWorld.h:5:7: note: forward declaration of '
+class CTerrain'
+    5 | class CTerrain;
+      |       ^~~~~~~~
+D:\workcode\game\warden\Source\Game\CWorld.cpp:55:32: error: invalid use of incomplete t
+ype 'class CTerrain'
+   55 |         uint32_t gy = s_terrain->GetCellsPerCol() + 1;
+      |                                ^~
+D:\workcode\game\warden\Source\Game\CWorld.h:5:7: note: forward declaration of '
+class CTerrain'
+    5 | class CTerrain;
+      |       ^~~~~~~~
+D:\workcode\game\warden\Source\Game\CWorld.cpp:70:18: error: invalid use of incomplete t
+ype 'class CTerrain'
+   70 |         s_terrain->SetHeights(heights);
+      |                  ^~
+D:\workcode\game\warden\Source\Game\CWorld.h:5:7: note: forward declaration of '
+class CTerrain'
+    5 | class CTerrain;
+      |       ^~~~~~~~
+D:\workcode\game\warden\Source\Game\CWorld.cpp: In static member function 'static void CWorld::[
+01;32mShutdown()':
+D:\workcode\game\warden\Source\Game\CWorld.cpp:79:9: warning: possible problem detected 
+in invocation of 'operator delete' [-Wdelete-incomplete]
+   79 |         delete s_terrain;
+      |         ^~~~~~~~~~~~~~~~
+D:\workcode\game\warden\Source\Game\CWorld.cpp:11:11: warning: 'CWorld::s_terrai
+n' has incomplete type
+   11 | CTerrain *CWorld::s_terrain = nullptr;
+      |           ^~~~~~
+D:\workcode\game\warden\Source\Game\CWorld.h:5:7: note: forward declaration of '
+class CTerrain'
+    5 | class CTerrain;
+      |       ^~~~~~~~
+D:\workcode\game\warden\Source\Game\CWorld.cpp:79:9: note: neither the destructor nor th
+e class-specific 'operator delete' will be called, even if they are declared when the class is defined
+   79 |         delete s_terrain;
+      |         ^~~~~~~~~~~~~~~~
+mingw32-make[3]: *** [CMakeFiles\warden.dir\build.make:3904: CMakeFiles/warden.dir/Source/Game/CWorld.cpp.obj] Error 1
+[ 58%] Building CXX object CMakeFiles/warden.dir/Source/Game/CampaignProfiles.cpp.obj
+D:\workcode\game\warden\Source\Game\CampaignProfiles.cpp: In member function 'void CampaignProfil
+es::RemoveProfile(int32_t)':
+D:\workcode\game\warden\Source\Game\CampaignProfiles.cpp:30:14: error: 'remove_i
+f' is not a member of 'std'; did you mean 'remove_cv'?
+   30 |         std::remove_if(m_profiles.begin(), m_profiles.end(),
+      |              ^~~~~~~~~
+      |              remove_cv
+mingw32-make[3]: *** [CMakeFiles\warden.dir\build.make:3919: CMakeFiles/warden.dir/Source/Game/CampaignProfiles.cpp.obj
+] Error 1
+[ 58%] Building CXX object CMakeFiles/warden.dir/Source/Game/Client.cpp.obj

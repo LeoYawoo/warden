@@ -1,6 +1,6 @@
 #include "net/connection/NetClient.h"
 #include "net/connection/WowConnection.h"
-#include "Common/datastore/CDataStore.h"
+#include "../../Base/CDataStore.h"
 #include "StormMac/String.h"
 #include "StormMac/Error.h"
 #include <cstdlib>

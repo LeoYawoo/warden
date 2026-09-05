@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <unordered_map>
+#include <fstream>
 
 // Reverse engineered from Warcraft III binary
 // Profile manages user profile data

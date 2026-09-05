@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_map>
 
 // Forward declarations
 class FrameDef;
@@ -38,4 +39,5 @@ protected:
     std::string m_setupName;
     bool m_complete;
     FrameDef* m_frameDef;
+    std::unordered_map<std::string, std::string> m_parameters;
 };

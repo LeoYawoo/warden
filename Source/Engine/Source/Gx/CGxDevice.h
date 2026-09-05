@@ -16,6 +16,12 @@
 #include "../Tempest/CBoundingBox.h"
 #include "CGxBatch.h"
 #include "../Gx/texture/CGxTex.h"
+#include "../Common/TSGrowableArray.h"
+#include "../Common/TSFixedArray.h"
+#include "../Common/TSHashTable.h"
+#include "../Common/TSList.h"
+#include "../Common/TSGetLink.h"
+#include "../Common/Hashkey.h"
 
 using namespace Tempest;
 

@@ -1,4 +1,5 @@
 #include "CDialogButtonEventReg.h"
+#include <algorithm>
 
 // Reverse engineered from Warcraft III binary
 

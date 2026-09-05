@@ -2,8 +2,9 @@
 
 #include "../Gx/Texture.h"
 #include <cstdint>
-#include <storm/String.h>
-#include "../Tempest/CAaBox.h>
+#include <StormMac/String.h>
+#include "../Tempest/CAaBox.h"
+#include "../Common/TSGrowableArray.h"
 
 class CAsyncObject;
 
@@ -60,6 +61,7 @@ public:
     M2SkinSection *m_skinSections = nullptr;
     uint32_t uint190 = 0;
     uint32_t uint194 = 0;
+    TSGrowableArray<CShaderEffect*> m_lowPrioritySequences;
 
     // Member functions
     CM2Shared(CM2Cache *cache)

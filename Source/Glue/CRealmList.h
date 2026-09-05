@@ -3,14 +3,33 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include "Common/TSGrowableArray.h"
 
 // Reverse engineered from Warcraft III binary
 // CRealmList manages the realm list
+
+struct RealmEntry {
+    char name[64];
+    char address[64];
+    int32_t port;
+};
+
+struct RealmCategory {
+    TSGrowableArray<int32_t> m_realms;
+    uint32_t uint14 = 0;
+};
 
 class CRealmList {
 public:
     CRealmList();
     ~CRealmList();
+
+    // IDA reverse-engineered names
+    static TSGrowableArray<RealmCategory*> s_categories;
+    static int32_t s_selectedCategory;
+    static int32_t s_preferredCategory;
+    static int32_t Sub4DE910(int32_t categoryIndex);
+    static void SetPreferredInfo(uint32_t index, int32_t pvp, int32_t rp);
 
     // Realm operations
     bool Initialize();

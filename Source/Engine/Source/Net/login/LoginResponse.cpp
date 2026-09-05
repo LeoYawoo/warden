@@ -1,6 +1,6 @@
 #include "net/login/LoginResponse.h"
 #include "net/grunt/Grunt.h"
-#include "Common/datastore/CDataStore.h"
+#include "../../Base/CDataStore.h"
 #include "StormMac/String.h"
 
 void LoginResponse::HandleRealmData(uint32_t a2, CDataStore *msg) {

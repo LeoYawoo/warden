@@ -10,6 +10,7 @@
 #include "Engine/Source/Gx/Gx.h"
 #include "Engine/Source/Gx/Draw.h"
 #include "Engine/Source/Gx/Font.h"
+#include "Engine/Source/Anim/Type.h"
 
 CGxShader *CSimpleRender::s_vertexShader[2];
 

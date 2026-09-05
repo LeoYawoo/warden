@@ -6,9 +6,9 @@
 #include "StormMac/Luaex.h"
 #include <cmath>
 #include <limits>
-#include "Engine/Source/Tempest/C44Matrix.h>
-#include "Engine/Source/Gx/Transform.h>
-#include "Engine/Source/Gx/Camera.h>
+#include "Engine/Source/Tempest/C44Matrix.h"
+#include "Engine/Source/Gx/Transform.h"
+#include "Engine/Source/Gx/Camera.h"
 using namespace Tempest;
 
 

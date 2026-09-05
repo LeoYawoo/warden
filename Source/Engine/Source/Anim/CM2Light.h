@@ -1,7 +1,7 @@
 #pragma once
 
 #include "M2Types.h"
-#include "../Tempest/C3Vector.h>
+#include "../Tempest/C3Vector.h"
 
 class CM2Scene;
 

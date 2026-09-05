@@ -2,8 +2,8 @@
 
 
 #include <cstdint>
-#include "../Tempest/CRect.h>
-#include "../Tempest/CImVector.h>
+#include "../Tempest/CRect.h"
+#include "../Tempest/CImVector.h"
 #include "CGxCaps.h"
 #include "CGxFormat.h"
 #include "Types.h"

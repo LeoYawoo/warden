@@ -3,6 +3,10 @@
 
 // Reverse engineered from Warcraft III binary
 
+TSGrowableArray<RealmCategory*> CRealmList::s_categories;
+int32_t CRealmList::s_selectedCategory = -1;
+int32_t CRealmList::s_preferredCategory = -1;
+
 CRealmList::CRealmList()
     : m_initialized(false), m_visible(false), m_selectedRealmIndex(-1) {
 }
@@ -59,3 +63,16 @@ void CRealmList::SetSelectedRealmIndex(int32_t index) { m_selectedRealmIndex = i
 
 bool CRealmList::IsVisible() const { return m_visible; }
 void CRealmList::SetVisible(bool visible) { m_visible = visible; }
+
+int32_t CRealmList::Sub4DE910(int32_t categoryIndex) {
+    // IDA reverse-engineered function
+    // Maps a user-facing category index to internal index
+    if (categoryIndex < 0 || categoryIndex >= static_cast<int32_t>(s_categories.Count())) {
+        return 0;
+    }
+    return categoryIndex;
+}
+
+void CRealmList::SetPreferredInfo(uint32_t index, int32_t pvp, int32_t rp) {
+    // TODO: Implement preferred realm info setting
+}

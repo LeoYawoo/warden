@@ -4,7 +4,7 @@
 #include "M2Model.h"
 #include "M2Types.h"
 #include "Common/TSGrowableArray.h"
-#include "../Tempest/C44Matrix.h>
+#include "../Tempest/C44Matrix.h"
 
 using namespace Tempest;
 

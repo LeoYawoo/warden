@@ -7,6 +7,10 @@
 
 class CEvent : public TRefCnt {
 public:
+    CEvent() : id(0), param(nullptr) {}
+    CEvent(unsigned int eventType, void* data) : id(eventType), param(data) {}
+    virtual ~CEvent() {}
+
     // Member variables
     uint32_t id;
     void *param;

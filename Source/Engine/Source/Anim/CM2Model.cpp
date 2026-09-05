@@ -10,7 +10,7 @@
 #include "M2Model.h"
 #include <common/DataMgr.h>
 #include <common/ObjectAlloc.h>
-#include "../Tempest/CMathi.h>
+#include "../Tempest/CMathi.h"
 
 uint32_t CM2Model::s_loadingSequence = 0xFFFFFFFF;
 uint8_t *CM2Model::s_sequenceBase;
@@ -76,7 +76,7 @@ uint16_t CM2Model::Sub8260C0(M2Data *data, uint32_t sequenceId, int32_t a3) {
     if (!data) return static_cast<uint16_t>(-1);
 
     for (uint32_t i = 0; i < data->sequences.Count(); i++) {
-        if (data->sequences[i].sequenceId == sequenceId) {
+        if (data->sequences[i].id == sequenceId) {
             return static_cast<uint16_t>(i);
         }
     }

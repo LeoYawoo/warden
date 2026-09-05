@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <vector>
 
 // Reverse engineered from Warcraft III binary
 // CDialogButtonEventReg manages dialog button event registration

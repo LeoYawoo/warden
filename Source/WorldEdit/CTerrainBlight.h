@@ -1,9 +1,7 @@
 #pragma once
 
 #include <cstdint>
-
-// Forward declarations
-class CTerrain;
+#include "Engine/Source/Terrain/CTerrain.h"
 
 // Reverse engineered from Warcraft III binary
 // CTerrainBlight manages terrain blight (corruption) effects

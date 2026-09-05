@@ -10,7 +10,7 @@
 #include "Common/TSGetLink.h"
 #include "StormMac/thread/SThread.h"
 #include <cstdint>
-#include <storm/Thread.h>
+#include <StormMac/Thread.h>
 
 class EvtContext;
 

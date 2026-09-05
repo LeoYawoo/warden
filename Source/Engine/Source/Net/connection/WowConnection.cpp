@@ -9,7 +9,7 @@
 #include "net/connection/WowConnectionNet.h"
 #include "net/connection/WowConnectionResponse.h"
 #include "StormMac/Time.h"
-#include "Common/datastore/CDataStore.h"
+#include "../../Base/CDataStore.h"
 #include <StormMac/Thread.h>
 #include <StormMac/Crypto.h>
 #include <StormMac/HMAC.h>

@@ -4,9 +4,9 @@
 #include "../Gx/Texture.h"
 #include "CM2Lighting.h"
 #include <cstdint>
-#include "../Tempest/C44Matrix.h>
-#include "../Tempest/C3Vector.h>
-#include "../Tempest/CAaBox.h>
+#include "../Tempest/C44Matrix.h"
+#include "../Tempest/C3Vector.h"
+#include "../Tempest/CAaBox.h"
 
 using namespace Tempest;
 
@@ -48,6 +48,7 @@ public:
     static uint16_t Sub8260C0(M2Data *data, uint32_t sequenceId, int32_t a3);
 
     // Member variables
+    uint32_t m_memHandle = 0;
     uint32_t m_refCount = 1;
     uint32_t m_flags = 0;
     CM2Model **m_scenePrev = nullptr;

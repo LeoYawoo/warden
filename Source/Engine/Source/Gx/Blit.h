@@ -2,7 +2,7 @@
 
 #include "Types.h"
 #include <cstdint>
-#include "../Tempest/C2iVector.h>
+#include "../Tempest/C2iVector.h"
 
 using namespace Tempest;
 

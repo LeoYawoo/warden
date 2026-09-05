@@ -4,7 +4,7 @@
 #include "net/grunt/Command.h"
 #include "net/srp/SRP6_Random.h"
 #include "StormMac/String.h"
-#include "Common/datastore/CDataStoreCache.h"
+#include "../../Base/CDataStoreCache.h"
 #include <cstring>
 #include <new>
 

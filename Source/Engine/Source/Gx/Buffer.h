@@ -5,6 +5,11 @@
 #include "buffer/Types.h"
 #include "Types.h"
 #include <cstdint>
+#include "../Tempest/C3Vector.h"
+#include "../Tempest/C2Vector.h"
+#include "../Tempest/CImVector.h"
+
+using namespace Tempest;
 
 class CGxBuf;
 
@@ -19,7 +24,7 @@ struct VertexBufDesc {
 
 namespace Buffer {
     extern VertexBufDesc s_vertexBufDesc[GxVertexBufferFormats_Last];
-    extern int32_t s_vertexBufOffset[GxVertexBufferFormats_Last][GxVAs_Last];
+    extern int32_t s_vertexBufOffset[GxVertexBufferFormats_Last][GxVertexBufferFormats_Last];
     extern uint32_t s_lockVertexCount;
 }
 

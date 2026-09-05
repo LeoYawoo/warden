@@ -5,7 +5,7 @@
 #include "WowConnectionResponse.h"
 #include "StormMac/Atomic.h"
 #include "StormMac/thread/SCritSect.h"
-#include "../Event/Types.h"
+#include "../../Event/Types.h"
 #include "Common/TSLinkedNode.h"
 #include "Common/TSList.h"
 

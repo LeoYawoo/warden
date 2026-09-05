@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include "Engine/Source/Agile/CEvent.h"
+#include "Engine/Source/Event/CEvent.h"
 
 // Forward declarations
 class CTerrain;

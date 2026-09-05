@@ -6,7 +6,7 @@
 #include "net/grunt/Timer.h"
 #include "net/srp/SRP6_Client.h"
 #include "net/Types.h"
-#include "Common/datastore/CDataStore.h"
+#include "../../Base/CDataStore.h"
 
 class WowConnection;
 

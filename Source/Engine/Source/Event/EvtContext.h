@@ -8,11 +8,19 @@
 #include "event/Types.h"
 #include "StormMac/thread/SCritSect.h"
 #include "Common/TSExplicitList.h"
+#include "Common/TSTimerPriority.h"
+#include "Common/TSPriorityQueue.h"
 #include "Common/instance/TInstanceId.h"
 #include "Common/instance/TSingletonInstanceId.h"
 #include "Common/prop/Types.h"
-#include <storm/Thread.h>
+#include <StormMac/Thread.h>
 #include "Common/offset_of.h"
+
+// Forward declaration for EvtTimerQueue
+class EvtTimerQueue : public TSPriorityQueue<EvtTimer> {
+public:
+    EvtTimerQueue() : TSPriorityQueue<EvtTimer>(0) {}
+};
 
 class EvtContext : public TSingletonInstanceId<EvtContext, STRUCT_OFFSET(TInstanceId<EvtContext>, m_id)> {
 public:

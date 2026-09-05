@@ -2,7 +2,7 @@
 #include "event/Event.h"
 #include "event/EvtThread.h"
 #include "StormMac/Time.h"
-#include <storm/Atomic.h>
+#include <StormMac/Atomic.h>
 #include "Common/offset_of.h"
 
 HEVENTCONTEXT AttachContextToThread(EvtContext *context) {

@@ -1,4 +1,5 @@
 #include "CFStringUtilities.h"
+#include <cstdarg>
 #include <cstring>
 #include <cstdlib>
 

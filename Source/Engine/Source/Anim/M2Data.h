@@ -5,8 +5,8 @@
 #include "../Tempest/CRange.h"
 #include "../Tempest/CiRange.h"
 #include "Type.h"
-#include "../Tempest/CAaBox.h>
-#include "../Tempest/C3Vector.h>
+#include "../Tempest/CAaBox.h"
+#include "../Tempest/C3Vector.h"
 
 using namespace Tempest;
 

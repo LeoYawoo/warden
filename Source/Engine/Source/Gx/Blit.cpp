@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <cstring>
 #include "StormMac/Unimplemented.h"
-#include "../Tempest/C2iVector.h>
+#include "../Tempest/C2iVector.h"
 
 using namespace Tempest;
 

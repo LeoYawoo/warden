@@ -63,30 +63,6 @@ void CAgentPtr<T>::Release() {
     }
 }
 
-// CAgentTimer - Address: 0x7573192
-CAgentTimer::CAgentTimer() {
-    // Timer initialization
-}
-
-CAgentTimer::CAgentTimer(const CAgentTimer& other) {
-    // Copy constructor
-}
-
-CAgentTimer::~CAgentTimer() {
-    // Destructor
-}
-
-CAgentTimer& CAgentTimer::operator=(const CAgentTimer& other) {
-    if (this != &other) {
-        // Copy assignment
-    }
-    return *this;
-}
-
-void CAgentTimer::EventId() {
-    // Event ID handling
-}
-
 // Explicit template instantiation
 template class CAgentPtr<CAgent>;
 template class CAgentPtr<void>;
