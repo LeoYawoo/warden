@@ -39,6 +39,8 @@ namespace Screen {
     extern int32_t s_presentDisable;
 }
 
+int32_t OnPaint(const void *a1, void *a2);
+
 void ILayerInitialize();
 
 void IStockInitialize();

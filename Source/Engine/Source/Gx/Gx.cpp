@@ -1,5 +1,16 @@
 #include "Gx.h"
 #include "Device.h"
+#include <QOpenGLFunctions>
+
+static QOpenGLFunctions *s_glFuncs = nullptr;
+
+QOpenGLFunctions *GxGetGLFunctions() {
+    return s_glFuncs;
+}
+
+void GxSetGLFunctions(QOpenGLFunctions *funcs) {
+    s_glFuncs = funcs;
+}
 
 const char *vsProfileNames[] = {
         "none", "vs_1_1", "vs_2_0", "vs_3_0", "vs_4_0", "vs_5_0", "arbvp1", "arbvp1_cg12", "nvvp", "nvvp2", "nvvp3",

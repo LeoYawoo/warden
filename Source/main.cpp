@@ -1,39 +1,29 @@
-#include <iostream>
-#include <cstdio>
-#include <windows.h>
-#include <QGuiApplication>
+#include <QApplication>
 #include <QSurfaceFormat>
+#include "Engine/Source/Gx/WardenWindow.h"
 #include "Engine/Source/Event/Event.h"
 #include "StormMac/StormInit.h"
 #include "Game/Client.h"
 
-
-
 int main(int argc, char **argv) {
-    AllocConsole();
-    freopen("CONOUT$", "w", stdout);
-    freopen("CONOUT$", "w", stderr);
-    fprintf(stderr, "=== warden starting ===\n");
-    fflush(stderr);
-
     QSurfaceFormat fmt;
     fmt.setSwapInterval(0);
+    fmt.setDepthBufferSize(24);
+    fmt.setStencilBufferSize(8);
     QSurfaceFormat::setDefaultFormat(fmt);
 
-    QGuiApplication app(argc, argv);
-    StormInitialize();
+    QApplication app(argc, argv);
 
-    // TODO
-    // - error log setup
-    // - misc other setup
+    // Create the OpenGL window
+    WardenWindow window;
+    window.resize(1024, 768);
+    window.show();
+
+    StormInitialize();
 
     if (InitializeGlobal()) {
         EventDoMessageLoop();
-
-        // TODO
-        // sub_406B70();
     }
-    // TODO
-    // - misc cleanup
+
     return app.exec();
 }

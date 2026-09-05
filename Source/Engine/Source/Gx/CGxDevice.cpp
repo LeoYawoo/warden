@@ -5,6 +5,7 @@
 #include "texture/CGxTex.h"
 #include "CGxBatch.h"
 #include "gll/CGxDeviceGLL.h"
+#include "CGxDeviceOpenGL/CGxDeviceOpenGl.h"
 #include "StormMac/SFile.h"
 #include <algorithm>
 #include <cstdarg>
@@ -113,10 +114,8 @@ CGxDevice *CGxDevice::NewGLL() {
 
 
 CGxDevice *CGxDevice::NewOpenGl() {
-    // TODO
-//    auto m = SMemAlloc(sizeof(CGxDeviceOpenGl), __FILE__, __LINE__, 0x0);
-//    return new(m) CGxDeviceOpenGl();
-    return nullptr;
+    auto m = SMemAlloc(sizeof(CGxDeviceOpenGl), __FILE__, __LINE__, 0x0);
+    return new(m) CGxDeviceOpenGl();
 }
 
 uint32_t CGxDevice::PrimCalcCount(EGxPrim primType, uint32_t count) {

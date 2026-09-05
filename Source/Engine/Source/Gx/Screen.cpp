@@ -13,8 +13,7 @@
 #include "../Gx/Gx.h"
 #include "../Gx/CCamera.h"
 #include "../Gx/gll/GLDevice.h"
-#include <glad/glad.h>
-#include "glad/glad.h"
+#include <QOpenGLFunctions>
 #include <cstdio>
 
 
@@ -69,8 +68,11 @@ int32_t OnPaint(const void *a1, void *a2) {
     float minX, maxX, minY, maxY, minZ, maxZ;
     GxXformViewport(minX, maxX, minY, maxY, minZ, maxZ);
 
-    glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    auto *gl = GxGetGLFunctions();
+    if (gl) {
+        gl->glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
+        gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
 
     // Render terrain
     CTerrain *terrain = CWorld::GetTerrain();

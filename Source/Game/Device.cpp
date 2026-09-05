@@ -192,11 +192,8 @@ void ConsoleDeviceInitialize(const char *title) {
     CGxFormat format;
     memcpy(&format, &s_requestedFormat, sizeof(s_requestedFormat));
 
-    // TODO proper api selection
+    // Use OpenGL API with Qt's QOpenGLWindow
     EGxApi api = GxApi_OpenGl;
-
-    api = GxApi_GLL;
-
 
     CGxDevice *device = GxDevCreate(api, OsWindowProc, format);
 
