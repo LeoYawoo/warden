@@ -4,6 +4,7 @@
 #include "Engine/Source/Gx/shader/CShaderEffect.h"
 #include "Terrain/CTerrain.h"
 #include <cmath>
+#include <cstdlib>
 
 
 uint32_t CWorld::s_enables;
@@ -45,7 +46,7 @@ void CWorld::Initialize() {
     );
 
     if (!s_terrain) {
-        s_terrain = new CTerrain();
+        s_terrain = static_cast<CTerrain*>(calloc(1, sizeof(CTerrain)));
         // Initialize a 64x64 cell terrain grid at origin (0, 0)
         // Each cell is 128 world units (matching War3 CELL_SIZE)
         s_terrain->Initialize(64, 64, 0.0f, 0.0f);
