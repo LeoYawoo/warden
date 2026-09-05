@@ -671,9 +671,8 @@ bool JpegDecoder::Decode(const uint8_t* data, size_t dataSize,
         }
     }
 
-    // BLP1 JPEG with 4 components (YUVA)
-    // Component order: comp0=Y, comp1=U, comp2=V, comp3=A
-    // Convert YUVA to BGRA
+    // BLP1 JPEG with 4 components
+    // Try YUVA order (standard JPEG with alpha)
     for (int y = 0; y < (int)height; y++)
     {
         for (int x = 0; x < (int)width; x++)
@@ -688,10 +687,10 @@ bool JpegDecoder::Decode(const uint8_t* data, size_t dataSize,
                 int vVal = compBuffers[2][pixelIdx] + 128;
                 int aVal = compBuffers[3][pixelIdx] + 128;
 
-                // YUV to RGB conversion
-                int r = yVal + (int)(1.402 * (vVal - 128));
-                int g = yVal - (int)(0.344 * (uVal - 128)) - (int)(0.714 * (vVal - 128));
-                int b = yVal + (int)(1.772 * (uVal - 128));
+                // YUV to RGB conversion (BT.601)
+                int r = yVal + ((359 * (vVal - 128)) >> 8);
+                int g = yVal - ((88 * (uVal - 128)) >> 8) - ((183 * (vVal - 128)) >> 8);
+                int b = yVal + ((454 * (uVal - 128)) >> 8);
 
                 output[outIdx + 0] = static_cast<uint8_t>(std::max(0, std::min(255, b))); // B
                 output[outIdx + 1] = static_cast<uint8_t>(std::max(0, std::min(255, g))); // G
