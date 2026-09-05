@@ -597,13 +597,13 @@ int32_t PumpBlpTextureAsync(CTexture *texture, void *buf) {
         return 0;
     }
 
-    if (texture->flags & 0x4 && !(image.m_header.hasMips & 0x10)) {
+    if (texture->flags & 0x4 && !(image.m_header.hasMipmaps & 0x10)) {
         texture->flags &= 0xFFFB;
     }
 
-    texture->alphaBits = image.m_header.alphaSize;
+    texture->alphaBits = image.m_header.alphaBits;
 
-    if (image.m_header.alphaSize == 0) {
+    if (image.m_header.alphaBits == 0) {
         texture->flags |= 0x1;
     }
 
@@ -617,8 +617,8 @@ int32_t PumpBlpTextureAsync(CTexture *texture, void *buf) {
 
     PIXEL_FORMAT pixFormat;
     EGxTexFormat gxTexFormat;
-    PIXEL_FORMAT preferredFormat = static_cast<PIXEL_FORMAT>(image.m_header.preferredFormat);
-    int32_t alphaSize = image.m_header.alphaSize;
+    PIXEL_FORMAT preferredFormat = static_cast<PIXEL_FORMAT>(image.m_header.extra);
+    int32_t alphaSize = image.m_header.alphaBits;
 
     GetTextureFormats(&pixFormat, &gxTexFormat, preferredFormat, alphaSize);
 

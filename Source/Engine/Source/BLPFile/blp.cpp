@@ -2,16 +2,16 @@
 #include "IJG/jpeg_decoder.h"
 #include <fstream>
 
-CBLPFile::CBLPFile() : m_valid(false) {
+CBLPLoader::CBLPLoader() : m_valid(false) {
     std::memset(&m_header, 0, sizeof(m_header));
     std::memset(m_palette, 0, sizeof(m_palette));
 }
 
-CBLPFile::~CBLPFile() {
+CBLPLoader::~CBLPLoader() {
 }
 
-bool CBLPFile::LoadFromMemory(const uint8_t *data, size_t size) {
-    if (!data || size < sizeof(BLPHeader)) {
+bool CBLPLoader::LoadFromMemory(const uint8_t *data, size_t size) {
+    if (!data || size < sizeof(BLP1Header)) {
         return false;
     }
 
@@ -19,7 +19,7 @@ bool CBLPFile::LoadFromMemory(const uint8_t *data, size_t size) {
     return ParseHeader(data, size);
 }
 
-bool CBLPFile::LoadFromFile(const char *filePath) {
+bool CBLPLoader::LoadFromFile(const char *filePath) {
     std::ifstream file(filePath, std::ios::binary | std::ios::ate);
     if (!file.is_open()) {
         return false;
@@ -36,17 +36,17 @@ bool CBLPFile::LoadFromFile(const char *filePath) {
     return ParseHeader(m_fileData.data(), m_fileData.size());
 }
 
-bool CBLPFile::ParseHeader(const uint8_t *data, size_t size) {
-    std::memcpy(&m_header, data, sizeof(BLPHeader));
+bool CBLPLoader::ParseHeader(const uint8_t *data, size_t size) {
+    std::memcpy(&m_header, data, sizeof(BLP1Header));
 
     // Validate magic number
-    if (m_header.signature != BLP_MAGIC) {
+    if (m_header.magic != 0x31504C42) { // "BLP1"
         m_valid = false;
         return false;
     }
 
     // Validate compression type (low 3 bits)
-    uint32_t compressionType = m_header.compression & 0x7;
+    uint32_t compressionType = m_header.type & 0x7;
     if (compressionType > BLP_FORMAT_UNCOMPRESSED) {
         m_valid = false;
         return false;
@@ -59,10 +59,10 @@ bool CBLPFile::ParseHeader(const uint8_t *data, size_t size) {
     }
 
     // Parse palette if needed
-    if (compressionType == BLP_FORMAT_PALETTE && m_header.compression > 0) {
-        uint32_t paletteSize = m_header.compression * sizeof(uint32_t);
-        if (sizeof(BLPHeader) + paletteSize <= size) {
-            std::memcpy(m_palette, data + sizeof(BLPHeader), paletteSize);
+    if (compressionType == BLP_FORMAT_PALETTE && m_header.type > 0) {
+        uint32_t paletteSize = m_header.type * sizeof(uint32_t);
+        if (sizeof(BLP1Header) + paletteSize <= size) {
+            std::memcpy(m_palette, data + sizeof(BLP1Header), paletteSize);
         }
     }
 
@@ -70,7 +70,7 @@ bool CBLPFile::ParseHeader(const uint8_t *data, size_t size) {
     return true;
 }
 
-uint32_t CBLPFile::GetNumMips() const {
+uint32_t CBLPLoader::GetNumMips() const {
     if (!m_valid) return 0;
 
     // Count valid mipmaps
@@ -85,7 +85,7 @@ uint32_t CBLPFile::GetNumMips() const {
     return count;
 }
 
-const uint8_t* CBLPFile::GetMipMapData(uint32_t level) const {
+const uint8_t* CBLPLoader::GetMipMapData(uint32_t level) const {
     if (!m_valid || level >= 16 || m_header.mipOffsets[level] == 0) {
         return nullptr;
     }
@@ -95,19 +95,19 @@ const uint8_t* CBLPFile::GetMipMapData(uint32_t level) const {
     return m_fileData.data() + m_header.mipOffsets[level];
 }
 
-uint32_t CBLPFile::GetMipMapSize(uint32_t level) const {
+uint32_t CBLPLoader::GetMipMapSize(uint32_t level) const {
     if (!m_valid || level >= 16) {
         return 0;
     }
     return m_header.mipSizes[level];
 }
 
-bool CBLPFile::DecodeToRGBA(std::vector<uint8_t> &output, uint32_t mipLevel) {
+bool CBLPLoader::DecodeToRGBA(std::vector<uint8_t> &output, uint32_t mipLevel) {
     if (!m_valid) {
         return false;
     }
 
-    uint32_t compressionType = m_header.compression & 0x7;
+    uint32_t compressionType = m_header.type & 0x7;
     switch (compressionType) {
         case BLP_FORMAT_JPEG:
             return DecodeJPEG(output, mipLevel);
@@ -126,7 +126,7 @@ bool CBLPFile::DecodeToRGBA(std::vector<uint8_t> &output, uint32_t mipLevel) {
     }
 }
 
-bool CBLPFile::DecodePalette(std::vector<uint8_t> &output, uint32_t mipLevel) {
+bool CBLPLoader::DecodePalette(std::vector<uint8_t> &output, uint32_t mipLevel) {
     const uint8_t *data = GetMipMapData(mipLevel);
     uint32_t dataSize = GetMipMapSize(mipLevel);
 
@@ -155,7 +155,7 @@ bool CBLPFile::DecodePalette(std::vector<uint8_t> &output, uint32_t mipLevel) {
     return true;
 }
 
-bool CBLPFile::DecodeDXT1(std::vector<uint8_t> &output, uint32_t mipLevel) {
+bool CBLPLoader::DecodeDXT1(std::vector<uint8_t> &output, uint32_t mipLevel) {
     const uint8_t *data = GetMipMapData(mipLevel);
     uint32_t dataSize = GetMipMapSize(mipLevel);
 
@@ -218,7 +218,7 @@ bool CBLPFile::DecodeDXT1(std::vector<uint8_t> &output, uint32_t mipLevel) {
     return true;
 }
 
-bool CBLPFile::DecodeDXT3(std::vector<uint8_t> &output, uint32_t mipLevel) {
+bool CBLPLoader::DecodeDXT3(std::vector<uint8_t> &output, uint32_t mipLevel) {
     const uint8_t *data = GetMipMapData(mipLevel);
     uint32_t dataSize = GetMipMapSize(mipLevel);
 
@@ -274,7 +274,7 @@ bool CBLPFile::DecodeDXT3(std::vector<uint8_t> &output, uint32_t mipLevel) {
     return true;
 }
 
-bool CBLPFile::DecodeDXT5(std::vector<uint8_t> &output, uint32_t mipLevel) {
+bool CBLPLoader::DecodeDXT5(std::vector<uint8_t> &output, uint32_t mipLevel) {
     const uint8_t *data = GetMipMapData(mipLevel);
     uint32_t dataSize = GetMipMapSize(mipLevel);
 
@@ -343,7 +343,7 @@ bool CBLPFile::DecodeDXT5(std::vector<uint8_t> &output, uint32_t mipLevel) {
     return true;
 }
 
-bool CBLPFile::DecodeUncompressed(std::vector<uint8_t> &output, uint32_t mipLevel) {
+bool CBLPLoader::DecodeUncompressed(std::vector<uint8_t> &output, uint32_t mipLevel) {
     const uint8_t *data = GetMipMapData(mipLevel);
     uint32_t dataSize = GetMipMapSize(mipLevel);
 
@@ -370,7 +370,7 @@ bool CBLPFile::DecodeUncompressed(std::vector<uint8_t> &output, uint32_t mipLeve
     return true;
 }
 
-bool CBLPFile::DecodeJPEG(std::vector<uint8_t> &output, uint32_t mipLevel) {
+bool CBLPLoader::DecodeJPEG(std::vector<uint8_t> &output, uint32_t mipLevel) {
     const uint8_t *data = GetMipMapData(mipLevel);
     uint32_t dataSize = GetMipMapSize(mipLevel);
 
