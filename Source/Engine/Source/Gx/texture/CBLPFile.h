@@ -57,6 +57,7 @@ public:
     const char *Source;
     BLPHeader m_header;
     void *m_data;
+    size_t m_dataSize;
     uint32_t m_numLevels;
     uint32_t m_width;
     uint32_t m_height;

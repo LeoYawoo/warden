@@ -630,6 +630,9 @@ if(BUILD_TESTS)
         # BLPFile tests
         add_executable(blp_tests
                 tests/BLPFile/TestBLPFile.cpp
+                tests/BLPFile/TestBLPDecode.cpp
+                Source/Engine/Source/Gx/texture/CBLPFile.cpp
+                Source/Engine/Source/BLPFile/IJG/jpeg_decoder.cpp
         )
 
         target_link_libraries(blp_tests PRIVATE tempest_lib GTest::gtest_main)

@@ -1,5 +1,5 @@
 #include "blp.h"
-#include "IJG/jmemstorm.h"
+#include "IJG/jpeg_decoder.h"
 #include <fstream>
 
 CBLPFile::CBLPFile() : m_valid(false) {
@@ -40,13 +40,14 @@ bool CBLPFile::ParseHeader(const uint8_t *data, size_t size) {
     std::memcpy(&m_header, data, sizeof(BLPHeader));
 
     // Validate magic number
-    if (m_header.magic != BLP_MAGIC) {
+    if (m_header.signature != BLP_MAGIC) {
         m_valid = false;
         return false;
     }
 
-    // Validate format
-    if (m_header.format > BLP_FORMAT_UNCOMPRESSED) {
+    // Validate compression type (low 3 bits)
+    uint32_t compressionType = m_header.compression & 0x7;
+    if (compressionType > BLP_FORMAT_UNCOMPRESSED) {
         m_valid = false;
         return false;
     }
@@ -57,15 +58,9 @@ bool CBLPFile::ParseHeader(const uint8_t *data, size_t size) {
         return false;
     }
 
-    // Parse mipmaps
-    if (!ParseMipMaps(data, size)) {
-        m_valid = false;
-        return false;
-    }
-
     // Parse palette if needed
-    if (m_header.format == BLP_FORMAT_PALETTE && m_header.paletteEntries > 0) {
-        uint32_t paletteSize = m_header.paletteEntries * sizeof(uint32_t);
+    if (compressionType == BLP_FORMAT_PALETTE && m_header.compression > 0) {
+        uint32_t paletteSize = m_header.compression * sizeof(uint32_t);
         if (sizeof(BLPHeader) + paletteSize <= size) {
             std::memcpy(m_palette, data + sizeof(BLPHeader), paletteSize);
         }
@@ -75,33 +70,36 @@ bool CBLPFile::ParseHeader(const uint8_t *data, size_t size) {
     return true;
 }
 
-bool CBLPFile::ParseMipMaps(const uint8_t *data, size_t size) {
-    m_mipMaps.clear();
-    m_mipMaps.reserve(m_header.numMips);
+uint32_t CBLPFile::GetNumMips() const {
+    if (!m_valid) return 0;
 
-    for (uint32_t i = 0; i < m_header.numMips && i < 16; ++i) {
-        const BMipMapInfo &info = m_header.mipmapInfo[i];
-        if (info.offset + info.size > size) {
-            return false;
+    // Count valid mipmaps
+    uint32_t count = 0;
+    for (uint32_t i = 0; i < 16; ++i) {
+        if (m_header.mipSizes[i] > 0 && m_header.mipOffsets[i] > 0) {
+            count++;
+        } else {
+            break;
         }
-        m_mipMaps.push_back(info);
     }
-
-    return true;
+    return count;
 }
 
 const uint8_t* CBLPFile::GetMipMapData(uint32_t level) const {
-    if (!m_valid || level >= m_mipMaps.size()) {
+    if (!m_valid || level >= 16 || m_header.mipOffsets[level] == 0) {
         return nullptr;
     }
-    return m_fileData.data() + m_mipMaps[level].offset;
+    if (m_header.mipOffsets[level] >= m_fileData.size()) {
+        return nullptr;
+    }
+    return m_fileData.data() + m_header.mipOffsets[level];
 }
 
 uint32_t CBLPFile::GetMipMapSize(uint32_t level) const {
-    if (!m_valid || level >= m_mipMaps.size()) {
+    if (!m_valid || level >= 16) {
         return 0;
     }
-    return m_mipMaps[level].size;
+    return m_header.mipSizes[level];
 }
 
 bool CBLPFile::DecodeToRGBA(std::vector<uint8_t> &output, uint32_t mipLevel) {
@@ -109,7 +107,8 @@ bool CBLPFile::DecodeToRGBA(std::vector<uint8_t> &output, uint32_t mipLevel) {
         return false;
     }
 
-    switch (m_header.format) {
+    uint32_t compressionType = m_header.compression & 0x7;
+    switch (compressionType) {
         case BLP_FORMAT_JPEG:
             return DecodeJPEG(output, mipLevel);
         case BLP_FORMAT_PALETTE:
@@ -171,19 +170,17 @@ bool CBLPFile::DecodeDXT1(std::vector<uint8_t> &output, uint32_t mipLevel) {
 
     output.resize(width * height * 4);
 
+    const uint8_t *ptr = data;
     for (uint32_t y = 0; y < height; y += 4) {
         for (uint32_t x = 0; x < width; x += 4) {
-            // Decode 4x4 block
-            uint16_t color0 = *reinterpret_cast<const uint16_t*>(data);
-            uint16_t color1 = *reinterpret_cast<const uint16_t*>(data + 2);
-            uint32_t indices = *reinterpret_cast<const uint32_t*>(data + 4);
-            data += 8;
+            uint16_t color0 = *reinterpret_cast<const uint16_t*>(ptr);
+            uint16_t color1 = *reinterpret_cast<const uint16_t*>(ptr + 2);
+            uint32_t indices = *reinterpret_cast<const uint32_t*>(ptr + 4);
+            ptr += 8;
 
-            // Expand 16-bit colors to 32-bit
             uint8_t r0 = ((color0 >> 11) & 0x1F) << 3;
             uint8_t g0 = ((color0 >> 5) & 0x3F) << 2;
             uint8_t b0 = (color0 & 0x1F) << 3;
-
             uint8_t r1 = ((color1 >> 11) & 0x1F) << 3;
             uint8_t g1 = ((color1 >> 5) & 0x3F) << 2;
             uint8_t b1 = (color1 & 0x1F) << 3;
@@ -194,19 +191,17 @@ bool CBLPFile::DecodeDXT1(std::vector<uint8_t> &output, uint32_t mipLevel) {
                     uint8_t r, g, b, a;
 
                     if (color0 > color1) {
-                        // 4-color mode
                         switch (idx) {
                             case 0: r = r0; g = g0; b = b0; a = 255; break;
                             case 1: r = r1; g = g1; b = b1; a = 255; break;
-                            case 2: r = (2 * r0 + r1) / 3; g = (2 * g0 + g1) / 3; b = (2 * b0 + b1) / 3; a = 255; break;
-                            case 3: r = (r0 + 2 * r1) / 3; g = (g0 + 2 * g1) / 3; b = (b0 + 2 * b1) / 3; a = 255; break;
+                            case 2: r = (2*r0+r1)/3; g = (2*g0+g1)/3; b = (2*b0+b1)/3; a = 255; break;
+                            case 3: r = (r0+2*r1)/3; g = (g0+2*g1)/3; b = (b0+2*b1)/3; a = 255; break;
                         }
                     } else {
-                        // 3-color mode
                         switch (idx) {
                             case 0: r = r0; g = g0; b = b0; a = 255; break;
                             case 1: r = r1; g = g1; b = b1; a = 255; break;
-                            case 2: r = (r0 + r1) / 2; g = (g0 + g1) / 2; b = (b0 + b1) / 2; a = 255; break;
+                            case 2: r = (r0+r1)/2; g = (g0+g1)/2; b = (b0+b1)/2; a = 255; break;
                             case 3: r = 0; g = 0; b = 0; a = 0; break;
                         }
                     }
@@ -220,7 +215,6 @@ bool CBLPFile::DecodeDXT1(std::vector<uint8_t> &output, uint32_t mipLevel) {
             }
         }
     }
-
     return true;
 }
 
@@ -228,9 +222,7 @@ bool CBLPFile::DecodeDXT3(std::vector<uint8_t> &output, uint32_t mipLevel) {
     const uint8_t *data = GetMipMapData(mipLevel);
     uint32_t dataSize = GetMipMapSize(mipLevel);
 
-    if (!data || dataSize == 0) {
-        return false;
-    }
+    if (!data || dataSize == 0) return false;
 
     uint32_t width = m_header.width >> mipLevel;
     uint32_t height = m_header.height >> mipLevel;
@@ -238,23 +230,21 @@ bool CBLPFile::DecodeDXT3(std::vector<uint8_t> &output, uint32_t mipLevel) {
     if (height == 0) height = 1;
 
     output.resize(width * height * 4);
+    const uint8_t *ptr = data;
 
     for (uint32_t y = 0; y < height; y += 4) {
         for (uint32_t x = 0; x < width; x += 4) {
-            // DXT3 has explicit alpha
-            uint64_t alphaBlock = *reinterpret_cast<const uint64_t*>(data);
-            data += 8;
+            uint64_t alphaBlock = *reinterpret_cast<const uint64_t*>(ptr);
+            ptr += 8;
 
-            // Decode color block (same as DXT1)
-            uint16_t color0 = *reinterpret_cast<const uint16_t*>(data);
-            uint16_t color1 = *reinterpret_cast<const uint16_t*>(data + 2);
-            uint32_t indices = *reinterpret_cast<const uint32_t*>(data + 4);
-            data += 8;
+            uint16_t color0 = *reinterpret_cast<const uint16_t*>(ptr);
+            uint16_t color1 = *reinterpret_cast<const uint16_t*>(ptr + 2);
+            uint32_t indices = *reinterpret_cast<const uint32_t*>(ptr + 4);
+            ptr += 8;
 
             uint8_t r0 = ((color0 >> 11) & 0x1F) << 3;
             uint8_t g0 = ((color0 >> 5) & 0x3F) << 2;
             uint8_t b0 = (color0 & 0x1F) << 3;
-
             uint8_t r1 = ((color1 >> 11) & 0x1F) << 3;
             uint8_t g1 = ((color1 >> 5) & 0x3F) << 2;
             uint8_t b1 = (color1 & 0x1F) << 3;
@@ -262,15 +252,14 @@ bool CBLPFile::DecodeDXT3(std::vector<uint8_t> &output, uint32_t mipLevel) {
             for (uint32_t py = 0; py < 4 && (y + py) < height; ++py) {
                 for (uint32_t px = 0; px < 4 && (x + px) < width; ++px) {
                     uint32_t colorIdx = (indices >> ((py * 4 + px) * 2)) & 0x3;
-                    uint32_t alphaIdx = py * 4 + px;
-                    uint8_t alpha = ((alphaBlock >> (alphaIdx * 4)) & 0xF) * 17;
+                    uint8_t alpha = static_cast<uint8_t>(((alphaBlock >> (py * 4 + px) * 4) & 0xF) * 17);
 
                     uint8_t r, g, b;
                     switch (colorIdx) {
                         case 0: r = r0; g = g0; b = b0; break;
                         case 1: r = r1; g = g1; b = b1; break;
-                        case 2: r = (2 * r0 + r1) / 3; g = (2 * g0 + g1) / 3; b = (2 * b0 + b1) / 3; break;
-                        case 3: r = (r0 + 2 * r1) / 3; g = (g0 + 2 * g1) / 3; b = (b0 + 2 * b1) / 3; break;
+                        case 2: r = (2*r0+r1)/3; g = (2*g0+g1)/3; b = (2*b0+b1)/3; break;
+                        case 3: r = (r0+2*r1)/3; g = (g0+2*g1)/3; b = (b0+2*b1)/3; break;
                     }
 
                     uint32_t pixelIdx = ((y + py) * width + (x + px)) * 4;
@@ -282,7 +271,6 @@ bool CBLPFile::DecodeDXT3(std::vector<uint8_t> &output, uint32_t mipLevel) {
             }
         }
     }
-
     return true;
 }
 
@@ -290,9 +278,7 @@ bool CBLPFile::DecodeDXT5(std::vector<uint8_t> &output, uint32_t mipLevel) {
     const uint8_t *data = GetMipMapData(mipLevel);
     uint32_t dataSize = GetMipMapSize(mipLevel);
 
-    if (!data || dataSize == 0) {
-        return false;
-    }
+    if (!data || dataSize == 0) return false;
 
     uint32_t width = m_header.width >> mipLevel;
     uint32_t height = m_header.height >> mipLevel;
@@ -300,27 +286,25 @@ bool CBLPFile::DecodeDXT5(std::vector<uint8_t> &output, uint32_t mipLevel) {
     if (height == 0) height = 1;
 
     output.resize(width * height * 4);
+    const uint8_t *ptr = data;
 
     for (uint32_t y = 0; y < height; y += 4) {
         for (uint32_t x = 0; x < width; x += 4) {
-            // DXT5 alpha block
-            uint8_t alpha0 = data[0];
-            uint8_t alpha1 = data[1];
-            uint64_t alphaBits = *reinterpret_cast<const uint16_t*>(data + 2) |
-                                 (static_cast<uint64_t>(*reinterpret_cast<const uint16_t*>(data + 4)) << 16) |
-                                 (static_cast<uint64_t>(*reinterpret_cast<const uint16_t*>(data + 6)) << 32);
-            data += 8;
+            uint8_t alpha0 = ptr[0];
+            uint8_t alpha1 = ptr[1];
+            uint64_t alphaBits = *reinterpret_cast<const uint16_t*>(ptr + 2) |
+                                 (static_cast<uint64_t>(*reinterpret_cast<const uint16_t*>(ptr + 4)) << 16) |
+                                 (static_cast<uint64_t>(*reinterpret_cast<const uint16_t*>(ptr + 6)) << 32);
+            ptr += 8;
 
-            // Color block (same as DXT1)
-            uint16_t color0 = *reinterpret_cast<const uint16_t*>(data);
-            uint16_t color1 = *reinterpret_cast<const uint16_t*>(data + 2);
-            uint32_t indices = *reinterpret_cast<const uint32_t*>(data + 4);
-            data += 8;
+            uint16_t color0 = *reinterpret_cast<const uint16_t*>(ptr);
+            uint16_t color1 = *reinterpret_cast<const uint16_t*>(ptr + 2);
+            uint32_t indices = *reinterpret_cast<const uint32_t*>(ptr + 4);
+            ptr += 8;
 
             uint8_t r0 = ((color0 >> 11) & 0x1F) << 3;
             uint8_t g0 = ((color0 >> 5) & 0x3F) << 2;
             uint8_t b0 = (color0 & 0x1F) << 3;
-
             uint8_t r1 = ((color1 >> 11) & 0x1F) << 3;
             uint8_t g1 = ((color1 >> 5) & 0x3F) << 2;
             uint8_t b1 = (color1 & 0x1F) << 3;
@@ -330,7 +314,6 @@ bool CBLPFile::DecodeDXT5(std::vector<uint8_t> &output, uint32_t mipLevel) {
                     uint32_t colorIdx = (indices >> ((py * 4 + px) * 2)) & 0x3;
                     uint32_t alphaIdx = py * 4 + px;
 
-                    // Interpolate alpha
                     uint8_t alpha;
                     if (alpha0 > alpha1) {
                         alpha = static_cast<uint8_t>(((6 - alphaIdx % 3) * alpha0 + (alphaIdx % 3 + 1) * alpha1 + 3) / 6);
@@ -344,8 +327,8 @@ bool CBLPFile::DecodeDXT5(std::vector<uint8_t> &output, uint32_t mipLevel) {
                     switch (colorIdx) {
                         case 0: r = r0; g = g0; b = b0; break;
                         case 1: r = r1; g = g1; b = b1; break;
-                        case 2: r = (2 * r0 + r1) / 3; g = (2 * g0 + g1) / 3; b = (2 * b0 + b1) / 3; break;
-                        case 3: r = (r0 + 2 * r1) / 3; g = (g0 + 2 * g1) / 3; b = (b0 + 2 * b1) / 3; break;
+                        case 2: r = (2*r0+r1)/3; g = (2*g0+g1)/3; b = (2*b0+b1)/3; break;
+                        case 3: r = (r0+2*r1)/3; g = (g0+2*g1)/3; b = (b0+2*b1)/3; break;
                     }
 
                     uint32_t pixelIdx = ((y + py) * width + (x + px)) * 4;
@@ -357,7 +340,6 @@ bool CBLPFile::DecodeDXT5(std::vector<uint8_t> &output, uint32_t mipLevel) {
             }
         }
     }
-
     return true;
 }
 
@@ -365,33 +347,26 @@ bool CBLPFile::DecodeUncompressed(std::vector<uint8_t> &output, uint32_t mipLeve
     const uint8_t *data = GetMipMapData(mipLevel);
     uint32_t dataSize = GetMipMapSize(mipLevel);
 
-    if (!data || dataSize == 0) {
-        return false;
-    }
+    if (!data || dataSize == 0) return false;
 
     uint32_t width = m_header.width >> mipLevel;
     uint32_t height = m_header.height >> mipLevel;
     if (width == 0) width = 1;
     if (height == 0) height = 1;
 
-    // Uncompressed BLP uses 32-bit BGRA
     output.resize(width * height * 4);
 
     for (uint32_t y = 0; y < height; ++y) {
         for (uint32_t x = 0; x < width; ++x) {
             uint32_t srcIdx = (y * width + x) * 4;
-            uint32_t dstIdx = (y * width + x) * 4;
-
             if (srcIdx + 3 < dataSize) {
-                // BGRA to RGBA
-                output[dstIdx + 0] = data[srcIdx + 2];  // R
-                output[dstIdx + 1] = data[srcIdx + 1];  // G
-                output[dstIdx + 2] = data[srcIdx + 0];  // B
-                output[dstIdx + 3] = data[srcIdx + 3];  // A
+                output[srcIdx + 0] = data[srcIdx + 2];  // R
+                output[srcIdx + 1] = data[srcIdx + 1];  // G
+                output[srcIdx + 2] = data[srcIdx + 0];  // B
+                output[srcIdx + 3] = data[srcIdx + 3];  // A
             }
         }
     }
-
     return true;
 }
 
@@ -403,47 +378,12 @@ bool CBLPFile::DecodeJPEG(std::vector<uint8_t> &output, uint32_t mipLevel) {
         return false;
     }
 
-    // BLP JPEG 格式特殊处理
-    // BLP 文件中的 JPEG 数据需要先跳过前 4 个字节（标志位）
-    // 然后才是标准的 JPEG 数据
+    JpegDecoder decoder;
+    uint32_t width = 0, height = 0;
 
-    if (dataSize < 4) {
+    if (!decoder.Decode(data, dataSize, output, width, height)) {
         return false;
     }
 
-    // 跳过 BLP JPEG 头部标志
-    const uint8_t *jpegData = data + 4;
-    uint32_t jpegSize = dataSize - 4;
-
-    // 验证 JPEG 标记 (SOI = 0xFFD8)
-    if (jpegData[0] != 0xFF || jpegData[1] != 0xD8) {
-        return false;
-    }
-
-    // 使用 jmemstorm 初始化内存管理
-    jmemstorm_context ctx;
-    jmemstorm_init(&ctx);
-
-    // 获取纹理尺寸
-    uint32_t width = m_header.width >> mipLevel;
-    uint32_t height = m_header.height >> mipLevel;
-    if (width == 0) width = 1;
-    if (height == 0) height = 1;
-
-    // 分配输出缓冲区
-    output.resize(width * height * 4);
-
-    // 注意：完整的 JPEG 解码需要集成完整的 IJG JPEG 库
-    // 这里提供一个简化的实现，实际使用时需要：
-    // 1. 初始化 JPEG 解码器
-    // 2. 设置输入源
-    // 3. 设置输出格式 (RGBA)
-    // 4. 执行解码
-    // 5. 清理资源
-
-    // 由于完整的 IJG JPEG 库集成较为复杂，这里返回 false
-    // 表示需要完整的 JPEG 解码器支持
-    jmemstorm_cleanup(&ctx);
-
-    return false;
+    return true;
 }

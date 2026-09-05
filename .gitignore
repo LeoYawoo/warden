@@ -33,3 +33,4 @@ convert_log.ps1
 extract_errors.ps1
 missing_headers.txt
 data/
+external/ijg/

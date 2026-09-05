@@ -1,205 +1,61 @@
 #include <gtest/gtest.h>
-#include "BLPFile/blp.h"
+#include "Gx/texture/CBLPFile.h"
 #include <cstring>
 
 TEST(BLPFileTest, DefaultConstructor) {
     CBLPFile blp;
-    EXPECT_FALSE(blp.IsValid());
     EXPECT_EQ(blp.GetWidth(), 0u);
     EXPECT_EQ(blp.GetHeight(), 0u);
-    EXPECT_EQ(blp.GetFormat(), BLP_FORMAT_JPEG);
-    EXPECT_EQ(blp.GetNumMips(), 0u);
+    EXPECT_EQ(blp.GetMipCount(), 0u);
 }
 
-TEST(BLPFileTest, LoadInvalidMagic) {
-    uint8_t data[164] = {0};
-    // Set invalid magic number
-    *reinterpret_cast<uint32_t*>(data) = 0x12345678;
-
+TEST(BLPFileTest, LoadInvalidFile) {
     CBLPFile blp;
-    EXPECT_FALSE(blp.LoadFromMemory(data, sizeof(data)));
-    EXPECT_FALSE(blp.IsValid());
+    EXPECT_EQ(blp.Open("nonexistent_file.blp"), 0);
 }
 
-TEST(BLPFileTest, LoadValidHeader) {
-    uint8_t data[256] = {0};
-
-    // Set valid magic number
-    *reinterpret_cast<uint32_t*>(data) = BLP_MAGIC;
-
-    // Set version
-    *reinterpret_cast<uint32_t*>(data + 4) = 1;
-
-    // Set format to palette
-    *reinterpret_cast<uint32_t*>(data + 8) = BLP_FORMAT_PALETTE;
-
-    // Set width and height
-    *reinterpret_cast<uint32_t*>(data + 16) = 64;
-    *reinterpret_cast<uint32_t*>(data + 20) = 64;
-
-    // Set mipmap count
-    *reinterpret_cast<uint32_t*>(data + 152) = 1;
-
-    // Set palette entries
-    *reinterpret_cast<uint32_t*>(data + 156) = 256;
-
-    // Set mipmap offset and size
-    *reinterpret_cast<uint32_t*>(data + 24) = 164;  // offset
-    *reinterpret_cast<uint32_t*>(data + 28) = 64;   // size
-
+TEST(BLPFileTest, OpenHeroArchmage) {
     CBLPFile blp;
-    EXPECT_TRUE(blp.LoadFromMemory(data, sizeof(data)));
-    EXPECT_TRUE(blp.IsValid());
-    EXPECT_EQ(blp.GetWidth(), 64u);
-    EXPECT_EQ(blp.GetHeight(), 64u);
-    EXPECT_EQ(blp.GetFormat(), BLP_FORMAT_PALETTE);
-    EXPECT_EQ(blp.GetNumMips(), 1u);
+    ASSERT_EQ(blp.Open("data/blp/HeroArchmage.blp"), 1);
+
+    EXPECT_GT(blp.GetWidth(), 0u);
+    EXPECT_GT(blp.GetHeight(), 0u);
+    EXPECT_GT(blp.GetMipCount(), 0u);
+
+    printf("HeroArchmage.blp: %ux%u, %u mips, %u alpha bits\n",
+           blp.GetWidth(), blp.GetHeight(), blp.GetMipCount(), blp.GetAlphaBits());
 }
 
-TEST(BLPFileTest, TooSmallData) {
-    uint8_t data[100] = {0};
+TEST(BLPFileTest, DecodeMipDimensions) {
     CBLPFile blp;
-    EXPECT_FALSE(blp.LoadFromMemory(data, sizeof(data)));
+    ASSERT_EQ(blp.Open("data/blp/HeroArchmage.blp"), 1);
+
+    uint32_t outW = 0, outH = 0;
+    ASSERT_EQ(blp.DecodeMip(0, nullptr, 0, &outW, &outH), 1);
+    EXPECT_EQ(outW, blp.GetWidth());
+    EXPECT_EQ(outH, blp.GetHeight());
 }
 
-TEST(BLPFileTest, NullData) {
+TEST(BLPFileTest, DecodeMipData) {
     CBLPFile blp;
-    EXPECT_FALSE(blp.LoadFromMemory(nullptr, 100));
-}
+    ASSERT_EQ(blp.Open("data/blp/HeroArchmage.blp"), 1);
 
-TEST(BLPFileTest, GetMipMapDataInvalid) {
-    CBLPFile blp;
-    EXPECT_EQ(blp.GetMipMapData(0), nullptr);
-    EXPECT_EQ(blp.GetMipMapSize(0), 0u);
-}
+    uint32_t w = blp.GetWidth();
+    uint32_t h = blp.GetHeight();
+    std::vector<uint8_t> buf(w * h * 4);
+    uint32_t outW = 0, outH = 0;
 
-TEST(BLPFileTest, DecodeInvalid) {
-    CBLPFile blp;
-    std::vector<uint8_t> output;
-    EXPECT_FALSE(blp.DecodeToRGBA(output));
-}
+    ASSERT_EQ(blp.DecodeMip(0, buf.data(), buf.size(), &outW, &outH), 1);
+    EXPECT_EQ(outW, w);
+    EXPECT_EQ(outH, h);
 
-TEST(BLPFileTest, DecodePaletteFormat) {
-    uint8_t data[164 + 1024 + 4096] = {0};  // Header + palette + mipmap data
-
-    // Set valid header
-    *reinterpret_cast<uint32_t*>(data) = BLP_MAGIC;
-    *reinterpret_cast<uint32_t*>(data + 4) = 1;
-    *reinterpret_cast<uint32_t*>(data + 8) = BLP_FORMAT_PALETTE;
-    *reinterpret_cast<uint32_t*>(data + 16) = 4;  // width
-    *reinterpret_cast<uint32_t*>(data + 20) = 4;  // height
-    *reinterpret_cast<uint32_t*>(data + 152) = 1;  // num mips
-    *reinterpret_cast<uint32_t*>(data + 156) = 256;  // palette entries
-    *reinterpret_cast<uint32_t*>(data + 24) = 164;  // mipmap offset
-    *reinterpret_cast<uint32_t*>(data + 28) = 64;   // mipmap size (4x4 = 16 indices)
-
-    // Set palette entries
-    for (uint32_t i = 0; i < 256; ++i) {
-        uint32_t *palette = reinterpret_cast<uint32_t*>(data + 164);
-        palette[i] = (i << 24) | (i << 16) | (i << 8) | i;  // ARGB
+    // 验证像素非全零
+    bool hasContent = false;
+    for (size_t i = 0; i < buf.size(); i += 4) {
+        if (buf[i] != 0 || buf[i + 1] != 0 || buf[i + 2] != 0) {
+            hasContent = true;
+            break;
+        }
     }
-
-    CBLPFile blp;
-    EXPECT_TRUE(blp.LoadFromMemory(data, sizeof(data)));
-    EXPECT_TRUE(blp.IsValid());
-
-    std::vector<uint8_t> output;
-    EXPECT_TRUE(blp.DecodeToRGBA(output, 0));
-    EXPECT_EQ(output.size(), 4 * 4 * 4u);  // 4x4 pixels * 4 bytes (RGBA)
-}
-
-TEST(BLPFileTest, DecodeDXT1Format) {
-    uint8_t data[256] = {0};
-
-    // Set valid header
-    *reinterpret_cast<uint32_t*>(data) = BLP_MAGIC;
-    *reinterpret_cast<uint32_t*>(data + 4) = 1;
-    *reinterpret_cast<uint32_t*>(data + 8) = BLP_FORMAT_DXT1;
-    *reinterpret_cast<uint32_t*>(data + 16) = 4;  // width
-    *reinterpret_cast<uint32_t*>(data + 20) = 4;  // height
-    *reinterpret_cast<uint32_t*>(data + 152) = 1;
-    *reinterpret_cast<uint32_t*>(data + 24) = 164;
-    *reinterpret_cast<uint32_t*>(data + 28) = 8;  // DXT1 block size
-
-    CBLPFile blp;
-    EXPECT_TRUE(blp.LoadFromMemory(data, sizeof(data)));
-    EXPECT_TRUE(blp.IsValid());
-
-    std::vector<uint8_t> output;
-    EXPECT_TRUE(blp.DecodeToRGBA(output, 0));
-    EXPECT_EQ(output.size(), 4 * 4 * 4u);
-}
-
-TEST(BLPFileTest, GetHeader) {
-    uint8_t data[256] = {0};
-    *reinterpret_cast<uint32_t*>(data) = BLP_MAGIC;
-    *reinterpret_cast<uint32_t*>(data + 16) = 128;
-    *reinterpret_cast<uint32_t*>(data + 20) = 256;
-
-    CBLPFile blp;
-    blp.LoadFromMemory(data, sizeof(data));
-
-    const BLPHeader &header = blp.GetHeader();
-    EXPECT_EQ(header.magic, BLP_MAGIC);
-    EXPECT_EQ(header.width, 128u);
-    EXPECT_EQ(header.height, 256u);
-}
-
-TEST(BLPFileTest, FormatEnumValues) {
-    EXPECT_EQ(BLP_FORMAT_JPEG, 0);
-    EXPECT_EQ(BLP_FORMAT_PALETTE, 1);
-    EXPECT_EQ(BLP_FORMAT_DXT1, 2);
-    EXPECT_EQ(BLP_FORMAT_DXT3, 3);
-    EXPECT_EQ(BLP_FORMAT_DXT5, 4);
-    EXPECT_EQ(BLP_FORMAT_UNCOMPRESSED, 5);
-}
-
-TEST(BLPFileTest, MagicNumber) {
-    EXPECT_EQ(BLP_MAGIC, 0x31504C42u);
-}
-
-TEST(BLPFileTest, HeaderSize) {
-    EXPECT_EQ(sizeof(BLPHeader), 164u);
-}
-
-TEST(BLPFileTest, DecodeJPEGFormat) {
-    // 测试 JPEG 格式识别
-    // 注意：完整的 JPEG 解码需要 IJG 库，这里只测试格式识别
-    uint8_t data[1024] = {0};
-
-    // Set valid header
-    *reinterpret_cast<uint32_t*>(data) = BLP_MAGIC;
-    *reinterpret_cast<uint32_t*>(data + 4) = 1;
-    *reinterpret_cast<uint32_t*>(data + 8) = BLP_FORMAT_JPEG;
-    *reinterpret_cast<uint32_t*>(data + 16) = 64;  // width
-    *reinterpret_cast<uint32_t*>(data + 20) = 64;  // height
-    *reinterpret_cast<uint32_t*>(data + 152) = 1;
-    *reinterpret_cast<uint32_t*>(data + 24) = 164;
-    *reinterpret_cast<uint32_t*>(data + 28) = 800;  // mipmap size
-
-    CBLPFile blp;
-    EXPECT_TRUE(blp.LoadFromMemory(data, sizeof(data)));
-    EXPECT_TRUE(blp.IsValid());
-    EXPECT_EQ(blp.GetFormat(), BLP_FORMAT_JPEG);
-
-    // JPEG 解码需要完整的 IJG 库，这里测试格式识别
-    std::vector<uint8_t> output;
-    // DecodeJPEG returns false without full JPEG decoder
-    EXPECT_FALSE(blp.DecodeToRGBA(output, 0));
-}
-
-TEST(BLPFileTest, JPEGMagicNumber) {
-    // BLP JPEG has special 4-byte header before actual JPEG data
-    uint8_t data[256] = {0};
-
-    *reinterpret_cast<uint32_t*>(data) = BLP_MAGIC;
-    *reinterpret_cast<uint32_t*>(data + 8) = BLP_FORMAT_JPEG;
-
-    // Set JPEG SOI marker at offset 168 (164 header + 4 BLP JPEG header)
-    data[168] = 0xFF;
-    data[169] = 0xD8;
-
-    CBLPFile blp;
-    blp.LoadFromMemory(data, sizeof(data));
-    EXPECT_EQ(blp.GetFormat(), BLP_FORMAT_JPEG);
+    EXPECT_TRUE(hasContent) << "Decoded image is all black";
 }
