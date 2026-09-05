@@ -583,7 +583,7 @@ void UpdateBlpTextureAsync(EGxTexCommand cmd, uint32_t w, uint32_t h, uint32_t d
 }
 
 int32_t PumpBlpTextureAsync(CTexture *texture, void *buf) {
-    CBLPLoader image;
+    CBLPFile image;
 
     if (!image.LoadFromBuffer(buf)) {
         texture->loadStatus.Add(

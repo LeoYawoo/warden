@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
     const char *blpPath = argv[1];
     const char *tgaPath = argv[2];
 
-    CBLPLoader blp;
+    CBLPFile blp;
     if (!blp.Open(blpPath)) {
         fprintf(stderr, "Failed to open %s\n", blpPath);
         return 1;

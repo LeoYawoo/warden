@@ -3,19 +3,19 @@
 #include <cstring>
 
 TEST(BLPFileTest, DefaultConstructor) {
-    CBLPLoader blp;
+    CBLPFile blp;
     EXPECT_EQ(blp.GetWidth(), 0u);
     EXPECT_EQ(blp.GetHeight(), 0u);
     EXPECT_EQ(blp.GetMipCount(), 0u);
 }
 
 TEST(BLPFileTest, LoadInvalidFile) {
-    CBLPLoader blp;
+    CBLPFile blp;
     EXPECT_EQ(blp.Open("nonexistent_file.blp"), 0);
 }
 
 TEST(BLPFileTest, OpenHeroArchmage) {
-    CBLPLoader blp;
+    CBLPFile blp;
     ASSERT_EQ(blp.Open("data/blp/HeroArchmage.blp"), 1);
 
     EXPECT_GT(blp.GetWidth(), 0u);
@@ -27,7 +27,7 @@ TEST(BLPFileTest, OpenHeroArchmage) {
 }
 
 TEST(BLPFileTest, DecodeMipDimensions) {
-    CBLPLoader blp;
+    CBLPFile blp;
     ASSERT_EQ(blp.Open("data/blp/HeroArchmage.blp"), 1);
 
     uint32_t outW = 0, outH = 0;
@@ -37,7 +37,7 @@ TEST(BLPFileTest, DecodeMipDimensions) {
 }
 
 TEST(BLPFileTest, DecodeMipData) {
-    CBLPLoader blp;
+    CBLPFile blp;
     ASSERT_EQ(blp.Open("data/blp/HeroArchmage.blp"), 1);
 
     uint32_t w = blp.GetWidth();

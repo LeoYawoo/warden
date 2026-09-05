@@ -47,12 +47,12 @@ public:
         : texFlags(flags.m_filter) { m_str = const_cast<char*>(str); }
 };
 
-// CBLPLoader - Unified BLP file loader
+// CBLPFile - Unified BLP file loader
 // Merged from Gx/texture/CBLPFile and BLPFile implementations
-class CBLPLoader {
+class CBLPFile {
 public:
-    CBLPLoader();
-    ~CBLPLoader();
+    CBLPFile();
+    ~CBLPFile();
 
     // Load/Close methods (from original CBLPFile)
     int32_t Open(const char *filename);

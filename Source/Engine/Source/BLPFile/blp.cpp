@@ -23,14 +23,14 @@ bool HASHKEY_TEXTUREFILE::operator==(const HASHKEY_TEXTUREFILE &other) const {
     return (texFlags & 0x3F) == (other.texFlags & 0x3F) && SStrCmpI(m_str, other.m_str, 260) == 0;
 }
 
-CBLPLoader::CBLPLoader()
+CBLPFile::CBLPFile()
     : Source(nullptr), m_data(nullptr), m_dataSize(0), m_valid(false),
       m_ownsData(false), m_width(0), m_height(0), m_numLevels(0), m_alphaBits(0) {
     std::memset(&m_header, 0, sizeof(m_header));
     std::memset(m_palette, 0, sizeof(m_palette));
 }
 
-CBLPLoader::~CBLPLoader() {
+CBLPFile::~CBLPFile() {
     Close();
 }
 
@@ -38,7 +38,7 @@ CBLPLoader::~CBLPLoader() {
 // Load/Close methods (from original CBLPFile)
 // ============================================================
 
-int32_t CBLPLoader::Open(const char *filename) {
+int32_t CBLPFile::Open(const char *filename) {
     if (!filename) return 0;
 
     std::ifstream file(filename, std::ios::binary | std::ios::ate);
@@ -96,7 +96,7 @@ int32_t CBLPLoader::Open(const char *filename) {
     return 1;
 }
 
-int32_t CBLPLoader::LoadFromBuffer(void *buf) {
+int32_t CBLPFile::LoadFromBuffer(void *buf) {
     if (!buf) return 0;
 
     m_data = buf;
@@ -134,7 +134,7 @@ int32_t CBLPLoader::LoadFromBuffer(void *buf) {
     return 1;
 }
 
-void CBLPLoader::Close() {
+void CBLPFile::Close() {
     if (m_data && m_ownsData) {
         std::free(m_data);
     }
@@ -148,7 +148,7 @@ void CBLPLoader::Close() {
 // Legacy load methods (convenience wrappers)
 // ============================================================
 
-bool CBLPLoader::LoadFromMemory(const uint8_t *data, size_t size) {
+bool CBLPFile::LoadFromMemory(const uint8_t *data, size_t size) {
     if (!data || size < sizeof(BLP1Header)) {
         return false;
     }
@@ -161,7 +161,7 @@ bool CBLPLoader::LoadFromMemory(const uint8_t *data, size_t size) {
     return ParseHeader(data, size);
 }
 
-bool CBLPLoader::LoadFromFile(const char *filePath) {
+bool CBLPFile::LoadFromFile(const char *filePath) {
     std::ifstream file(filePath, std::ios::binary | std::ios::ate);
     if (!file.is_open()) {
         return false;
@@ -186,7 +186,7 @@ bool CBLPLoader::LoadFromFile(const char *filePath) {
 // Header parsing
 // ============================================================
 
-bool CBLPLoader::ParseHeader(const uint8_t *data, size_t size) {
+bool CBLPFile::ParseHeader(const uint8_t *data, size_t size) {
     std::memcpy(&m_header, data, sizeof(BLP1Header));
 
     // Validate magic number
@@ -239,7 +239,7 @@ bool CBLPLoader::ParseHeader(const uint8_t *data, size_t size) {
 // Mipmap data access
 // ============================================================
 
-const uint8_t* CBLPLoader::GetMipMapData(uint32_t level) const {
+const uint8_t* CBLPFile::GetMipMapData(uint32_t level) const {
     if (!m_valid || !m_data || level >= 16 || m_header.mipOffsets[level] == 0) {
         return nullptr;
     }
@@ -249,7 +249,7 @@ const uint8_t* CBLPLoader::GetMipMapData(uint32_t level) const {
     return static_cast<const uint8_t*>(m_data) + m_header.mipOffsets[level];
 }
 
-uint32_t CBLPLoader::GetMipMapSize(uint32_t level) const {
+uint32_t CBLPFile::GetMipMapSize(uint32_t level) const {
     if (!m_valid || level >= 16) {
         return 0;
     }
@@ -260,7 +260,7 @@ uint32_t CBLPLoader::GetMipMapSize(uint32_t level) const {
 // Decode methods
 // ============================================================
 
-bool CBLPLoader::DecodeToRGBA(std::vector<uint8_t> &output, uint32_t mipLevel) {
+bool CBLPFile::DecodeToRGBA(std::vector<uint8_t> &output, uint32_t mipLevel) {
     if (!m_valid) {
         return false;
     }
@@ -284,7 +284,7 @@ bool CBLPLoader::DecodeToRGBA(std::vector<uint8_t> &output, uint32_t mipLevel) {
     }
 }
 
-int32_t CBLPLoader::DecodeMip(uint32_t mipLevel, void *dst, uint32_t dstSize,
+int32_t CBLPFile::DecodeMip(uint32_t mipLevel, void *dst, uint32_t dstSize,
                               uint32_t *outWidth, uint32_t *outHeight) {
     if (!m_data || mipLevel >= 16) return 0;
 
@@ -398,7 +398,7 @@ int32_t CBLPLoader::DecodeMip(uint32_t mipLevel, void *dst, uint32_t dstSize,
     return 0;
 }
 
-int32_t CBLPLoader::LockChain2(char * /*filename*/, PIXEL_FORMAT /*format*/, MipBits * /*mipBits*/,
+int32_t CBLPFile::LockChain2(char * /*filename*/, PIXEL_FORMAT /*format*/, MipBits * /*mipBits*/,
                                int32_t /*bestMip*/, int32_t /*maxAnisotropy*/) {
     // TODO: Reverse engineer from IDA
     return 0;
@@ -408,7 +408,7 @@ int32_t CBLPLoader::LockChain2(char * /*filename*/, PIXEL_FORMAT /*format*/, Mip
 // Internal decode methods
 // ============================================================
 
-bool CBLPLoader::DecodePalette(std::vector<uint8_t> &output, uint32_t mipLevel) {
+bool CBLPFile::DecodePalette(std::vector<uint8_t> &output, uint32_t mipLevel) {
     const uint8_t *data = GetMipMapData(mipLevel);
     uint32_t dataSize = GetMipMapSize(mipLevel);
 
@@ -437,7 +437,7 @@ bool CBLPLoader::DecodePalette(std::vector<uint8_t> &output, uint32_t mipLevel) 
     return true;
 }
 
-bool CBLPLoader::DecodeDXT1(std::vector<uint8_t> &output, uint32_t mipLevel) {
+bool CBLPFile::DecodeDXT1(std::vector<uint8_t> &output, uint32_t mipLevel) {
     const uint8_t *data = GetMipMapData(mipLevel);
     uint32_t dataSize = GetMipMapSize(mipLevel);
 
@@ -500,7 +500,7 @@ bool CBLPLoader::DecodeDXT1(std::vector<uint8_t> &output, uint32_t mipLevel) {
     return true;
 }
 
-bool CBLPLoader::DecodeDXT3(std::vector<uint8_t> &output, uint32_t mipLevel) {
+bool CBLPFile::DecodeDXT3(std::vector<uint8_t> &output, uint32_t mipLevel) {
     const uint8_t *data = GetMipMapData(mipLevel);
     uint32_t dataSize = GetMipMapSize(mipLevel);
 
@@ -556,7 +556,7 @@ bool CBLPLoader::DecodeDXT3(std::vector<uint8_t> &output, uint32_t mipLevel) {
     return true;
 }
 
-bool CBLPLoader::DecodeDXT5(std::vector<uint8_t> &output, uint32_t mipLevel) {
+bool CBLPFile::DecodeDXT5(std::vector<uint8_t> &output, uint32_t mipLevel) {
     const uint8_t *data = GetMipMapData(mipLevel);
     uint32_t dataSize = GetMipMapSize(mipLevel);
 
@@ -625,7 +625,7 @@ bool CBLPLoader::DecodeDXT5(std::vector<uint8_t> &output, uint32_t mipLevel) {
     return true;
 }
 
-bool CBLPLoader::DecodeUncompressed(std::vector<uint8_t> &output, uint32_t mipLevel) {
+bool CBLPFile::DecodeUncompressed(std::vector<uint8_t> &output, uint32_t mipLevel) {
     const uint8_t *data = GetMipMapData(mipLevel);
     uint32_t dataSize = GetMipMapSize(mipLevel);
 
@@ -652,7 +652,7 @@ bool CBLPLoader::DecodeUncompressed(std::vector<uint8_t> &output, uint32_t mipLe
     return true;
 }
 
-bool CBLPLoader::DecodeJPEG(std::vector<uint8_t> &output, uint32_t mipLevel) {
+bool CBLPFile::DecodeJPEG(std::vector<uint8_t> &output, uint32_t mipLevel) {
     const uint8_t *data = GetMipMapData(mipLevel);
     uint32_t dataSize = GetMipMapSize(mipLevel);
 
