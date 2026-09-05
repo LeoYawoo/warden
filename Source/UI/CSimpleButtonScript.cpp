@@ -1,5 +1,5 @@
 #include "UI/CSimpleButtonScript.h"
-#include "UI/CSimpleButton.h"
+#include "Engine/Source/Frame/CSimpleButton.h"
 #include "UI/CSimpleFontString.h"
 #include "UI/CSimpleTexture.h"
 #include "StormMac/Unimplemented.h"

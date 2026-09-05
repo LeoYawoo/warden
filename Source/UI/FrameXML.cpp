@@ -1,6 +1,6 @@
 #include "FrameXML.h"
-#include "CSimpleButton.h"
-#include "CSimpleCheckbox.h"
+#include "../Engine/Source/Frame/CSimpleButton.h"
+#include "../Engine/Source/Frame/CSimpleCheckbox.h"
 #include "CSimpleEditBox.h"
 #include "CSimpleFont.h"
 #include "CSimpleFrame.h"

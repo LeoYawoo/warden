@@ -376,7 +376,7 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Agile/CAbilityBaseBuild.cpp
                 Source/Engine/Source/Agile/CAbilityBaseSell.cpp
                 Source/Engine/Source/Agile/CUnitRefList.cpp
-                Source/Engine/Source/Agile/CAgentWar3.cpp
+                Source/CAgentWar3.cpp
                 Source/Engine/Source/Agile/AgentRefMini.cpp
                 Source/Engine/Source/Agile/AgentRef.cpp
                 Source/Engine/Source/Agile/CListenerEvent.cpp

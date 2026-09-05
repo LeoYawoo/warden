@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CAgent.h"
+#include "Engine/Source/Agile/CAgent.h"
 
 // Forward declarations
 class CUnit;

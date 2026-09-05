@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "Common/RCString.h"
+#include "Base/RCString.h"
 
 class XMLAttribute {
 public:

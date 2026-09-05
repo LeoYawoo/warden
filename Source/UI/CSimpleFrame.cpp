@@ -14,7 +14,7 @@
 #include "CSimpleRender.h"
 #include "CSimpleTop.h"
 #include "CSimpleTitleRegion.h"
-#include "CBackdropGenerator.h"
+#include "../Engine/Source/Frame/CBackdropGenerator.h"
 #include "Engine/Source/Gx/Coordinate.h"
 
 

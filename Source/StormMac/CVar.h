@@ -4,7 +4,7 @@
 #include "Common/Hashkey.h"
 #include "Common/TSHashTable.h"
 #include "Common/TSHashObject.h"
-#include "Common/RCString.h"
+#include "Base/RCString.h"
 
 
 class CVar : public TSHashObject<CVar, HASHKEY_STRI> {

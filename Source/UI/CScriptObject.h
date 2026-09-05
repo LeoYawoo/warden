@@ -1,7 +1,7 @@
 #pragma once
 
 #include "UI/FrameScript_Object.h"
-#include "Common/RCString.h"
+#include "Base/RCString.h"
 #include "StormMac/xml/XMLNode.h"
 #include <cstdint>
 

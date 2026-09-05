@@ -2,7 +2,7 @@
 
 
 #include <cstdint>
-#include "Common/RCString.h"
+#include "Base/RCString.h"
 #include "XMLAttribute.h"
 #include "Common/TSGrowableArray.h"
 

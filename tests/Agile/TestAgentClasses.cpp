@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "Agile/CUnitRefList.h"
-#include "Agile/CAgentWar3.h"
+#include "Source/CAgentWar3.h"
 #include "Agile/AgentRefMini.h"
 #include "Agile/AgentRef.h"
 #include "Agile/CEvent.h"

@@ -1,20 +1,29 @@
 #pragma once
 
-#include "CCheckBox.h"
-#include <cstdint>
+#include "CSimpleButton.h"
 
-// Reverse engineered from Warcraft III binary
-// CSimpleCheckbox is a simple checkbox UI control
-
-class CSimpleCheckbox : public CCheckBox {
+class CSimpleCheckbox : public CSimpleButton {
 public:
-    CSimpleCheckbox();
-    virtual ~CSimpleCheckbox();
+    // Static variables
+    static int32_t s_metatable;
+    static int32_t s_objectType;
 
-    // Checkbox properties
-    void SetTextColor(uint32_t color);
-    uint32_t GetTextColor() const;
+    // Static functions
+    static void CreateScriptMetaTable();
 
-protected:
-    uint32_t m_textColor;
+    static int32_t GetObjectType();
+
+    static void RegisterScriptMethods(lua_State *L);
+
+    // Member variables
+
+    // Virtual member functions
+    virtual bool IsA(int32_t type);
+
+    virtual int32_t GetScriptMetaTable();
+
+    // Member functions
+    CSimpleCheckbox(CSimpleFrame *parent);
 };
+
+

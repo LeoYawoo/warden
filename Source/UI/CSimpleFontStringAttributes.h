@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include "Common/RCString.h"
+#include "Base/RCString.h"
 #include "Engine/Source/Tempest/C2Vector.h"
 #include "Engine/Source/Tempest/CImVector.h"
 

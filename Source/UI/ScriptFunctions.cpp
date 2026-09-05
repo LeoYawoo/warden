@@ -1,6 +1,6 @@
 #include "UI/ScriptFunctions.h"
-#include "UI/CSimpleButton.h"
-#include "UI/CSimpleCheckbox.h"
+#include "Engine/Source/Frame/CSimpleButton.h"
+#include "Engine/Source/Frame/CSimpleCheckbox.h"
 #include "UI/CSimpleEditBox.h"
 #include "UI/CSimpleFont.h"
 #include "UI/CSimpleFontString.h"

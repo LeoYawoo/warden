@@ -1,6 +1,6 @@
 #pragma once
 
-#include "net/connection/NetClient.h"
+#include "Net/NetClient.h"
 #include "Common/TSList.h"
 #include "StormMac/thread/SCritSect.h"
 #include <cstdint>
