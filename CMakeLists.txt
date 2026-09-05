@@ -627,6 +627,18 @@ if(BUILD_TESTS)
         include(GoogleTest)
         gtest_discover_tests(world_tests)
 
+        # BLP to TGA converter
+        add_executable(blp2tga
+                tests/BLPFile/blp2tga.cpp
+                Source/Engine/Source/Gx/texture/CBLPFile.cpp
+                Source/Engine/Source/BLPFile/IJG/jpeg_decoder.cpp
+                Source/StormMac/String.cpp
+                Source/StormMac/Error.cpp
+                Source/StormMac/memory.cpp
+                Source/StormMac/string/bjhash.cpp
+        )
+        target_include_directories(blp2tga PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
+
         # BLPFile tests
         add_executable(blp_tests
                 tests/BLPFile/TestBLPFile.cpp

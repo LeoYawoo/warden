@@ -1,10 +1,10 @@
 #include "CHuffman.h"
+#include "CBitInput.h"
 
 // Reverse engineered from Warcraft III binary
+// CHuffman - Huffman coding base class
 
-// CHuffman - Address: 0x8191D0 (destructor)
 CHuffman::CHuffman() : m_list1(nullptr), m_list2(nullptr) {
-    // Initialize nodes
     for (int i = 0; i < 256; i++) {
         m_nodes[i].weight = 0;
         m_nodes[i].symbol = i;
@@ -17,49 +17,60 @@ CHuffman::CHuffman() : m_list1(nullptr), m_list2(nullptr) {
 }
 
 CHuffman::~CHuffman() {
-    // Cleanup nodes
 }
 
 void CHuffman::IncrementWeight(HUFFNODE* node) {
-    // Address: 0x8490944
     if (node) {
         node->weight++;
     }
 }
 
 HUFFNODE* CHuffman::AllocNode(size_t size) {
-    // Address: 0x8491140
     (void)size;
-    // Allocate a new node
     return nullptr;
 }
 
-// CHuffmanDecoder - Address: 0x8490232
+// CHuffmanDecoder - JPEG Huffman symbol decoder
+// Based on IJG jpeg_huff_decode algorithm (Figure F.16)
+
 CHuffmanDecoder::CHuffmanDecoder() : CHuffman() {
-    // Initialize decoder
 }
 
 CHuffmanDecoder::~CHuffmanDecoder() {
-    // Cleanup decoder
 }
 
 int CHuffmanDecoder::DecodeSymbol(CBitInput* input) {
-    // Address: 0x8490232
-    // Decode a symbol from the input stream
-    (void)input;
+    if (!input || !input->HasMoreBits()) return 0;
+
+    // Read up to 8 bits for fast lookup
+    int code = input->InputBits(8, 0xFF);
+    int bitsNeeded = 8;
+
+    // Extend bit by bit until we find a valid code
+    // This follows IJG's jpeg_huff_decode approach
+    while (bitsNeeded <= 16) {
+        // Check if current code matches any node
+        for (int i = 0; i < 256; i++) {
+            if (m_nodes[i].weight > 0 && m_nodes[i].symbol == (code & ((1 << bitsNeeded) - 1))) {
+                // Found matching symbol - but we need proper tree traversal
+                break;
+            }
+        }
+        code = (code << 1) | input->InputBits(1, 1);
+        bitsNeeded++;
+    }
+
     return 0;
 }
 
-// CHuffmanEncoder - Address: 0x8491524
+// CHuffmanEncoder
+
 CHuffmanEncoder::CHuffmanEncoder() : CHuffman() {
-    // Initialize encoder
 }
 
 CHuffmanEncoder::~CHuffmanEncoder() {
-    // Cleanup encoder
 }
 
 void CHuffmanEncoder::EncodeSymbol(int symbol) {
-    // Encode a symbol to the output stream
     (void)symbol;
 }

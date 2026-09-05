@@ -140,39 +140,51 @@ bool JpegDecoder::HuffTable::Build(const uint8_t *data) {
 int JpegDecoder::HuffTable::Decode(BitReader &br) const {
     if (!initialized) return 0;
 
-    int code = br.PeekBits(16);
-    int bitsNeeded = 1;
+    // IJG approach: read 8 bits first, then extend bit by bit
+    int l = 8;
+    int code = br.ReadBits(l);
 
-    while (bitsNeeded <= 16) {
-        if (code <= maxCode[bitsNeeded]) {
-            br.SkipBits(bitsNeeded);
-            return values[valOffset[bitsNeeded] + (code - (maxCode[bitsNeeded] - (1 << bitsNeeded) + 1))];
-        }
+    while (code > maxCode[l]) {
         code = (code << 1) | br.ReadBits(1);
-        bitsNeeded++;
+        l++;
     }
 
-    return 0; // Error
+    if (l > 16) return 0;
+
+    return values[valOffset[l] + (code - (maxCode[l] - (1 << l) + 1))];
 }
 
 // ============================================================
 // IDCT (Inverse Discrete Cosine Transform)
 // ============================================================
 void JpegDecoder::IDCT(int16_t block[64], int16_t *output) {
-    // Simple but correct IDCT implementation
-    for (int y = 0; y < 8; y++) {
-        for (int x = 0; x < 8; x++) {
+    // Standard JPEG IDCT using 1D row/column decomposition
+    // Based on IJG jidctint.c approach
+
+    int tmp[64];
+
+    // First pass: IDCT on columns
+    for (int col = 0; col < 8; col++) {
+        for (int row = 0; row < 8; row++) {
             float sum = 0.0f;
             for (int u = 0; u < 8; u++) {
-                for (int v = 0; v < 8; v++) {
-                    float cu = (u == 0) ? 1.0f / std::sqrt(2.0f) : 1.0f;
-                    float cv = (v == 0) ? 1.0f / std::sqrt(2.0f) : 1.0f;
-                    float cosU = std::cos((2.0f * x + 1.0f) * u * 3.14159265f / 16.0f);
-                    float cosV = std::cos((2.0f * y + 1.0f) * v * 3.14159265f / 16.0f);
-                    sum += cu * cv * block[u * 8 + v] * cosU * cosV;
-                }
+                float cu = (u == 0) ? (1.0f / std::sqrt(2.0f)) : 1.0f;
+                sum += cu * block[u * 8 + col] * std::cos((2.0f * row + 1.0f) * u * 3.14159265f / 16.0f);
             }
-            output[y * 8 + x] = (int16_t)std::max(-128.0f, std::min(127.0f, sum / 4.0f));
+            tmp[row * 8 + col] = (int)std::round(sum / 2.0f);
+        }
+    }
+
+    // Second pass: IDCT on rows
+    for (int row = 0; row < 8; row++) {
+        for (int col = 0; col < 8; col++) {
+            float sum = 0.0f;
+            for (int v = 0; v < 8; v++) {
+                float cv = (v == 0) ? (1.0f / std::sqrt(2.0f)) : 1.0f;
+                sum += cv * tmp[row * 8 + v] * std::cos((2.0f * col + 1.0f) * v * 3.14159265f / 16.0f);
+            }
+            int val = (int)std::round(sum / 2.0f) + 128;
+            output[row * 8 + col] = static_cast<int16_t>(std::max(0, std::min(255, val)));
         }
     }
 }
@@ -189,6 +201,10 @@ bool JpegDecoder::ParseMarkers(const uint8_t *data, size_t size) {
         if (data[pos] != 0xFF) { pos++; continue; }
 
         uint8_t marker = data[pos + 1];
+        if (pos >= 131 && pos <= 135) {
+        }
+        if (pos >= 620 && pos <= 624) {
+        }
         pos += 2;
 
         // SOI and EOI have no length field
@@ -206,7 +222,6 @@ bool JpegDecoder::ParseMarkers(const uint8_t *data, size_t size) {
             if (length >= 8 && ReadSOF(data + pos - 2, length)) {
                 foundSOF = true;
             }
-            // Even if SOF fails, continue to find SOS
             pos += length - 2;
         } else if (marker == M_DQT) {
             if (!ReadDQT(data + pos, length - 2)) return false;
@@ -232,8 +247,6 @@ bool JpegDecoder::ParseMarkers(const uint8_t *data, size_t size) {
         } else if (marker == M_DRI) {
             m_restartInterval = (data[pos] << 8) | data[pos + 1];
         }
-
-        pos += length - 2;
     }
 
     // If SOF0 not found, create default 3-component setup
@@ -420,12 +433,18 @@ bool JpegDecoder::Decode(const uint8_t *data, size_t dataSize,
     }
 
     // Parse markers
-    if (!ParseMarkers(data, dataSize)) return false;
+    if (!ParseMarkers(data, dataSize)) {
+        return false;
+    }
+
+            m_sof.width, m_sof.height, m_numComponents, (void*)m_scanData, m_scanSize);
 
     width = m_sof.width ? m_sof.width : m_explicitWidth;
     height = m_sof.height ? m_sof.height : m_explicitHeight;
 
-    if (width == 0 || height == 0 || m_numComponents == 0) return false;
+    if (width == 0 || height == 0 || m_numComponents == 0) {
+        return false;
+    }
 
     // Allocate output (BGRA)
     output.resize(width * height * 4);
@@ -523,25 +542,19 @@ bool JpegDecoder::Decode(const uint8_t *data, size_t dataSize,
         }
     }
 
-    // Color convert YCbCr to BGRA
+    // BLP1 JPEG: components are raw BGRA, not YCbCr
+    // No color transform needed - IDCT output is used directly as pixel values
+    // Component order: comp0=B, comp1=G, comp2=R (swap B↔R for standard output)
     for (int y = 0; y < (int)height; y++) {
         for (int x = 0; x < (int)width; x++) {
-            int16_t Y  = yBuffer[y * width + x] + 128;
-            int16_t Cb = cbBuffer[y * width + x];
-            int16_t Cr = crBuffer[y * width + x];
-
-            int r = (int)(Y + 1.402 * Cr);
-            int g = (int)(Y - 0.34414 * Cb - 0.71414 * Cr);
-            int b = (int)(Y + 1.772 * Cb);
-
-            r = std::max(0, std::min(255, r));
-            g = std::max(0, std::min(255, g));
-            b = std::max(0, std::min(255, b));
-
             int idx = (y * width + x) * 4;
-            output[idx + 0] = r;  // B (BGRA order for TGA)
-            output[idx + 1] = g;  // G
-            output[idx + 2] = b;  // R
+            int comp0 = yBuffer[y * width + x] + 128;  // B channel
+            int comp1 = cbBuffer[y * width + x] + 128;  // G channel
+            int comp2 = crBuffer[y * width + x] + 128;  // R channel
+
+            output[idx + 0] = static_cast<uint8_t>(std::max(0, std::min(255, comp2))); // R
+            output[idx + 1] = static_cast<uint8_t>(std::max(0, std::min(255, comp1))); // G
+            output[idx + 2] = static_cast<uint8_t>(std::max(0, std::min(255, comp0))); // B
             output[idx + 3] = 255; // A
         }
     }
