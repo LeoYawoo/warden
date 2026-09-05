@@ -13,6 +13,7 @@
 #include "StormMac/StormInit.h"
 #include "UI/FrameScript.h"
 #include "UI/FrameXML.h"
+#include "TerrainLayer.h"
 #include "Engine/Source/Net/Poll.h"
 #include "StormMac/db/Db.h"
 #include "StormMac/CVar.h"
@@ -400,6 +401,11 @@ void WowClientInit() {
     // sub_78E400();
 
     CWorld::Initialize();
+
+    // Register terrain rendering as a screen layer
+    RECTF terrainRect = {0.0f, 0.0f, 1.0f, 1.0f};
+    HLAYER terrainLayer;
+    ScrnLayerCreate(&terrainRect, 0.0f, 0, nullptr, TerrainLayerPaintFunc, &terrainLayer);
 
     // TODO
     // ShadowInit();

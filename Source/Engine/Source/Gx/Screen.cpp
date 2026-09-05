@@ -8,12 +8,9 @@
 #include "StormMac/Filesystem.h"
 #include "Common/Region.h"
 #include <StormMac/String.h>
-#include "Game/CWorld.h"
-#include "Terrain/CTerrain.h"
 #include "../Gx/Gx.h"
 #include "../Gx/CCamera.h"
 #include "../Gx/gll/GLDevice.h"
-#include <QOpenGLFunctions>
 #include <cstdio>
 
 
@@ -34,21 +31,16 @@ int32_t OnPaint(const void *a1, void *a2) {
     static int paintCount = 0;
     paintCount++;
 
-    // TODO
-    // if (!g_theGxDevicePtr || !g_theGxDevicePtr->CapsHasContext(-1) || !g_theGxDevicePtr->CapsIsWindowVisible(-1)) {
-    //     // TODO
-    //     // - sound engine logic
-    //
-    //     return 1;
-    // }
+    // TODO: device/context validation
+    // if (!g_theGxDevicePtr || ...) { return 1; }
 
+    // --- Visibility pass: walk layers backward to compute visible rects ---
     CSRgn rgn;
     SRgnCreate(&rgn.m_handle, 0);
 
     RECTF baseRect = {0.0f, 0.0f, 1.0f, 1.0f};
     SRgnCombineRectf(rgn.m_handle, &baseRect, nullptr, 2);
 
-    // Walk the layer list backward (highest z-order to lowest) to establish visibility rects
     for (auto layer = s_zOrderList.Tail(); layer; layer = layer->zorderlink.Prev()) {
         SRgnGetBoundingRectf(rgn.m_handle, &layer->visible);
 
@@ -64,109 +56,61 @@ int32_t OnPaint(const void *a1, void *a2) {
 
     SRgnDelete(rgn.m_handle);
 
-    // Save viewport
+    // --- Save viewport ---
     float minX, maxX, minY, maxY, minZ, maxZ;
     GxXformViewport(minX, maxX, minY, maxY, minZ, maxZ);
 
-    auto *gl = GxGetGLFunctions();
-    if (gl) {
-        gl->glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
-        gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    }
-
-    // Render terrain
-    CTerrain *terrain = CWorld::GetTerrain();
-    if (terrain && terrain->IsValid()) {
-        CRect windowSize;
-        GxCapsWindowSize(windowSize);
-        float w = windowSize.maxX - windowSize.minX;
-        float h = windowSize.maxY - windowSize.minY;
-        if (w > 0 && h > 0) {
-            CRect projRect = {0.0f, 0.0f, w, h};
-
-            CCamera camera;
-            // Position camera to look at the terrain center
-            float cx = terrain->GetOriginX() + terrain->GetCellsPerRow() * terrain->GetCellSize() * 0.5f;
-            float cy = terrain->GetOriginY() + terrain->GetCellsPerCol() * terrain->GetCellSize() * 0.5f;
-            camera.m_position.Set(C3Vector(cx, cy - 200.0f, 300.0f));
-            camera.m_target.Set(C3Vector(cx, cy, 0.0f));
-            camera.m_distance.Set(1.0f);
-            camera.m_fov.Set(1.2f);
-            camera.m_zFar.Set(10000.0f);
-            camera.m_zNear.Set(10.0f);
-            camera.SetupWorldProjection(projRect, 0);
-
-            terrain->Render();
-        }
-    }
-
-#if 0  // Disable UI layer rendering for terrain debug
-    // Walk the layer list forward (lowest z-order to highest) to paint visible layers
+    // --- Paint pass: walk layers forward and call each paintfunc ---
     for (auto layer = s_zOrderList.Head(); layer; layer = layer->zorderlink.Next()) {
         if (layer->visible.right > layer->visible.left && layer->visible.top > layer->visible.bottom) {
+            // Set viewport for this layer
             if (layer->flags & 0x4) {
-                GxXformSetViewport(
-                        0.0f,
-                        1.0f,
-                        0.0f,
-                        1.0f,
-                        0.0f,
-                        1.0f
-                );
+                // Full-screen layer
+                GxXformSetViewport(0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f);
             } else {
                 GxXformSetViewport(
-                        layer->visible.left,
-                        layer->visible.right,
-                        layer->visible.bottom,
-                        layer->visible.top,
-                        0.0f,
-                        1.0f
+                    layer->visible.left, layer->visible.right,
+                    layer->visible.bottom, layer->visible.top,
+                    0.0f, 1.0f
                 );
             }
 
+            // Set up orthographic projection for 2D layers
             if (layer->flags & 0x2) {
                 C44Matrix identity;
                 GxXformSetView(identity);
 
                 C44Matrix orthoProj;
                 GxuXformCreateOrtho(
-                        layer->visible.left,
-                        layer->visible.right,
-                        layer->visible.bottom,
-                        layer->visible.top,
-                        0.0f,
-                        500.0f,
-                        orthoProj
+                    layer->visible.left, layer->visible.right,
+                    layer->visible.bottom, layer->visible.top,
+                    0.0f, 500.0f, orthoProj
                 );
                 GxXformSetProjection(orthoProj);
             }
 
+            // Call the layer's paint function
             layer->paintfunc(
-                    layer->param,
-                    &layer->rect,
-                    &layer->visible,
-                    Screen::s_elapsedSec
+                layer->param,
+                &layer->rect,
+                &layer->visible,
+                Screen::s_elapsedSec
             );
         }
     }
-#endif  // Disable UI layer rendering for terrain debug
 
-    // Restore viewport
+    // --- Restore viewport ---
     GxXformSetViewport(minX, maxX, minY, maxY, minZ, maxZ);
 
     GxuFontUpdate();
 
+    // --- Present ---
     if (!Screen::s_presentDisable) {
         if (Screen::s_captureScreen) {
-            // TODO
-
+            // TODO: screen capture
             GxSub682A00();
-
-            // TODO
-
             return 1;
         }
-
         GxSub682A00();
     }
 
