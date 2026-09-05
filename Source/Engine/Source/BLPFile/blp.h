@@ -3,6 +3,9 @@
 #include <cstdint>
 #include <cstring>
 #include <vector>
+#include "Gx/Types.h"
+#include "Gx/texture/CGxTex.h"
+#include "Common/Hashkey.h"
 
 // BLP Texture Formats (compression field, low 3 bits)
 enum BLPFormat : uint32_t {
@@ -16,7 +19,6 @@ enum BLPFormat : uint32_t {
 
 // BLP1 file header (156 bytes)
 // Reference: gowarcraft3, openwarcraft3
-// Note: Same as Gx/texture/CBLPFile.h BLPHeader
 #pragma pack(push, 1)
 struct BLP1Header {
     uint32_t magic;           // +0:   "BLP1"
@@ -31,37 +33,53 @@ struct BLP1Header {
 };
 #pragma pack(pop)
 
-// CBLPLoader - Standalone BLP file loader with full format support
-// This is a separate implementation from Gx/texture/CBLPFile
+// HASHKEY_TEXTUREFILE - hash key for texture cache
+class HASHKEY_TEXTUREFILE : public HASHKEY_STR {
+public:
+    uint8_t texFlags;
+
+    HASHKEY_TEXTUREFILE &operator=(const char *str);
+    bool operator==(const char *str);
+    bool operator==(const HASHKEY_TEXTUREFILE &other) const;
+    HASHKEY_TEXTUREFILE() : texFlags(0) {}
+    HASHKEY_TEXTUREFILE(const char *str, uint8_t flags) : texFlags(flags) { m_str = const_cast<char*>(str); }
+    HASHKEY_TEXTUREFILE(const char *str, const CGxTexFlags &flags)
+        : texFlags(flags.m_filter) { m_str = const_cast<char*>(str); }
+};
+
+// CBLPLoader - Unified BLP file loader
+// Merged from Gx/texture/CBLPFile and BLPFile implementations
 class CBLPLoader {
 public:
     CBLPLoader();
     ~CBLPLoader();
 
-    // Load BLP file from memory
-    bool LoadFromMemory(const uint8_t *data, size_t size);
+    // Load/Close methods (from original CBLPFile)
+    int32_t Open(const char *filename);
+    int32_t LoadFromBuffer(void *buf);
+    void Close();
 
-    // Load BLP file from file path
+    // Legacy load methods (convenience wrappers)
+    bool LoadFromMemory(const uint8_t *data, size_t size);
     bool LoadFromFile(const char *filePath);
 
-    // Get texture dimensions
-    uint32_t GetWidth() const { return m_header.width; }
-    uint32_t GetHeight() const { return m_header.height; }
-
-    // Get texture format
+    // Get texture properties
+    uint32_t GetWidth() const { return m_width; }
+    uint32_t GetHeight() const { return m_height; }
+    uint32_t GetMipCount() const { return m_numLevels; }
+    uint32_t GetAlphaBits() const { return m_alphaBits; }
     BLPFormat GetFormat() const { return static_cast<BLPFormat>(m_header.type & 0x7); }
-
-    // Get number of mipmaps
-    uint32_t GetNumMips() const;
 
     // Get mipmap data
     const uint8_t* GetMipMapData(uint32_t level) const;
-
-    // Get mipmap size
     uint32_t GetMipMapSize(uint32_t level) const;
 
-    // Decode texture to RGBA format
+    // Decode methods
     bool DecodeToRGBA(std::vector<uint8_t> &output, uint32_t mipLevel = 0);
+    int32_t DecodeMip(uint32_t mipLevel, void *dst, uint32_t dstSize,
+                      uint32_t *outWidth, uint32_t *outHeight);
+    int32_t LockChain2(char *filename, PIXEL_FORMAT format, MipBits *mipBits,
+                       int32_t bestMip, int32_t maxAnisotropy);
 
     // Check if file is valid
     bool IsValid() const { return m_valid; }
@@ -71,6 +89,9 @@ public:
 
     // Get palette (for palette format)
     const uint32_t* GetPalette() const { return m_palette; }
+
+    // Source filename (from original CBLPFile)
+    const char *Source;
 
 private:
     bool ParseHeader(const uint8_t *data, size_t size);
@@ -83,6 +104,15 @@ private:
 
     BLP1Header m_header;
     std::vector<uint8_t> m_fileData;
+    void *m_data;           // Raw data pointer (for LoadFromBuffer)
+    size_t m_dataSize;
     uint32_t m_palette[256];
     bool m_valid;
+    bool m_ownsData;        // Whether we own the data and should free it
+
+    // Cached properties
+    uint32_t m_width;
+    uint32_t m_height;
+    uint32_t m_numLevels;
+    uint32_t m_alphaBits;
 };

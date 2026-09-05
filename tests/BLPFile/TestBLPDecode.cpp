@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "Gx/texture/CBLPFile.h"
+#include "BLPFile/blp.h"
 #include <fstream>
 #include <vector>
 #include <cstring>
@@ -31,7 +31,7 @@ static bool WriteTGA(const char *path, uint32_t width, uint32_t height, const ui
 TEST(BLPDecodeIntegration, HeroArchmageProperties) {
     const char *blpPath = "data/blp/HeroArchmage.blp";
 
-    CBLPFile blp;
+    CBLPLoader blp;
     ASSERT_EQ(blp.Open(blpPath), 1) << "Failed to load " << blpPath;
 
     uint32_t width = blp.GetWidth();
@@ -54,7 +54,7 @@ TEST(BLPDecodeIntegration, HeroArchmageProperties) {
 TEST(BLPDecodeIntegration, HeroArchmageMipDecode) {
     const char *blpPath = "data/blp/HeroArchmage.blp";
 
-    CBLPFile blp;
+    CBLPLoader blp;
     ASSERT_EQ(blp.Open(blpPath), 1);
 
     uint32_t width = blp.GetWidth();
@@ -90,7 +90,7 @@ TEST(BLPDecodeIntegration, HeroArchmageToTGA) {
     const char *blpPath = "data/blp/HeroArchmage.blp";
     const char *tgaPath = "data/blp/HeroArchmage_decoded.tga";
 
-    CBLPFile blp;
+    CBLPLoader blp;
     ASSERT_EQ(blp.Open(blpPath), 1);
 
     uint32_t width = blp.GetWidth();
@@ -116,7 +116,7 @@ TEST(BLPDecodeIntegration, HeroArchmageToTGA) {
 TEST(BLPDecodeIntegration, HeroArchmageIdempotent) {
     const char *blpPath = "data/blp/HeroArchmage.blp";
 
-    CBLPFile blp;
+    CBLPLoader blp;
     ASSERT_EQ(blp.Open(blpPath), 1);
 
     uint32_t width = blp.GetWidth();
@@ -142,7 +142,7 @@ TEST(BLPDecodeIntegration, TGAReadableByFFmpeg) {
     const char *pngPath = "data/blp/HeroArchmage_test.png";
     const char *ffmpegPath = "data/tools/ffmpeg/ffmpeg.exe";
 
-    CBLPFile blp;
+    CBLPLoader blp;
     ASSERT_EQ(blp.Open(blpPath), 1);
 
     uint32_t width = blp.GetWidth();

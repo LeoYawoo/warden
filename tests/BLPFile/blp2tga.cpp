@@ -1,7 +1,7 @@
 // blp2tga - BLP to TGA converter
 // Usage: blp2tga <input.blp> <output.tga>
 
-#include "Gx/texture/CBLPFile.h"
+#include "BLPFile/blp.h"
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
     const char *blpPath = argv[1];
     const char *tgaPath = argv[2];
 
-    CBLPFile blp;
+    CBLPLoader blp;
     if (!blp.Open(blpPath)) {
         fprintf(stderr, "Failed to open %s\n", blpPath);
         return 1;

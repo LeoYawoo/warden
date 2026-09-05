@@ -1,7 +1,7 @@
 #include "Texture.h"
 #include "Device.h"
 #include "Gx.h"
-#include "texture/CBLPFile.h"
+#include "BLPFile/blp.h"
 #include "StormMac/Filesystem.h"
 #include "StormMac/SFile.h"
 #include <algorithm>
@@ -583,7 +583,7 @@ void UpdateBlpTextureAsync(EGxTexCommand cmd, uint32_t w, uint32_t h, uint32_t d
 }
 
 int32_t PumpBlpTextureAsync(CTexture *texture, void *buf) {
-    CBLPFile image;
+    CBLPLoader image;
 
     if (!image.LoadFromBuffer(buf)) {
         texture->loadStatus.Add(
@@ -597,18 +597,20 @@ int32_t PumpBlpTextureAsync(CTexture *texture, void *buf) {
         return 0;
     }
 
-    if (texture->flags & 0x4 && !(image.m_header.hasMipmaps & 0x10)) {
+    const BLP1Header& header = image.GetHeader();
+
+    if (texture->flags & 0x4 && !(header.hasMipmaps & 0x10)) {
         texture->flags &= 0xFFFB;
     }
 
-    texture->alphaBits = image.m_header.alphaBits;
+    texture->alphaBits = header.alphaBits;
 
-    if (image.m_header.alphaBits == 0) {
+    if (header.alphaBits == 0) {
         texture->flags |= 0x1;
     }
 
-    uint32_t width = image.m_header.width;
-    uint32_t height = image.m_header.height;
+    uint32_t width = header.width;
+    uint32_t height = header.height;
     uint32_t bestMip = 0;
 
     RequestImageDimensions(&width, &height, &bestMip);
@@ -617,8 +619,8 @@ int32_t PumpBlpTextureAsync(CTexture *texture, void *buf) {
 
     PIXEL_FORMAT pixFormat;
     EGxTexFormat gxTexFormat;
-    PIXEL_FORMAT preferredFormat = static_cast<PIXEL_FORMAT>(image.m_header.extra);
-    int32_t alphaSize = image.m_header.alphaBits;
+    PIXEL_FORMAT preferredFormat = static_cast<PIXEL_FORMAT>(header.extra);
+    int32_t alphaSize = header.alphaBits;
 
     GetTextureFormats(&pixFormat, &gxTexFormat, preferredFormat, alphaSize);
 
@@ -659,7 +661,7 @@ int32_t PumpBlpTextureAsync(CTexture *texture, void *buf) {
     texture->dataFormat = dataFormat;
     texture->gxTexFormat = gxTexFormat;
 
-    if (gxWidth < 256 && image.m_numLevels == 1) {
+    if (gxWidth < 256 && image.GetMipCount() == 1) {
         if (!texture->gxTexFlags.m_generateMipMaps) {
             texture->gxTexFlags.m_filter = 0;
         }

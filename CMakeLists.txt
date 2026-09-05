@@ -630,7 +630,7 @@ if(BUILD_TESTS)
         # BLP to TGA converter
         add_executable(blp2tga
                 tests/BLPFile/blp2tga.cpp
-                Source/Engine/Source/Gx/texture/CBLPFile.cpp
+                Source/Engine/Source/BLPFile/blp.cpp
                 Source/Engine/Source/BLPFile/IJG/jpeg_decoder.cpp
                 Source/StormMac/String.cpp
                 Source/StormMac/Error.cpp
@@ -643,7 +643,7 @@ if(BUILD_TESTS)
         add_executable(blp_tests
                 tests/BLPFile/TestBLPFile.cpp
                 tests/BLPFile/TestBLPDecode.cpp
-                Source/Engine/Source/Gx/texture/CBLPFile.cpp
+                Source/Engine/Source/BLPFile/blp.cpp
                 Source/Engine/Source/BLPFile/IJG/jpeg_decoder.cpp
         )
 

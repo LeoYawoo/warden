@@ -7,7 +7,7 @@
 #include "Agile/CHandleObject.h"
 #include "Common/TSLink.h"
 #include "CGxTex.h"
-#include "CBLPFile.h"
+#include "BLPFile/blp.h"
 #include "StormMac/CAsyncObject.h"
 
 // Forward declarations
