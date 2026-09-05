@@ -57,7 +57,7 @@ int32_t CBLPFile::Open(const char *filename) {
     // Parse header
     memcpy(&m_header, m_data, sizeof(BLPHeader));
 
-    if (m_header.signature != 0x31504C42) { // "BLP1"
+    if (m_header.magic != 0x31504C42) { // "BLP1"
         free(m_data);
         m_data = nullptr;
         return 0;
@@ -65,7 +65,7 @@ int32_t CBLPFile::Open(const char *filename) {
 
     m_width = m_header.width;
     m_height = m_header.height;
-    m_alphaBits = m_header.alphaSize;
+    m_alphaBits = m_header.alphaBits;
 
     // Count mipmaps
     m_numLevels = 0;
@@ -87,14 +87,14 @@ int32_t CBLPFile::LoadFromBuffer(void *buf) {
 
     memcpy(&m_header, m_data, sizeof(BLPHeader));
 
-    if (m_header.signature != 0x31504C42) {
+    if (m_header.magic != 0x31504C42) {
         m_data = nullptr;
         return 0;
     }
 
     m_width = m_header.width;
     m_height = m_header.height;
-    m_alphaBits = m_header.alphaSize;
+    m_alphaBits = m_header.alphaBits;
 
     m_numLevels = 0;
     for (uint32_t i = 0; i < 16; ++i) {
@@ -143,44 +143,35 @@ int32_t CBLPFile::DecodeMip(uint32_t mipLevel, void *dst, uint32_t dstSize, uint
 
     if (!dst) return 1; // Just query dimensions
 
-    uint32_t compression = m_header.compression & 0x7;
-    uint8_t *src = static_cast<uint8_t*>(m_data) + m_header.mipOffsets[mipLevel];
-    uint32_t srcSize = m_header.mipSizes[mipLevel];
+    uint32_t compression = m_header.type & 0x7;
 
     if (compression == 0) {
-        // JPEG - scan for SOI marker to find actual data start
+        // JPEG-BLP: concatenate JPEG header + JPEG data from mipmap offset
         const uint8_t *fileData = static_cast<const uint8_t*>(m_data);
-        size_t fileSize = m_dataSize;
 
-        // Find JPEG SOI marker
-        const uint8_t *jpegStart = nullptr;
-        size_t jpegSize = 0;
+        // Read JPEG header size (stored right after the 156-byte BLP header)
+        uint32_t jpgHeaderSize = *reinterpret_cast<const uint32_t*>(fileData + sizeof(BLPHeader));
 
-        // Try the mipOffset first
-        if (srcSize > 2 && src[0] == 0xFF && src[1] == 0xD8) {
-            jpegStart = src;
-            jpegSize = srcSize;
-        } else {
-            // Scan for JPEG SOI in the file
-            for (size_t i = 0; i < fileSize - 1; ++i) {
-                if (fileData[i] == 0xFF && fileData[i + 1] == 0xD8) {
-                    jpegStart = fileData + i;
-                    jpegSize = fileSize - i;
-                    break;
-                }
-            }
-        }
+        // JPEG header starts at offset 160 (sizeof(BLPHeader) + 4)
+        const uint8_t *jpgHeader = fileData + sizeof(BLPHeader) + 4;
 
-        if (!jpegStart) return 0;
+        // JPEG data starts at mipOffset[mipLevel]
+        const uint8_t *jpgData = fileData + m_header.mipOffsets[mipLevel];
+        uint32_t jpgDataSize = m_header.mipSizes[mipLevel];
+
+        // Concatenate: JPEG header + JPEG data
+        std::vector<uint8_t> fullJpeg;
+        fullJpeg.reserve(jpgHeaderSize + jpgDataSize);
+        fullJpeg.insert(fullJpeg.end(), jpgHeader, jpgHeader + jpgHeaderSize);
+        fullJpeg.insert(fullJpeg.end(), jpgData, jpgData + jpgDataSize);
 
         JpegDecoder decoder;
-        decoder.SetDimensions(m_width >> mipLevel, m_height >> mipLevel);
+        decoder.SetDimensions(m_header.width >> mipLevel, m_header.height >> mipLevel);
         uint32_t jpegW = 0, jpegH = 0;
         std::vector<uint8_t> jpegOutput;
-        if (!decoder.Decode(jpegStart, jpegSize, jpegOutput, jpegW, jpegH)) {
+        if (!decoder.Decode(fullJpeg.data(), fullJpeg.size(), jpegOutput, jpegW, jpegH)) {
             return 0;
         }
-        // Copy decoded data to destination (BGRA format)
         uint32_t copySize = std::min(dstSize, static_cast<uint32_t>(jpegOutput.size()));
         memcpy(dst, jpegOutput.data(), copySize);
         if (outWidth) *outWidth = jpegW;
@@ -188,8 +179,11 @@ int32_t CBLPFile::DecodeMip(uint32_t mipLevel, void *dst, uint32_t dstSize, uint
         return 1;
     } else if (compression == 1) {
         // Palette
-        uint32_t *palette = reinterpret_cast<uint32_t*>(static_cast<uint8_t*>(m_data) + sizeof(BLPHeader));
+        const uint8_t *fileData = static_cast<const uint8_t*>(m_data);
+        uint32_t *palette = reinterpret_cast<uint32_t*>(const_cast<uint8_t*>(fileData + sizeof(BLPHeader)));
         uint8_t *out = static_cast<uint8_t*>(dst);
+        uint8_t *src = const_cast<uint8_t*>(fileData + m_header.mipOffsets[mipLevel]);
+        uint32_t srcSize = m_header.mipSizes[mipLevel];
         for (uint32_t i = 0; i < w * h && i < srcSize; ++i) {
             uint32_t color = palette[src[i]];
             out[i * 4 + 0] = (color >> 16) & 0xFF;
@@ -200,8 +194,9 @@ int32_t CBLPFile::DecodeMip(uint32_t mipLevel, void *dst, uint32_t dstSize, uint
         return 1;
     } else if (compression == 4) {
         // DXT5
+        const uint8_t *fileData = static_cast<const uint8_t*>(m_data);
+        const uint8_t *ptr = fileData + m_header.mipOffsets[mipLevel];
         uint8_t *out = static_cast<uint8_t*>(dst);
-        const uint8_t *ptr = src;
         for (uint32_t y = 0; y < h; y += 4) {
             for (uint32_t x = 0; x < w; x += 4) {
                 uint8_t a0 = ptr[0], a1 = ptr[1];

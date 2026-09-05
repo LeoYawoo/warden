@@ -21,18 +21,18 @@ public:
         : texFlags(flags.m_filter) { m_str = const_cast<char*>(str); }
 };
 
-// BLP file header
+// BLP1 file header (156 bytes)
+// Reference: gowarcraft3, openwarcraft3
 struct BLPHeader {
-    uint32_t signature;
-    uint32_t version;
-    uint8_t compression;
-    uint8_t alphaSize;
-    uint8_t preferredFormat;
-    uint8_t hasMips;
-    uint32_t width;
-    uint32_t height;
-    uint32_t mipOffsets[16];
-    uint32_t mipSizes[16];
+    uint32_t magic;           // +0:   "BLP1"
+    uint32_t type;            // +4:   0=JPG, 1=Paletted
+    uint32_t alphaBits;       // +8:   0x08=has alpha, 0x00=no alpha
+    uint32_t width;           // +12
+    uint32_t height;          // +16
+    uint32_t extra;           // +20:  flags (3/4/5)
+    uint32_t hasMipmaps;      // +24:  always 1
+    uint32_t mipOffsets[16];  // +28:  file offsets to mip data
+    uint32_t mipSizes[16];    // +92:  sizes of mip data
 };
 
 // CBLPFile - BLP texture file loader
