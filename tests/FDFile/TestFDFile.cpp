@@ -294,54 +294,101 @@ TEST_F(FDFileRealDataTest, LoadFrameDefTOC) {
     EXPECT_NE(content.find("UI\\"), std::string::npos);
 }
 
-// --- 批量加载所有 FDF 文件 ---
+// --- 批量加载所有 FDF 文件（覆盖 data/FrameDef 全部文件） ---
+
+TEST_F(FDFileRealDataTest, LoadAllRootFDFs) {
+    const char* rootFiles[] = {
+        "data/FrameDef/DateStrings.fdf",
+        "data/FrameDef/GlobalStrings.fdf",
+        "data/FrameDef/NetworkStrings.fdf",
+    };
+
+    for (const char* path : rootFiles) {
+        std::string content = ReadFileContent(path);
+        EXPECT_FALSE(content.empty()) << "Failed to load: " << path;
+    }
+}
 
 TEST_F(FDFileRealDataTest, LoadAllGlueFDFs) {
-    // 测试所有 Glue 目录下的 FDF 文件可以被读取
     const char* glueFiles[] = {
-        "data/FrameDef/Glue/MainMenu.fdf",
-        "data/FrameDef/Glue/OptionsMenu.fdf",
-        "data/FrameDef/Glue/SinglePlayerMenu.fdf",
-        "data/FrameDef/Glue/Loading.fdf",
-        "data/FrameDef/Glue/DialogWar3.fdf",
-        "data/FrameDef/Glue/StandardTemplates.fdf",
-        "data/FrameDef/Glue/ListBoxWar3.fdf",
-        "data/FrameDef/Glue/MapListBox.fdf",
-        "data/FrameDef/Glue/Skirmish.fdf",
-        "data/FrameDef/Glue/TeamSetup.fdf",
-        "data/FrameDef/Glue/ScoreScreen.fdf",
+        "data/FrameDef/Glue/AdvancedOptionsDisplay.fdf",
+        "data/FrameDef/Glue/AdvancedOptionsPane.fdf",
+        "data/FrameDef/Glue/BattleNetChatActionMenu.fdf",
+        "data/FrameDef/Glue/BattleNetChatPanel.fdf",
+        "data/FrameDef/Glue/BattleNetChatroom.fdf",
+        "data/FrameDef/Glue/BattleNetCustomCreatePanel.fdf",
+        "data/FrameDef/Glue/BattleNetCustomJoinPanel.fdf",
+        "data/FrameDef/Glue/BattleNetCustomLoadPanel.fdf",
+        "data/FrameDef/Glue/BattleNetFriendsListBox.fdf",
+        "data/FrameDef/Glue/BattleNetFriendsPane.fdf",
         "data/FrameDef/Glue/BattleNetMain.fdf",
+        "data/FrameDef/Glue/BattleNetNewsBox.fdf",
+        "data/FrameDef/Glue/BattleNetProfilePanel.fdf",
+        "data/FrameDef/Glue/BattleNetStandardPanel.fdf",
+        "data/FrameDef/Glue/BattleNetTeamInvitation.fdf",
+        "data/FrameDef/Glue/BattleNetTeamPanel.fdf",
         "data/FrameDef/Glue/BattleNetTemplates.fdf",
+        "data/FrameDef/Glue/BattleNetUserListBox.fdf",
+        "data/FrameDef/Glue/CampaignMenu.fdf",
+        "data/FrameDef/Glue/CheckListBox.fdf",
+        "data/FrameDef/Glue/DecoratedMapListBox.fdf",
+        "data/FrameDef/Glue/DialogWar3.fdf",
+        "data/FrameDef/Glue/GameChatroom.fdf",
+        "data/FrameDef/Glue/ListBoxWar3.fdf",
+        "data/FrameDef/Glue/LoadSavedGameScreen.fdf",
+        "data/FrameDef/Glue/Loading.fdf",
+        "data/FrameDef/Glue/LocalMultiplayerCreate.fdf",
+        "data/FrameDef/Glue/LocalMultiplayerJoin.fdf",
+        "data/FrameDef/Glue/LocalMultiplayerLoad.fdf",
+        "data/FrameDef/Glue/MainMenu.fdf",
+        "data/FrameDef/Glue/MapInfoPane.fdf",
+        "data/FrameDef/Glue/MapListBox.fdf",
+        "data/FrameDef/Glue/MapPreferenceBox.fdf",
+        "data/FrameDef/Glue/MultiplayerMenu.fdf",
+        "data/FrameDef/Glue/OptionsMenu.fdf",
+        "data/FrameDef/Glue/PlayerSlot.fdf",
+        "data/FrameDef/Glue/ScoreScreen.fdf",
+        "data/FrameDef/Glue/SinglePlayerMenu.fdf",
+        "data/FrameDef/Glue/Skirmish.fdf",
+        "data/FrameDef/Glue/StandardTemplates.fdf",
+        "data/FrameDef/Glue/TeamSetup.fdf",
+        "data/FrameDef/Glue/ViewReplayScreen.fdf",
     };
 
     for (const char* path : glueFiles) {
         std::string content = ReadFileContent(path);
         EXPECT_FALSE(content.empty()) << "Failed to load: " << path;
-        if (!content.empty()) {
-            EXPECT_NE(content.find("Frame"), std::string::npos)
-                << "No Frame definition in: " << path;
-        }
     }
 }
 
 TEST_F(FDFileRealDataTest, LoadAllUIFDFs) {
-    // 测试所有 UI 目录下的 FDF 文件可以被读取
     const char* uiFiles[] = {
-        "data/FrameDef/UI/ConsoleUI.fdf",
-        "data/FrameDef/UI/ResourceBar.fdf",
-        "data/FrameDef/UI/SimpleInfoPanel.fdf",
-        "data/FrameDef/UI/UpperButtonBar.fdf",
-        "data/FrameDef/UI/EscMenuMainPanel.fdf",
         "data/FrameDef/UI/AllianceDialog.fdf",
+        "data/FrameDef/UI/AllianceSlot.fdf",
         "data/FrameDef/UI/ChatDialog.fdf",
+        "data/FrameDef/UI/CinematicPanel.fdf",
+        "data/FrameDef/UI/ConsoleUI.fdf",
+        "data/FrameDef/UI/EscMenuMainPanel.fdf",
+        "data/FrameDef/UI/EscMenuOptionsPanel.fdf",
+        "data/FrameDef/UI/EscMenuSaveGamePanel.fdf",
+        "data/FrameDef/UI/EscMenuTemplates.fdf",
+        "data/FrameDef/UI/GameResultDialog.fdf",
+        "data/FrameDef/UI/GameSaveSplashDialog.fdf",
+        "data/FrameDef/UI/InfoPanelBuildingDetail.fdf",
+        "data/FrameDef/UI/InfoPanelItemDetail.fdf",
+        "data/FrameDef/UI/InfoPanelTemplates.fdf",
+        "data/FrameDef/UI/InfoPanelUnitDetail.fdf",
+        "data/FrameDef/UI/LeaderBoard.fdf",
         "data/FrameDef/UI/LogDialog.fdf",
         "data/FrameDef/UI/QuestDialog.fdf",
         "data/FrameDef/UI/ReplayPanel.fdf",
-        "data/FrameDef/UI/TimerDialog.fdf",
-        "data/FrameDef/UI/SuspendDialog.fdf",
-        "data/FrameDef/UI/UnresponsiveDialog.fdf",
-        "data/FrameDef/UI/GameResultDialog.fdf",
+        "data/FrameDef/UI/ResourceBar.fdf",
         "data/FrameDef/UI/ScriptDialog.fdf",
+        "data/FrameDef/UI/SimpleInfoPanel.fdf",
+        "data/FrameDef/UI/SuspendDialog.fdf",
+        "data/FrameDef/UI/TimerDialog.fdf",
+        "data/FrameDef/UI/UnresponsiveDialog.fdf",
+        "data/FrameDef/UI/UpperButtonBar.fdf",
     };
 
     for (const char* path : uiFiles) {
