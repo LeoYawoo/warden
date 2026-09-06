@@ -381,6 +381,11 @@ if(BUILD_TESTS)
                 Source/Engine/Source/Agile/AgentRef.cpp
                 Source/Engine/Source/Agile/CListenerEvent.cpp
                 Source/Engine/Source/Anim/Type.cpp
+                Source/Engine/Source/Anim/CMdlModel.cpp
+                Source/Engine/Source/Anim/MdlBinReader.cpp
+                Source/Engine/Source/Anim/MdlInterp.cpp
+                Source/Engine/Source/Anim/MdlRender.cpp
+                Source/Engine/Source/Model/ModelCreate.cpp
                 Source/Engine/Source/BLPFile/blp.cpp
                 Source/Engine/Source/BLPFile/IJG/jmemstorm.cpp
                 Source/Engine/Source/Base/CDataStore.cpp
@@ -535,6 +540,9 @@ if(BUILD_TESTS)
         # Anim tests
         add_executable(anim_tests
                 tests/Anim/TestFixed16.cpp
+                tests/Anim/TestMdlData.cpp
+                tests/Anim/TestMdlParse.cpp
+                tests/Anim/TestFootman.cpp
         )
 
         target_link_libraries(anim_tests PRIVATE tempest_lib GTest::gtest_main)
