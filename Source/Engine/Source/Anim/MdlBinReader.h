@@ -29,8 +29,8 @@ private:
     // 读取模型信息
     bool ReadModel(MsgBuffer& buffer, MDLMODELSECTION& model, Status& status);
 
-    // 读取动画序列
-    bool ReadSequences(MsgBuffer& buffer, MDLArray<MDLSEQUENCESSECTION>& sequences, Status& status);
+    // 读取动画序列 (无 count 前缀，通过 chunkSize 计算 count)
+    bool ReadSequences(MsgBuffer& buffer, uint32_t chunkSize, MDLArray<MDLSEQUENCESSECTION>& sequences, Status& status);
 
     // 读取全局序列
     bool ReadGlobalSequences(MsgBuffer& buffer, MDLArray<MDLGLOBALSEQSECTION>& globalSeqs, Status& status);
@@ -38,11 +38,11 @@ private:
     // 读取声音
     bool ReadSounds(MsgBuffer& buffer, MDLArray<MDLSOUNDSECTION>& sounds, Status& status);
 
-    // 读取材质
-    bool ReadMaterials(MsgBuffer& buffer, MDLArray<MDLMATERIALSECTION>& materials, Status& status);
+    // 读取材质 (无 count 前缀)
+    bool ReadMaterials(MsgBuffer& buffer, uint32_t chunkSize, MDLArray<MDLMATERIALSECTION>& materials, Status& status);
 
-    // 读取纹理
-    bool ReadTextures(MsgBuffer& buffer, MDLArray<MDLTEXTURESECTION>& textures, Status& status);
+    // 读取纹理 (无 count 前缀)
+    bool ReadTextures(MsgBuffer& buffer, uint32_t chunkSize, MDLArray<MDLTEXTURESECTION>& textures, Status& status);
 
     // 读取纹理动画
     bool ReadTextureAnimations(MsgBuffer& buffer, MDLArray<MDLTEXANIMSECTION>& texAnims, Status& status);

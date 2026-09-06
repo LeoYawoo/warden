@@ -15,7 +15,7 @@ static const uint32_t CHUNK_MODL = 0x4C444F4D;  // "MODL" (模型信息)
 static const uint32_t CHUNK_SEQS = 0x53455153;  // "SEQS"
 static const uint32_t CHUNK_GLOS = 0x534F4C47;  // "GLOS" (全局序列)
 static const uint32_t CHUNK_SNDS = 0x53444E53;  // "SNDS"
-static const uint32_t CHUNK_MATS = 0x5354414D;  // "MATS"
+static const uint32_t CHUNK_MTLS = 0x534C544D;  // "MTLS" (材质)
 static const uint32_t CHUNK_TEXS = 0x53584554;  // "TEXS"
 static const uint32_t CHUNK_TEXA = 0x41584554;  // "TEXA"
 static const uint32_t CHUNK_GEOS = 0x534F4547;  // "GEOS"
@@ -30,6 +30,7 @@ static const uint32_t CHUNK_EVTS = 0x53545645;  // "EVTS"
 static const uint32_t CHUNK_PRE2 = 0x32455250;  // "PRE2"
 static const uint32_t CHUNK_CLID = 0x44494C43;  // "CLID"
 static const uint32_t CHUNK_RIBB = 0x42424952;  // "RIBB"
+static const uint32_t CHUNK_PIVT = 0x54564950;  // "PIVT" (透视点)
 
 // ============================================================================
 // 构造函数/析构函数
@@ -66,7 +67,6 @@ bool MdlBinReader::Read(MsgBuffer& buffer, MDLDATA& data, Status& status) {
         bool result = false;
         switch (tag) {
             case CHUNK_VERS:
-                // 版本 chunk，读取并跳过 (size 是数据大小，不含 tag+size)
                 result = SkipChunk(buffer, size);
                 break;
             case CHUNK_MODL:
@@ -75,8 +75,14 @@ bool MdlBinReader::Read(MsgBuffer& buffer, MDLDATA& data, Status& status) {
                     result = ReadModel(buffer, data.model, status);
                 }
                 break;
+            case CHUNK_SEQS:
+            case CHUNK_MTLS:
+            case CHUNK_TEXS:
+                // 暂时跳过 (chunk 格式需进一步验证)
+                result = SkipChunk(buffer, size);
+                break;
             default:
-                // 其他 chunk 暂时跳过 (SEQS/GEOS/BONE 等含嵌套数组的 chunk 尚未完全实现)
+                // 未知 chunk，跳过
                 result = SkipChunk(buffer, size);
                 break;
         }
@@ -155,27 +161,21 @@ bool MdlBinReader::ReadModel(MsgBuffer& buffer, MDLMODELSECTION& model, Status& 
     return true;
 }
 
-bool MdlBinReader::ReadSequences(MsgBuffer& buffer, MDLArray<MDLSEQUENCESSECTION>& sequences, Status& status) {
-    uint32_t count;
-    if (!buffer.Read(&count, sizeof(count))) {
-        status.SetError(-30, "Failed to read sequence count");
-        return false;
-    }
+bool MdlBinReader::ReadSequences(MsgBuffer& buffer, uint32_t chunkSize, MDLArray<MDLSEQUENCESSECTION>& sequences, Status& status) {
+    // SEQS chunk 无 count 前缀，数据直接是 sequence entries
+    // count = chunkSize / sizeof(MDLSEQUENCESSECTION)
+    constexpr uint32_t entrySize = sizeof(MDLSEQUENCESSECTION);
+    uint32_t count = chunkSize / entrySize;
+    if (count == 0) return true;
 
     sequences.count = count;
-    if (count > 0) {
-        // 分配内存并读取数据
-        MDLSEQUENCESSECTION* data = new MDLSEQUENCESSECTION[count];
-        if (!buffer.Read(data, count * sizeof(MDLSEQUENCESSECTION))) {
-            delete[] data;
-            status.SetError(-31, "Failed to read sequences");
-            return false;
-        }
-
-        // 设置偏移 (简化处理，实际需要修复)
-        sequences.offset = reinterpret_cast<uintptr_t>(data);
+    MDLSEQUENCESSECTION* data = new MDLSEQUENCESSECTION[count];
+    if (!buffer.Read(data, count * entrySize)) {
+        delete[] data;
+        status.SetError(-31, "Failed to read sequences");
+        return false;
     }
-
+    sequences.offset = reinterpret_cast<uintptr_t>(data);
     return true;
 }
 
@@ -221,45 +221,35 @@ bool MdlBinReader::ReadSounds(MsgBuffer& buffer, MDLArray<MDLSOUNDSECTION>& soun
     return true;
 }
 
-bool MdlBinReader::ReadMaterials(MsgBuffer& buffer, MDLArray<MDLMATERIALSECTION>& materials, Status& status) {
-    uint32_t count;
-    if (!buffer.Read(&count, sizeof(count))) {
-        status.SetError(-60, "Failed to read material count");
-        return false;
-    }
+bool MdlBinReader::ReadMaterials(MsgBuffer& buffer, uint32_t chunkSize, MDLArray<MDLMATERIALSECTION>& materials, Status& status) {
+    constexpr uint32_t entrySize = sizeof(MDLMATERIALSECTION);
+    uint32_t count = chunkSize / entrySize;
+    if (count == 0) return true;
 
     materials.count = count;
-    if (count > 0) {
-        MDLMATERIALSECTION* data = new MDLMATERIALSECTION[count];
-        if (!buffer.Read(data, count * sizeof(MDLMATERIALSECTION))) {
-            delete[] data;
-            status.SetError(-61, "Failed to read materials");
-            return false;
-        }
-        materials.offset = reinterpret_cast<uintptr_t>(data);
+    MDLMATERIALSECTION* data = new MDLMATERIALSECTION[count];
+    if (!buffer.Read(data, count * entrySize)) {
+        delete[] data;
+        status.SetError(-61, "Failed to read materials");
+        return false;
     }
-
+    materials.offset = reinterpret_cast<uintptr_t>(data);
     return true;
 }
 
-bool MdlBinReader::ReadTextures(MsgBuffer& buffer, MDLArray<MDLTEXTURESECTION>& textures, Status& status) {
-    uint32_t count;
-    if (!buffer.Read(&count, sizeof(count))) {
-        status.SetError(-70, "Failed to read texture count");
-        return false;
-    }
+bool MdlBinReader::ReadTextures(MsgBuffer& buffer, uint32_t chunkSize, MDLArray<MDLTEXTURESECTION>& textures, Status& status) {
+    constexpr uint32_t entrySize = sizeof(MDLTEXTURESECTION);
+    uint32_t count = chunkSize / entrySize;
+    if (count == 0) return true;
 
     textures.count = count;
-    if (count > 0) {
-        MDLTEXTURESECTION* data = new MDLTEXTURESECTION[count];
-        if (!buffer.Read(data, count * sizeof(MDLTEXTURESECTION))) {
-            delete[] data;
-            status.SetError(-71, "Failed to read textures");
-            return false;
-        }
-        textures.offset = reinterpret_cast<uintptr_t>(data);
+    MDLTEXTURESECTION* data = new MDLTEXTURESECTION[count];
+    if (!buffer.Read(data, count * entrySize)) {
+        delete[] data;
+        status.SetError(-71, "Failed to read textures");
+        return false;
     }
-
+    textures.offset = reinterpret_cast<uintptr_t>(data);
     return true;
 }
 
@@ -334,16 +324,68 @@ bool MdlBinReader::ReadBones(MsgBuffer& buffer, MDLArray<MDLBONESECTION>& bones,
     }
 
     bones.count = count;
-    if (count > 0) {
-        MDLBONESECTION* data = new MDLBONESECTION[count];
-        if (!buffer.Read(data, count * sizeof(MDLBONESECTION))) {
-            delete[] data;
-            status.SetError(-111, "Failed to read bones");
-            return false;
+    if (count == 0) return true;
+
+    MDLBONESECTION* data = new MDLBONESECTION[count];
+
+    for (uint32_t i = 0; i < count; i++) {
+        auto& bone = data[i];
+
+        // 读取固定字段: name[80] + nodeId + flags + parentBone + submeshId + unknown[2]
+        if (!buffer.Read(bone.name.data, 80)) { delete[] data; status.SetError(-111, "Failed to read bone name"); return false; }
+        if (!buffer.Read(&bone.nodeId, sizeof(bone.nodeId))) { delete[] data; status.SetError(-112, "Failed to read bone nodeId"); return false; }
+        if (!buffer.Read(&bone.flags, sizeof(bone.flags))) { delete[] data; status.SetError(-113, "Failed to read bone flags"); return false; }
+        if (!buffer.Read(&bone.parentBone, sizeof(bone.parentBone))) { delete[] data; status.SetError(-114, "Failed to read bone parentBone"); return false; }
+        if (!buffer.Read(&bone.submeshId, sizeof(bone.submeshId))) { delete[] data; status.SetError(-115, "Failed to read bone submeshId"); return false; }
+        if (!buffer.Read(bone.unknown, sizeof(bone.unknown))) { delete[] data; status.SetError(-116, "Failed to read bone unknown"); return false; }
+
+        // 读取 translation 轨道: interpType(4) + globalSeqId(4) + keyCount(4) + keys
+        {
+            uint32_t interpType, globalSeqId, keyCount;
+            if (!buffer.Read(&interpType, 4)) { delete[] data; status.SetError(-117, "Failed to read trans interp"); return false; }
+            if (!buffer.Read(&globalSeqId, 4)) { delete[] data; status.SetError(-118, "Failed to read trans globalSeq"); return false; }
+            if (!buffer.Read(&keyCount, 4)) { delete[] data; status.SetError(-119, "Failed to read trans keyCount"); return false; }
+            if (keyCount > 0) {
+                auto* keys = new MDLTRANSKEYFRAME[keyCount];
+                if (!buffer.Read(keys, keyCount * sizeof(MDLTRANSKEYFRAME))) { delete[] keys; delete[] data; status.SetError(-120, "Failed to read trans keys"); return false; }
+                bone.translationTrack.count = keyCount;
+                bone.translationTrack.offset = reinterpret_cast<uintptr_t>(keys);
+            }
         }
-        bones.offset = reinterpret_cast<uintptr_t>(data);
+
+        // 读取 rotation 轨道
+        {
+            uint32_t interpType, globalSeqId, keyCount;
+            if (!buffer.Read(&interpType, 4)) { delete[] data; status.SetError(-121, "Failed to read rot interp"); return false; }
+            if (!buffer.Read(&globalSeqId, 4)) { delete[] data; status.SetError(-122, "Failed to read rot globalSeq"); return false; }
+            if (!buffer.Read(&keyCount, 4)) { delete[] data; status.SetError(-123, "Failed to read rot keyCount"); return false; }
+            if (keyCount > 0) {
+                auto* keys = new MDLROTKEYFRAME[keyCount];
+                if (!buffer.Read(keys, keyCount * sizeof(MDLROTKEYFRAME))) { delete[] keys; delete[] data; status.SetError(-124, "Failed to read rot keys"); return false; }
+                bone.rotationTrack.count = keyCount;
+                bone.rotationTrack.offset = reinterpret_cast<uintptr_t>(keys);
+            }
+        }
+
+        // 读取 scale 轨道
+        {
+            uint32_t interpType, globalSeqId, keyCount;
+            if (!buffer.Read(&interpType, 4)) { delete[] data; status.SetError(-125, "Failed to read scale interp"); return false; }
+            if (!buffer.Read(&globalSeqId, 4)) { delete[] data; status.SetError(-126, "Failed to read scale globalSeq"); return false; }
+            if (!buffer.Read(&keyCount, 4)) { delete[] data; status.SetError(-127, "Failed to read scale keyCount"); return false; }
+            if (keyCount > 0) {
+                auto* keys = new MDLSCALEKEYFRAME[keyCount];
+                if (!buffer.Read(keys, keyCount * sizeof(MDLSCALEKEYFRAME))) { delete[] keys; delete[] data; status.SetError(-128, "Failed to read scale keys"); return false; }
+                bone.scaleTrack.count = keyCount;
+                bone.scaleTrack.offset = reinterpret_cast<uintptr_t>(keys);
+            }
+        }
+
+        // 读取 pivot
+        if (!buffer.Read(&bone.pivot, sizeof(bone.pivot))) { delete[] data; status.SetError(-129, "Failed to read bone pivot"); return false; }
     }
 
+    bones.offset = reinterpret_cast<uintptr_t>(data);
     return true;
 }
 
