@@ -567,6 +567,7 @@ if(BUILD_TESTS)
 
         target_link_libraries(fdfile_tests PRIVATE tempest_lib GTest::gtest_main)
         target_include_directories(fdfile_tests PRIVATE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/Source ${CMAKE_SOURCE_DIR}/Source/Engine/Source)
+        target_compile_definitions(fdfile_tests PRIVATE PROJECT_ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
         include(GoogleTest)
         gtest_discover_tests(fdfile_tests)

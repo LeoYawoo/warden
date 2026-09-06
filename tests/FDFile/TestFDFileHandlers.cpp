@@ -100,21 +100,21 @@ TEST(MenuHashNodeTest, Clear) {
     EXPECT_STREQ(node.GetMenuText(), "");
 }
 
-// Test FDFile (basic tests, existing implementation)
-TEST(FDFileTest, DefaultConstructor) {
+// Test FDFile handler integration
+TEST(FDFileHandlerTest, DefaultConstructor) {
     FDFile fd;
     EXPECT_FALSE(fd.IsValid());
     EXPECT_EQ(fd.GetStatus(), FRAMEDEF_STATUS_OK);
 }
 
-TEST(FDFileTest, ParseXML) {
+TEST(FDFileHandlerTest, ParseXML) {
     FDFile fd;
     const char* xml = "<root><child attr=\"value\"/></root>";
     EXPECT_TRUE(fd.ParseXML(xml));
     EXPECT_TRUE(fd.IsValid());
 }
 
-TEST(FDFileTest, Clear) {
+TEST(FDFileHandlerTest, Clear) {
     FDFile fd;
     fd.ParseXML("<root/>");
     fd.Clear();
