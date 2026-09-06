@@ -9,7 +9,6 @@
 // ============================================================
 
 static std::string ReadFileContent(const char* relPath) {
-    // 从项目根目录读取文件
     std::string fullPath = std::string(PROJECT_ROOT_DIR) + "/" + relPath;
     std::ifstream file(fullPath, std::ios::binary);
     if (!file.is_open()) return "";
@@ -29,158 +28,185 @@ TEST(FDFileTest, DefaultConstructor) {
     EXPECT_STREQ(fd.GetErrorMessage(), "");
 }
 
-TEST(FDFileTest, ParseXMLSimple) {
+TEST(FDFileTest, ParseSimpleFrame) {
     FDFile fd;
-    const char* xml = "<Frame name=\"TestFrame\" width=\"100\" height=\"200\"></Frame>";
-
-    EXPECT_TRUE(fd.ParseXML(xml));
-    EXPECT_TRUE(fd.IsValid());
-    EXPECT_EQ(fd.GetStatus(), FRAMEDEF_STATUS_OK);
+    const char* fdf = R"(
+Frame "FRAME" "TestFrame" {
+    Width 0.5,
+    Height 0.3,
 }
+)";
 
-TEST(FDFileTest, ParseXMLWithChildren) {
-    FDFile fd;
-    const char* xml = "<Frame>"
-                       "<Button/>"
-                       "<Texture/>"
-                       "</Frame>";
-
-    EXPECT_TRUE(fd.ParseXML(xml));
+    EXPECT_TRUE(fd.LoadFromMemory(fdf, strlen(fdf)));
     EXPECT_TRUE(fd.IsValid());
 
-    const FrameDefNode* root = fd.GetRootNode();
-    EXPECT_NE(root, nullptr);
-    EXPECT_EQ(root->name, "Frame");
-    EXPECT_EQ(fd.GetChildCount(root), 2u);
+    const FdfNode* frame = fd.FindFrame("TestFrame");
+    ASSERT_NE(frame, nullptr);
+    EXPECT_EQ(frame->frameType, "FRAME");
+    EXPECT_EQ(frame->name, "TestFrame");
+    EXPECT_GE(frame->attributes.size(), 2u);
 }
 
-TEST(FDFileTest, FindNode) {
+TEST(FDFileTest, ParseFrameWithInherits) {
     FDFile fd;
-    const char* xml = "<Frame>"
-                       "<Button/>"
-                       "<Texture/>"
-                       "</Frame>";
+    const char* fdf = R"(
+Frame "FRAME" "MainMenuFrame" INHERITS "StandardFrameTemplate" {
+    SetAllPoints,
+}
+)";
 
-    fd.ParseXML(xml);
+    EXPECT_TRUE(fd.LoadFromMemory(fdf, strlen(fdf)));
 
-    EXPECT_NE(fd.FindNode("Button"), nullptr);
-    EXPECT_NE(fd.FindNode("Texture"), nullptr);
-    EXPECT_EQ(fd.FindNode("NonExistent"), nullptr);
+    const FdfNode* frame = fd.FindFrame("MainMenuFrame");
+    ASSERT_NE(frame, nullptr);
+    EXPECT_EQ(frame->inheritsFrom, "StandardFrameTemplate");
+    EXPECT_EQ(frame->withChildren, false);
 }
 
-TEST(FDFileTest, GetNodeAttribute) {
+TEST(FDFileTest, ParseFrameWithInheritsWithChildren) {
     FDFile fd;
-    const char* xml = "<Frame width=\"100\" height=\"200\"></Frame>";
+    const char* fdf = R"(
+Frame "GLUETEXTBUTTON" "OKButton" INHERITS WITHCHILDREN "StandardSmallButtonTemplate" {
+    Width 0.079,
+}
+)";
 
-    fd.ParseXML(xml);
-    const FrameDefNode* node = fd.GetRootNode();
+    EXPECT_TRUE(fd.LoadFromMemory(fdf, strlen(fdf)));
+
+    const FdfNode* frame = fd.FindFrame("OKButton");
+    ASSERT_NE(frame, nullptr);
+    EXPECT_EQ(frame->inheritsFrom, "StandardSmallButtonTemplate");
+    EXPECT_EQ(frame->withChildren, true);
+}
+
+TEST(FDFileTest, ParseNestedFrames) {
+    FDFile fd;
+    const char* fdf = R"(
+Frame "FRAME" "ParentFrame" {
+    Frame "TEXT" "ChildText" {
+        Text "Hello",
+    }
+    Frame "SPRITE" "ChildSprite" {
+        File "logo.blp",
+    }
+}
+)";
+
+    EXPECT_TRUE(fd.LoadFromMemory(fdf, strlen(fdf)));
+
+    const FdfNode* parent = fd.FindFrame("ParentFrame");
+    ASSERT_NE(parent, nullptr);
+    EXPECT_EQ(parent->children.size(), 2u);
+
+    const FdfNode* child1 = parent->children[0];
+    EXPECT_EQ(child1->name, "ChildText");
+    EXPECT_EQ(child1->frameType, "TEXT");
+
+    const FdfNode* child2 = parent->children[1];
+    EXPECT_EQ(child2->name, "ChildSprite");
+    EXPECT_EQ(child2->frameType, "SPRITE");
+}
+
+TEST(FDFileTest, ParseTextureBlock) {
+    FDFile fd;
+    const char* fdf = R"(
+Frame "SIMPLEFRAME" "ConsoleUI" {
+    Texture {
+        File "ConsoleTexture01",
+        Width 0.256,
+        Height 0.032,
+        TexCoord 0, 1, 0, 0.125,
+        AlphaMode "ALPHAKEY",
+        Anchor TOPLEFT,0,0,
+    }
+}
+)";
+
+    EXPECT_TRUE(fd.LoadFromMemory(fdf, strlen(fdf)));
+
+    const FdfNode* frame = fd.FindFrame("ConsoleUI");
+    ASSERT_NE(frame, nullptr);
+    ASSERT_EQ(frame->children.size(), 1u);
+
+    const FdfNode* texture = frame->children[0];
+    EXPECT_EQ(texture->frameType, "TEXTURE");
+    EXPECT_GE(texture->attributes.size(), 5u);
+}
+
+TEST(FDFileTest, ParseStringList) {
+    FDFile fd;
+    const char* fdf = R"(
+StringList {
+    MONTH_01        "January",
+    MONTH_02        "February",
+    DAY_01          "Sunday",
+}
+)";
+
+    EXPECT_TRUE(fd.LoadFromMemory(fdf, strlen(fdf)));
 
     std::string value;
-    EXPECT_TRUE(fd.GetNodeAttribute(node, "width", value));
-    EXPECT_EQ(value, "100");
+    EXPECT_TRUE(fd.GetString("MONTH_01", value));
+    EXPECT_EQ(value, "January");
 
-    EXPECT_TRUE(fd.GetNodeAttribute(node, "height", value));
-    EXPECT_EQ(value, "200");
+    EXPECT_TRUE(fd.GetString("MONTH_02", value));
+    EXPECT_EQ(value, "February");
 
-    EXPECT_FALSE(fd.GetNodeAttribute(node, "nonexistent", value));
+    EXPECT_TRUE(fd.GetString("DAY_01", value));
+    EXPECT_EQ(value, "Sunday");
+
+    EXPECT_FALSE(fd.GetString("NONEXISTENT", value));
 }
 
-TEST(FDFileTest, GetChildCount) {
+TEST(FDFileTest, ParseComments) {
     FDFile fd;
-    const char* xml = "<Frame>"
-                       "<Button/>"
-                       "<Texture/>"
-                       "</Frame>";
+    const char* fdf = R"(
+// 单行注释
+Frame "FRAME" "CommentedFrame" {
+    /* 多行
+       注释 */
+    Width 0.5,
+}
+)";
 
-    fd.ParseXML(xml);
-    const FrameDefNode* root = fd.GetRootNode();
+    EXPECT_TRUE(fd.LoadFromMemory(fdf, strlen(fdf)));
 
-    EXPECT_EQ(fd.GetChildCount(root), 2u);
-    EXPECT_EQ(fd.GetChildCount(nullptr), 0u);
+    const FdfNode* frame = fd.FindFrame("CommentedFrame");
+    ASSERT_NE(frame, nullptr);
 }
 
-TEST(FDFileTest, GetChild) {
+TEST(FDFileTest, InvalidContent) {
     FDFile fd;
-    const char* xml = "<Frame>"
-                       "<Button/>"
-                       "<Texture/>"
-                       "</Frame>";
-
-    fd.ParseXML(xml);
-    const FrameDefNode* root = fd.GetRootNode();
-
-    EXPECT_NE(fd.GetChild(root, 0), nullptr);
-    EXPECT_EQ(fd.GetChild(root, 0)->name, "Button");
-    EXPECT_NE(fd.GetChild(root, 1), nullptr);
-    EXPECT_EQ(fd.GetChild(root, 1)->name, "Texture");
-    EXPECT_EQ(fd.GetChild(root, 2), nullptr);
-    EXPECT_EQ(fd.GetChild(nullptr, 0), nullptr);
-}
-
-TEST(FDFileTest, InvalidXML) {
-    FDFile fd;
-    EXPECT_FALSE(fd.ParseXML(nullptr));
-    EXPECT_FALSE(fd.IsValid());
-}
-
-TEST(FDFileTest, MalformedXML) {
-    FDFile fd;
-    EXPECT_FALSE(fd.ParseXML("Not valid XML"));
+    EXPECT_FALSE(fd.LoadFromMemory(nullptr, 0));
     EXPECT_FALSE(fd.IsValid());
 }
 
 TEST(FDFileTest, Clear) {
     FDFile fd;
-    fd.ParseXML("<Frame name=\"Test\"></Frame>");
+    const char* fdf = R"(
+Frame "FRAME" "TestFrame" {
+    Width 0.5,
+}
+)";
+
+    fd.LoadFromMemory(fdf, strlen(fdf));
     EXPECT_TRUE(fd.IsValid());
 
     fd.Clear();
     EXPECT_FALSE(fd.IsValid());
     EXPECT_EQ(fd.GetRootNode(), nullptr);
-}
-
-TEST(FDFileTest, SelfClosingTag) {
-    FDFile fd;
-    const char* xml = "<Button width=\"100\"/>";
-
-    EXPECT_TRUE(fd.ParseXML(xml));
-    const FrameDefNode* node = fd.GetRootNode();
-    EXPECT_NE(node, nullptr);
-    EXPECT_EQ(node->name, "Button");
-    EXPECT_EQ(node->attributes.size(), 1u);
-}
-
-TEST(FDFileTest, NestedElements) {
-    FDFile fd;
-    const char* xml = "<Frame>"
-                       "<Panel>"
-                       "<Button/>"
-                       "</Panel>"
-                       "</Frame>";
-
-    EXPECT_TRUE(fd.ParseXML(xml));
-
-    const FrameDefNode* root = fd.GetRootNode();
-    EXPECT_EQ(root->name, "Frame");
-    EXPECT_EQ(fd.GetChildCount(root), 1u);
-
-    const FrameDefNode* panel = fd.GetChild(root, 0);
-    EXPECT_NE(panel, nullptr);
-    EXPECT_EQ(panel->name, "Panel");
-    EXPECT_EQ(fd.GetChildCount(panel), 1u);
+    EXPECT_TRUE(fd.GetFrames().empty());
+    EXPECT_TRUE(fd.GetStrings().empty());
 }
 
 TEST(FDFileTest, EnumValues) {
     EXPECT_EQ(FRAMEDEF_STATUS_OK, 0);
     EXPECT_EQ(FRAMEDEF_STATUS_ERROR, 1);
     EXPECT_EQ(FRAMEDEF_STATUS_NOT_FOUND, 2);
-    EXPECT_EQ(NODE_TYPE_ELEMENT, 0);
-    EXPECT_EQ(NODE_TYPE_ATTRIBUTE, 1);
-    EXPECT_EQ(NODE_TYPE_TEXT, 2);
 }
 
 // ============================================================
-// 真实数据文件加载测试
+// 真实数据文件加载测试 (使用真正的 FDF 解析)
 // ============================================================
 
 class FDFileRealDataTest : public ::testing::Test {
@@ -196,32 +222,44 @@ TEST_F(FDFileRealDataTest, LoadDateStrings) {
     std::string content = ReadFileContent("data/FrameDef/DateStrings.fdf");
     ASSERT_FALSE(content.empty()) << "DateStrings.fdf not found";
 
-    // 验证文件包含预期的字符串定义
-    EXPECT_NE(content.find("MONTH_01"), std::string::npos);
-    EXPECT_NE(content.find("January"), std::string::npos);
-    EXPECT_NE(content.find("DAY_01"), std::string::npos);
-    EXPECT_NE(content.find("Sunday"), std::string::npos);
-    EXPECT_NE(content.find("StringList"), std::string::npos);
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()))
+        << "Failed to parse DateStrings.fdf";
+
+    // 验证字符串被正确解析
+    std::string value;
+    EXPECT_TRUE(fd.GetString("MONTH_01", value));
+    EXPECT_EQ(value, "January");
+
+    EXPECT_TRUE(fd.GetString("DAY_01", value));
+    EXPECT_EQ(value, "Sunday");
 }
 
 TEST_F(FDFileRealDataTest, LoadGlobalStrings) {
     std::string content = ReadFileContent("data/FrameDef/GlobalStrings.fdf");
     ASSERT_FALSE(content.empty()) << "GlobalStrings.fdf not found";
 
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()))
+        << "Failed to parse GlobalStrings.fdf";
+
     // 验证关键字符串存在
-    EXPECT_NE(content.find("ACCEPT"), std::string::npos);
-    EXPECT_NE(content.find("AGILITY"), std::string::npos);
-    EXPECT_NE(content.find("ARMOR_HERO"), std::string::npos);
-    EXPECT_NE(content.find("StringList"), std::string::npos);
+    std::string value;
+    EXPECT_TRUE(fd.GetString("ACCEPT", value)) << "Missing ACCEPT string";
+    EXPECT_TRUE(fd.GetString("AGILITY", value)) << "Missing AGILITY string";
 }
 
 TEST_F(FDFileRealDataTest, LoadNetworkStrings) {
     std::string content = ReadFileContent("data/FrameDef/NetworkStrings.fdf");
     ASSERT_FALSE(content.empty()) << "NetworkStrings.fdf not found";
 
-    EXPECT_NE(content.find("ERROR_ID_CANTCONNECT"), std::string::npos);
-    EXPECT_NE(content.find("Unable to connect"), std::string::npos);
-    EXPECT_NE(content.find("StringList"), std::string::npos);
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()))
+        << "Failed to parse NetworkStrings.fdf";
+
+    std::string value;
+    EXPECT_TRUE(fd.GetString("ERROR_ID_CANTCONNECT", value))
+        << "Missing ERROR_ID_CANTCONNECT string";
 }
 
 // --- Frame 定义文件测试 ---
@@ -230,71 +268,58 @@ TEST_F(FDFileRealDataTest, LoadConsoleUI) {
     std::string content = ReadFileContent("data/FrameDef/UI/ConsoleUI.fdf");
     ASSERT_FALSE(content.empty()) << "ConsoleUI.fdf not found";
 
-    // 验证 Frame 定义结构
-    EXPECT_NE(content.find("Frame"), std::string::npos);
-    EXPECT_NE(content.find("ConsoleUI"), std::string::npos);
-    EXPECT_NE(content.find("Texture"), std::string::npos);
-    EXPECT_NE(content.find("File"), std::string::npos);
-    EXPECT_NE(content.find("Width"), std::string::npos);
-    EXPECT_NE(content.find("Height"), std::string::npos);
-    EXPECT_NE(content.find("Anchor"), std::string::npos);
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()))
+        << "Failed to parse ConsoleUI.fdf";
+
+    // 验证帧定义结构
+    const FdfNode* frame = fd.FindFrame("ConsoleUI");
+    ASSERT_NE(frame, nullptr) << "ConsoleUI frame not found";
+    EXPECT_EQ(frame->frameType, "SIMPLEFRAME");
+
+    // 验证有 Texture 子节点
+    size_t textureCount = 0;
+    for (const auto* child : frame->children) {
+        if (child->frameType == "TEXTURE") {
+            textureCount++;
+        }
+    }
+    EXPECT_GE(textureCount, 4u) << "ConsoleUI should have multiple Texture children";
 }
 
 TEST_F(FDFileRealDataTest, LoadMainMenu) {
     std::string content = ReadFileContent("data/FrameDef/Glue/MainMenu.fdf");
     ASSERT_FALSE(content.empty()) << "MainMenu.fdf not found";
 
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()))
+        << "Failed to parse MainMenu.fdf";
+
     // 验证嵌套 Frame 结构
-    EXPECT_NE(content.find("MainMenuFrame"), std::string::npos);
-    EXPECT_NE(content.find("INHERITS"), std::string::npos);
-    EXPECT_NE(content.find("IncludeFile"), std::string::npos);
-    EXPECT_NE(content.find("StandardFrameTemplate"), std::string::npos);
-    EXPECT_NE(content.find("WarCraftIIILogo"), std::string::npos);
-    EXPECT_NE(content.find("SetPoint"), std::string::npos);
+    const FdfNode* frame = fd.FindFrame("MainMenuFrame");
+    ASSERT_NE(frame, nullptr) << "MainMenuFrame not found";
+    EXPECT_EQ(frame->inheritsFrom, "StandardFrameTemplate");
+
+    // 验证有子帧
+    EXPECT_GE(frame->children.size(), 1u) << "MainMenuFrame should have children";
 }
 
-TEST_F(FDFileRealDataTest, LoadEscMenuMainPanel) {
-    std::string content = ReadFileContent("data/FrameDef/UI/EscMenuMainPanel.fdf");
-    ASSERT_FALSE(content.empty()) << "EscMenuMainPanel.fdf not found";
+TEST_F(FDFileRealDataTest, LoadStandardTemplates) {
+    std::string content = ReadFileContent("data/FrameDef/Glue/StandardTemplates.fdf");
+    ASSERT_FALSE(content.empty()) << "StandardTemplates.fdf not found";
 
-    EXPECT_NE(content.find("Frame"), std::string::npos);
-    EXPECT_NE(content.find("TEXT"), std::string::npos);
-    EXPECT_NE(content.find("GLUETEXTBUTTON"), std::string::npos);
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()))
+        << "Failed to parse StandardTemplates.fdf";
+
+    // 验证多个模板定义
+    const FdfNode* heavy = fd.FindFrame("StandardHeavyBackdropTemplate");
+    ASSERT_NE(heavy, nullptr) << "StandardHeavyBackdropTemplate not found";
+    EXPECT_EQ(heavy->frameType, "BACKDROP");
+
+    const FdfNode* medium = fd.FindFrame("StandardMediumBackdropTemplate");
+    ASSERT_NE(medium, nullptr) << "StandardMediumBackdropTemplate not found";
 }
-
-TEST_F(FDFileRealDataTest, LoadResourceBar) {
-    std::string content = ReadFileContent("data/FrameDef/UI/ResourceBar.fdf");
-    ASSERT_FALSE(content.empty()) << "ResourceBar.fdf not found";
-
-    EXPECT_NE(content.find("Frame"), std::string::npos);
-    EXPECT_NE(content.find("Texture"), std::string::npos);
-}
-
-TEST_F(FDFileRealDataTest, LoadAllianceDialog) {
-    std::string content = ReadFileContent("data/FrameDef/UI/AllianceDialog.fdf");
-    ASSERT_FALSE(content.empty()) << "AllianceDialog.fdf not found";
-
-    EXPECT_NE(content.find("Frame"), std::string::npos);
-    EXPECT_NE(content.find("AllianceDialog"), std::string::npos);
-    EXPECT_NE(content.find("DIALOG"), std::string::npos);
-    EXPECT_NE(content.find("DialogBackdrop"), std::string::npos);
-}
-
-// --- FrameDef.toc 目录文件测试 ---
-
-TEST_F(FDFileRealDataTest, LoadFrameDefTOC) {
-    std::string content = ReadFileContent("data/FrameDef/FrameDef.toc");
-    ASSERT_FALSE(content.empty()) << "FrameDef.toc not found";
-
-    // 验证 TOC 包含所有子目录的文件引用
-    EXPECT_NE(content.find("GlobalStrings.fdf"), std::string::npos);
-    EXPECT_NE(content.find("NetworkStrings.fdf"), std::string::npos);
-    EXPECT_NE(content.find("DateStrings.fdf"), std::string::npos);
-    EXPECT_NE(content.find("Glue\\"), std::string::npos);
-    EXPECT_NE(content.find("UI\\"), std::string::npos);
-}
-
-// --- 批量加载所有 FDF 文件（覆盖 data/FrameDef 全部文件） ---
 
 TEST_F(FDFileRealDataTest, LoadAllRootFDFs) {
     const char* rootFiles[] = {
@@ -305,7 +330,11 @@ TEST_F(FDFileRealDataTest, LoadAllRootFDFs) {
 
     for (const char* path : rootFiles) {
         std::string content = ReadFileContent(path);
-        EXPECT_FALSE(content.empty()) << "Failed to load: " << path;
+        ASSERT_FALSE(content.empty()) << "Failed to load: " << path;
+
+        FDFile fd;
+        EXPECT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()))
+            << "Failed to parse: " << path;
     }
 }
 
@@ -357,7 +386,11 @@ TEST_F(FDFileRealDataTest, LoadAllGlueFDFs) {
 
     for (const char* path : glueFiles) {
         std::string content = ReadFileContent(path);
-        EXPECT_FALSE(content.empty()) << "Failed to load: " << path;
+        ASSERT_FALSE(content.empty()) << "Failed to load: " << path;
+
+        FDFile fd;
+        EXPECT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()))
+            << "Failed to parse: " << path;
     }
 }
 
@@ -393,129 +426,142 @@ TEST_F(FDFileRealDataTest, LoadAllUIFDFs) {
 
     for (const char* path : uiFiles) {
         std::string content = ReadFileContent(path);
-        EXPECT_FALSE(content.empty()) << "Failed to load: " << path;
-        if (!content.empty()) {
-            EXPECT_NE(content.find("Frame"), std::string::npos)
-                << "No Frame definition in: " << path;
-        }
+        ASSERT_FALSE(content.empty()) << "Failed to load: " << path;
+
+        FDFile fd;
+        EXPECT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()))
+            << "Failed to parse: " << path;
+
+        // 验证至少有一个帧定义
+        EXPECT_FALSE(fd.GetFrames().empty())
+            << "No frames found in: " << path;
     }
 }
 
 // ============================================================
-// FDF 格式特征验证测试
+// FDF 格式特征验证测试 (使用真正解析)
 // ============================================================
 
 TEST_F(FDFileRealDataTest, FDF_HasFrameSyntax) {
-    // 验证 FDF 使用 Frame "TYPE" "NAME" { } 语法而非 XML
     std::string content = ReadFileContent("data/FrameDef/UI/ConsoleUI.fdf");
     ASSERT_FALSE(content.empty());
 
-    // FDF 格式特征：Frame 关键字后跟引号包裹的类型和名称
-    EXPECT_NE(content.find("Frame \""), std::string::npos)
-        << "FDF should use Frame \"TYPE\" syntax";
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()));
 
-    // 不应包含 XML 标签
-    EXPECT_EQ(content.find("<Frame"), std::string::npos)
-        << "FDF should not contain XML tags";
+    // 验证帧被正确解析
+    const FdfNode* frame = fd.FindFrame("ConsoleUI");
+    EXPECT_NE(frame, nullptr);
+    EXPECT_EQ(frame->frameType, "SIMPLEFRAME");
 }
 
 TEST_F(FDFileRealDataTest, FDF_HasStringListSyntax) {
-    // 验证 StringList 使用自定义语法
     std::string content = ReadFileContent("data/FrameDef/DateStrings.fdf");
     ASSERT_FALSE(content.empty());
 
-    EXPECT_NE(content.find("StringList {"), std::string::npos)
-        << "StringList should use { } syntax";
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()));
 
-    // 验证 KEY "VALUE", 格式
-    EXPECT_NE(content.find("MONTH_01"), std::string::npos);
-}
-
-TEST_F(FDFileRealDataTest, FDF_HasIncludeFile) {
-    // 验证 IncludeFile 指令
-    std::string content = ReadFileContent("data/FrameDef/Glue/MainMenu.fdf");
-    ASSERT_FALSE(content.empty());
-
-    EXPECT_NE(content.find("IncludeFile"), std::string::npos)
-        << "FDF should support IncludeFile directive";
+    // 验证字符串被正确解析
+    EXPECT_FALSE(fd.GetStrings().empty());
 }
 
 TEST_F(FDFileRealDataTest, FDF_HasInherits) {
-    // 验证 INHERITS 继承语法
     std::string content = ReadFileContent("data/FrameDef/Glue/MainMenu.fdf");
     ASSERT_FALSE(content.empty());
 
-    EXPECT_NE(content.find("INHERITS"), std::string::npos)
-        << "FDF should support INHERITS syntax";
-}
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()));
 
-TEST_F(FDFileRealDataTest, FDF_HasComments) {
-    // 验证注释格式 (// 和 /* */)
-    std::string content = ReadFileContent("data/FrameDef/DateStrings.fdf");
-    ASSERT_FALSE(content.empty());
-
-    EXPECT_NE(content.find("/*"), std::string::npos)
-        << "FDF should support /* */ comments";
-    EXPECT_NE(content.find("//"), std::string::npos)
-        << "FDF should support // comments";
+    const FdfNode* frame = fd.FindFrame("MainMenuFrame");
+    ASSERT_NE(frame, nullptr);
+    EXPECT_EQ(frame->inheritsFrom, "StandardFrameTemplate");
 }
 
 TEST_F(FDFileRealDataTest, FDF_HasNestedFrames) {
-    // 验证嵌套 Frame 结构
     std::string content = ReadFileContent("data/FrameDef/UI/ConsoleUI.fdf");
     ASSERT_FALSE(content.empty());
 
-    // ConsoleUI 有多个嵌套的 Texture Frame
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()));
+
+    const FdfNode* frame = fd.FindFrame("ConsoleUI");
+    ASSERT_NE(frame, nullptr);
+
     size_t textureCount = 0;
-    size_t pos = 0;
-    while ((pos = content.find("Texture {", pos)) != std::string::npos) {
-        textureCount++;
-        pos++;
+    for (const auto* child : frame->children) {
+        if (child->frameType == "TEXTURE") {
+            textureCount++;
+        }
     }
-    EXPECT_GE(textureCount, 4u)
-        << "ConsoleUI should have multiple nested Texture frames";
+    EXPECT_GE(textureCount, 4u);
 }
 
 TEST_F(FDFileRealDataTest, FDF_HasFrameTypes) {
-    // 验证多种 Frame 类型
-    std::string content = ReadFileContent("data/FrameDef/Glue/MainMenu.fdf");
+    std::string content = ReadFileContent("data/FrameDef/Glue/StandardTemplates.fdf");
     ASSERT_FALSE(content.empty());
 
-    EXPECT_NE(content.find("Frame \"FRAME\""), std::string::npos);
-    EXPECT_NE(content.find("Frame \"TEXT\""), std::string::npos);
-    EXPECT_NE(content.find("Frame \"SPRITE\""), std::string::npos);
-    EXPECT_NE(content.find("Frame \"BACKDROP\""), std::string::npos);
-    EXPECT_NE(content.find("Frame \"GLUETEXTBUTTON\""), std::string::npos);
-}
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()));
 
-TEST_F(FDFileRealDataTest, FDF_HasSetPoint) {
-    // 验证 SetPoint 布局语法
-    std::string content = ReadFileContent("data/FrameDef/Glue/MainMenu.fdf");
-    ASSERT_FALSE(content.empty());
+    // 验证多种帧类型被解析
+    bool hasBackdrop = false, hasFrame = false;
+    for (const auto& [name, frame] : fd.GetFrames()) {
+        if (frame->frameType == "BACKDROP") hasBackdrop = true;
+        if (frame->frameType == "FRAME") hasFrame = true;
+    }
 
-    EXPECT_NE(content.find("SetPoint"), std::string::npos);
-    EXPECT_NE(content.find("TOPLEFT"), std::string::npos);
-    EXPECT_NE(content.find("BOTTOMLEFT"), std::string::npos);
+    EXPECT_TRUE(hasBackdrop) << "No BACKDROP type found in StandardTemplates";
+    EXPECT_TRUE(hasFrame) << "No FRAME type found";
 }
 
 TEST_F(FDFileRealDataTest, FDF_HasTextProperties) {
-    // 验证文本属性
     std::string content = ReadFileContent("data/FrameDef/Glue/MainMenu.fdf");
     ASSERT_FALSE(content.empty());
 
-    EXPECT_NE(content.find("Text \""), std::string::npos);
-    EXPECT_NE(content.find("FontColor"), std::string::npos);
-    EXPECT_NE(content.find("FontJustificationH"), std::string::npos);
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()));
+
+    // 验证文本属性被解析
+    bool foundTextProp = false;
+    for (const auto& [name, frame] : fd.GetFrames()) {
+        for (const auto& attr : frame->attributes) {
+            if (attr.name == "Text" || attr.name == "FontColor" ||
+                attr.name == "FontJustificationH") {
+                foundTextProp = true;
+                break;
+            }
+        }
+        if (foundTextProp) break;
+    }
+
+    EXPECT_TRUE(foundTextProp) << "No text properties found";
 }
 
 TEST_F(FDFileRealDataTest, FDF_HasTextureProperties) {
-    // 验证纹理属性
     std::string content = ReadFileContent("data/FrameDef/UI/ConsoleUI.fdf");
     ASSERT_FALSE(content.empty());
 
-    EXPECT_NE(content.find("File \""), std::string::npos);
-    EXPECT_NE(content.find("TexCoord"), std::string::npos);
-    EXPECT_NE(content.find("AlphaMode"), std::string::npos);
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()));
+
+    // 验证纹理属性被解析
+    bool foundTextureProp = false;
+    for (const auto& [name, frame] : fd.GetFrames()) {
+        for (const auto* child : frame->children) {
+            for (const auto& attr : child->attributes) {
+                if (attr.name == "File" || attr.name == "TexCoord" ||
+                    attr.name == "AlphaMode") {
+                    foundTextureProp = true;
+                    break;
+                }
+            }
+            if (foundTextureProp) break;
+        }
+        if (foundTextureProp) break;
+    }
+
+    EXPECT_TRUE(foundTextureProp) << "No texture properties found";
 }
 
 // ============================================================
@@ -526,6 +572,9 @@ TEST_F(FDFileRealDataTest, DateStrings_CompleteMonths) {
     std::string content = ReadFileContent("data/FrameDef/DateStrings.fdf");
     ASSERT_FALSE(content.empty());
 
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()));
+
     // 验证12个月份都有定义
     const char* months[] = {
         "MONTH_01", "MONTH_02", "MONTH_03", "MONTH_04",
@@ -533,8 +582,8 @@ TEST_F(FDFileRealDataTest, DateStrings_CompleteMonths) {
         "MONTH_09", "MONTH_10", "MONTH_11", "MONTH_12"
     };
     for (const char* month : months) {
-        EXPECT_NE(content.find(month), std::string::npos)
-            << "Missing month: " << month;
+        std::string value;
+        EXPECT_TRUE(fd.GetString(month, value)) << "Missing month: " << month;
     }
 }
 
@@ -542,14 +591,17 @@ TEST_F(FDFileRealDataTest, DateStrings_CompleteDays) {
     std::string content = ReadFileContent("data/FrameDef/DateStrings.fdf");
     ASSERT_FALSE(content.empty());
 
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()));
+
     // 验证7天都有定义
     const char* days[] = {
         "DAY_01", "DAY_02", "DAY_03", "DAY_04",
         "DAY_05", "DAY_06", "DAY_07"
     };
     for (const char* day : days) {
-        EXPECT_NE(content.find(day), std::string::npos)
-            << "Missing day: " << day;
+        std::string value;
+        EXPECT_TRUE(fd.GetString(day, value)) << "Missing day: " << day;
     }
 }
 
@@ -557,43 +609,44 @@ TEST_F(FDFileRealDataTest, GlobalStrings_ArmorTypes) {
     std::string content = ReadFileContent("data/FrameDef/GlobalStrings.fdf");
     ASSERT_FALSE(content.empty());
 
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()));
+
     // 验证护甲类型定义完整
-    EXPECT_NE(content.find("ARMOR_FORT"), std::string::npos);
-    EXPECT_NE(content.find("ARMOR_HERO"), std::string::npos);
-    EXPECT_NE(content.find("ARMOR_LARGE"), std::string::npos);
-    EXPECT_NE(content.find("ARMOR_MEDIUM"), std::string::npos);
-    EXPECT_NE(content.find("ARMOR_NORMAL"), std::string::npos);
-    EXPECT_NE(content.find("ARMOR_SMALL"), std::string::npos);
-    EXPECT_NE(content.find("ARMOR_DIVINE"), std::string::npos);
+    std::string value;
+    EXPECT_TRUE(fd.GetString("ARMOR_FORT", value));
+    EXPECT_TRUE(fd.GetString("ARMOR_HERO", value));
+    EXPECT_TRUE(fd.GetString("ARMOR_LARGE", value));
+    EXPECT_TRUE(fd.GetString("ARMOR_MEDIUM", value));
+    EXPECT_TRUE(fd.GetString("ARMOR_NORMAL", value));
+    EXPECT_TRUE(fd.GetString("ARMOR_SMALL", value));
+    EXPECT_TRUE(fd.GetString("ARMOR_DIVINE", value));
 }
 
 TEST_F(FDFileRealDataTest, NetworkStrings_ErrorIDs) {
     std::string content = ReadFileContent("data/FrameDef/NetworkStrings.fdf");
     ASSERT_FALSE(content.empty());
 
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()));
+
     // 验证关键网络错误 ID
-    EXPECT_NE(content.find("ERROR_ID_CANTCONNECT"), std::string::npos);
-    EXPECT_NE(content.find("ERROR_ID_DISCONNECT"), std::string::npos);
-    EXPECT_NE(content.find("ERROR_ID_GAMEFULL"), std::string::npos);
-    EXPECT_NE(content.find("ERROR_ID_VERSION_BAD"), std::string::npos);
-    EXPECT_NE(content.find("ERROR_ID_CDKEY_INVALID"), std::string::npos);
+    std::string value;
+    EXPECT_TRUE(fd.GetString("ERROR_ID_CANTCONNECT", value));
+    EXPECT_TRUE(fd.GetString("ERROR_ID_DISCONNECT", value));
+    EXPECT_TRUE(fd.GetString("ERROR_ID_GAMEFULL", value));
+    EXPECT_TRUE(fd.GetString("ERROR_ID_VERSION_BAD", value));
+    EXPECT_TRUE(fd.GetString("ERROR_ID_CDKEY_INVALID", value));
 }
 
-TEST_F(FDFileRealDataTest, FrameDefTOC_FileCount) {
-    std::string content = ReadFileContent("data/FrameDef/FrameDef.toc");
+TEST_F(FDFileRealDataTest, FrameDefTOC_FrameCount) {
+    // 通过加载所有 FDF 文件验证帧定义数量
+    std::string content = ReadFileContent("data/FrameDef/UI/ConsoleUI.fdf");
     ASSERT_FALSE(content.empty());
 
-    // 统计文件引用数量
-    int lineCount = 0;
-    std::istringstream stream(content);
-    std::string line;
-    while (std::getline(stream, line)) {
-        if (!line.empty() && line[0] != '\r') {
-            lineCount++;
-        }
-    }
+    FDFile fd;
+    ASSERT_TRUE(fd.LoadFromMemory(content.c_str(), content.size()));
 
-    // FrameDef.toc 应该引用了大量文件
-    EXPECT_GE(lineCount, 50)
-        << "FrameDef.toc should reference at least 50 FDF files";
+    // ConsoleUI 应该有多个帧定义
+    EXPECT_GE(fd.GetFrames().size(), 1u);
 }

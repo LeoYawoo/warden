@@ -25,7 +25,7 @@ TEST(FrameHashNodeTest, SetNodeId) {
 
 TEST(FrameHashNodeTest, SetFrameDef) {
     FrameHashNode node;
-    FrameDefNode frameDef;
+    FdfNode frameDef;
     node.SetFrameDef(&frameDef);
     EXPECT_TRUE(node.IsValid());
     EXPECT_EQ(node.GetFrameDef(), &frameDef);
@@ -40,7 +40,7 @@ TEST(FrameHashNodeTest, SetNext) {
 
 TEST(FrameHashNodeTest, Clear) {
     FrameHashNode node;
-    FrameDefNode frameDef;
+    FdfNode frameDef;
     node.SetFrameDef(&frameDef);
     node.Clear();
     EXPECT_FALSE(node.IsValid());
@@ -107,16 +107,25 @@ TEST(FDFileHandlerTest, DefaultConstructor) {
     EXPECT_EQ(fd.GetStatus(), FRAMEDEF_STATUS_OK);
 }
 
-TEST(FDFileHandlerTest, ParseXML) {
+TEST(FDFileHandlerTest, ParseFDF) {
     FDFile fd;
-    const char* xml = "<root><child attr=\"value\"/></root>";
-    EXPECT_TRUE(fd.ParseXML(xml));
+    const char* fdf = R"(
+Frame "FRAME" "TestFrame" {
+    Width 0.5,
+}
+)";
+    EXPECT_TRUE(fd.LoadFromMemory(fdf, strlen(fdf)));
     EXPECT_TRUE(fd.IsValid());
 }
 
 TEST(FDFileHandlerTest, Clear) {
     FDFile fd;
-    fd.ParseXML("<root/>");
+    const char* fdf = R"(
+Frame "FRAME" "TestFrame" {
+    Width 0.5,
+}
+)";
+    fd.LoadFromMemory(fdf, strlen(fdf));
     fd.Clear();
     EXPECT_FALSE(fd.IsValid());
 }

@@ -1,26 +1,33 @@
 #include "FrameHashNode.h"
 #include "../FDFile.h"
+#include <cstring>
 
-// Reverse engineered from Warcraft III binary
+// FrameHashNode.cpp - 帧哈希节点实现
+// 基于 IDA 反编译分析实现
 
 FrameHashNode::FrameHashNode()
-    : m_nodeId(0),
-      m_frameDef(nullptr),
-      m_next(nullptr) {
+    : m_next(nullptr)
+    , m_prev(nullptr)
+    , m_nodeId(0)
+    , m_frameDef(nullptr)
+    , m_isValid(false)
+    , m_isInUse(false) {
+    m_name[0] = '\0';
 }
 
 FrameHashNode::~FrameHashNode() {
 }
 
 const char* FrameHashNode::GetName() const {
-    return m_name.c_str();
+    return m_name;
 }
 
 void FrameHashNode::SetName(const char* name) {
     if (name) {
-        m_name = name;
+        strncpy(m_name, name, sizeof(m_name) - 1);
+        m_name[sizeof(m_name) - 1] = '\0';
     } else {
-        m_name.clear();
+        m_name[0] = '\0';
     }
 }
 
@@ -32,20 +39,28 @@ void FrameHashNode::SetNodeId(int32_t id) {
     m_nodeId = id;
 }
 
-FrameDefNode* FrameHashNode::GetFrameDef() const {
+FdfNode* FrameHashNode::GetFrameDef() const {
     return m_frameDef;
 }
 
-void FrameHashNode::SetFrameDef(FrameDefNode* frameDef) {
+void FrameHashNode::SetFrameDef(FdfNode* frameDef) {
     m_frameDef = frameDef;
+    m_isValid = (frameDef != nullptr);
 }
 
 bool FrameHashNode::IsValid() const {
-    return m_frameDef != nullptr;
+    return m_isValid;
+}
+
+bool FrameHashNode::IsInUse() const {
+    return m_isInUse;
 }
 
 void FrameHashNode::Clear() {
     m_frameDef = nullptr;
+    m_isValid = false;
+    m_isInUse = false;
+    m_name[0] = '\0';
 }
 
 FrameHashNode* FrameHashNode::GetNext() const {
@@ -54,4 +69,12 @@ FrameHashNode* FrameHashNode::GetNext() const {
 
 void FrameHashNode::SetNext(FrameHashNode* next) {
     m_next = next;
+}
+
+FrameHashNode* FrameHashNode::GetPrev() const {
+    return m_prev;
+}
+
+void FrameHashNode::SetPrev(FrameHashNode* prev) {
+    m_prev = prev;
 }
