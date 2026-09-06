@@ -1,14 +1,21 @@
-// blp2tga - BLP to TGA converter
-// Usage: blp2tga <input.blp> <output.tga> [--dump-jpeg]
+// blp2tga - BLP to TGA/PNG converter
+// Usage: blp2tga <input.blp> <output.tga> [--dump-png]
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "../../external/stb_image_write_new.h"
 
 #include "BLPFile/blp.h"
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <fstream>
 #include <vector>
 #include <string>
 
-static bool WriteTGA(const char *path, uint32_t width, uint32_t height, const uint8_t *bgra) {
+// ============================================================
+// TGA writer
+// ============================================================
+static bool WriteTGA(const char *path, uint32_t width, uint32_t height, const uint8_t *rgba) {
     std::ofstream file(path, std::ios::binary);
     if (!file.is_open()) return false;
 
@@ -22,105 +29,43 @@ static bool WriteTGA(const char *path, uint32_t width, uint32_t height, const ui
     header[17] = 0x28;   // top-to-bottom, 8-bit alpha
 
     file.write(reinterpret_cast<const char *>(header), 18);
-    file.write(reinterpret_cast<const char *>(bgra), width * height * 4);
+
+    // TGA uses BGRA byte order, swap R and B from RGBA
+    std::vector<uint8_t> bgra(width * height * 4);
+    for (uint32_t i = 0; i < width * height; ++i) {
+        bgra[i * 4 + 0] = rgba[i * 4 + 2]; // B
+        bgra[i * 4 + 1] = rgba[i * 4 + 1]; // G
+        bgra[i * 4 + 2] = rgba[i * 4 + 0]; // R
+        bgra[i * 4 + 3] = rgba[i * 4 + 3]; // A
+    }
+
+    file.write(reinterpret_cast<const char *>(bgra.data()), bgra.size());
     return file.good();
 }
 
-static bool WriteJpeg(const char *path, const uint8_t *data, size_t size) {
-    std::ofstream file(path, std::ios::binary);
-    if (!file.is_open()) return false;
-    file.write(reinterpret_cast<const char *>(data), size);
-    return file.good();
-}
-
-// Extract concatenated JPEG from BLP file
-static bool ExtractJpegFromBLP(const char *blpPath, uint32_t mipLevel, const char *outJpegPath) {
-    std::ifstream file(blpPath, std::ios::binary | std::ios::ate);
-    if (!file.is_open()) return false;
-
-    std::streamsize size = file.tellg();
-    file.seekg(0, std::ios::beg);
-
-    std::vector<uint8_t> data(static_cast<size_t>(size));
-    if (!file.read(reinterpret_cast<char*>(data.data()), size)) {
-        return false;
-    }
-
-    // Parse BLP header
-    const BLP1Header *header = reinterpret_cast<const BLP1Header*>(data.data());
-
-    if (header->magic != 0x31504C42) { // "BLP1"
-        fprintf(stderr, "Not a BLP1 file\n");
-        return false;
-    }
-
-    uint32_t compression = header->type & 0x7;
-    if (compression != BLP_FORMAT_JPEG) {
-        fprintf(stderr, "Not a JPEG BLP file (compression=%u)\n", compression);
-        return false;
-    }
-
-    // Read JPEG header size (stored right after the 156-byte BLP header)
-    uint32_t jpgHeaderSize = *reinterpret_cast<const uint32_t*>(data.data() + sizeof(BLP1Header));
-
-    // JPEG header starts at offset 160 (sizeof(BLP1Header) + 4)
-    const uint8_t *jpgHeader = data.data() + sizeof(BLP1Header) + 4;
-
-    // JPEG data starts at mipOffset[mipLevel]
-    if (mipLevel >= 16 || header->mipOffsets[mipLevel] == 0) {
-        fprintf(stderr, "Invalid mip level %u\n", mipLevel);
-        return false;
-    }
-
-    const uint8_t *jpgData = data.data() + header->mipOffsets[mipLevel];
-    uint32_t jpgDataSize = header->mipSizes[mipLevel];
-
-    printf("JPEG header size: %u bytes\n", jpgHeaderSize);
-    printf("JPEG data offset: 0x%x, size: %u bytes\n", header->mipOffsets[mipLevel], jpgDataSize);
-    printf("Total JPEG size: %u bytes\n", jpgHeaderSize + jpgDataSize);
-
-    // Concatenate: JPEG header + JPEG data
-    std::vector<uint8_t> fullJpeg;
-    fullJpeg.reserve(jpgHeaderSize + jpgDataSize);
-    fullJpeg.insert(fullJpeg.end(), jpgHeader, jpgHeader + jpgHeaderSize);
-    fullJpeg.insert(fullJpeg.end(), jpgData, jpgData + jpgDataSize);
-
-    return WriteJpeg(outJpegPath, fullJpeg.data(), fullJpeg.size());
+// ============================================================
+// PNG writer (using stb_image_write)
+// ============================================================
+static bool WritePNG(const char *path, uint32_t width, uint32_t height, const uint8_t *rgba) {
+    // stb_image_write expects stride (bytes per row)
+    int stride = width * 4;
+    int ret = stbi_write_png(path, width, height, 4, rgba, stride);
+    return ret != 0;
 }
 
 int main(int argc, char **argv) {
     if (argc < 3) {
-        fprintf(stderr, "Usage: %s <input.blp> <output.tga> [--dump-jpeg]\n", argv[0]);
+        fprintf(stderr, "Usage: %s <input.blp> <output.tga> [--dump-png]\n", argv[0]);
         return 1;
     }
 
     const char *blpPath = argv[1];
     const char *tgaPath = argv[2];
-    bool dumpJpeg = false;
+    bool dumpPng = false;
 
-    // Check for --dump-jpeg flag
     for (int i = 3; i < argc; i++) {
-        if (strcmp(argv[i], "--dump-jpeg") == 0) {
-            dumpJpeg = true;
-        }
-    }
-
-    // Extract and dump JPEG if requested
-    if (dumpJpeg) {
-        std::string jpegPath = std::string(tgaPath);
-        // Replace .tga extension with _mip0.jpg
-        size_t dotPos = jpegPath.rfind('.');
-        if (dotPos != std::string::npos) {
-            jpegPath = jpegPath.substr(0, dotPos) + "_mip0.jpg";
-        } else {
-            jpegPath += "_mip0.jpg";
-        }
-
-        printf("Extracting JPEG to: %s\n", jpegPath.c_str());
-        if (ExtractJpegFromBLP(blpPath, 0, jpegPath.c_str())) {
-            printf("JPEG extracted successfully\n");
-        } else {
-            fprintf(stderr, "Failed to extract JPEG\n");
+        if (strcmp(argv[i], "--dump-png") == 0) {
+            dumpPng = true;
         }
     }
 
@@ -145,7 +90,23 @@ int main(int argc, char **argv) {
         fprintf(stderr, "Failed to write %s\n", tgaPath);
         return 1;
     }
-
     printf("TGA: %s (%ux%u)\n", tgaPath, outW, outH);
+
+    if (dumpPng) {
+        std::string pngPath = std::string(tgaPath);
+        size_t dotPos = pngPath.rfind('.');
+        if (dotPos != std::string::npos) {
+            pngPath = pngPath.substr(0, dotPos) + "_mip0.png";
+        } else {
+            pngPath += "_mip0.png";
+        }
+
+        if (WritePNG(pngPath.c_str(), outW, outH, buf.data())) {
+            printf("PNG: %s (%ux%u)\n", pngPath.c_str(), outW, outH);
+        } else {
+            fprintf(stderr, "Failed to write %s\n", pngPath.c_str());
+        }
+    }
+
     return 0;
 }

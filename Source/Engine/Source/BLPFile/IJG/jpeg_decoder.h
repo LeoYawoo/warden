@@ -1,7 +1,7 @@
 #pragma once
 
 // JPEG Decoder - Reference implementation based on IJG jpeglib architecture
-// Decodes baseline DCT JPEG to BGRA pixel data
+// Decodes baseline DCT JPEG to RGBA pixel data
 
 #include <cstdint>
 #include <vector>
@@ -42,8 +42,9 @@ private:
     struct HuffTable {
         uint8_t  bits[17];    // Number of codes per bit length
         uint8_t  values[256]; // Symbol values
+        int      minCode[17]; // Minimum code per bit length
         int      maxCode[17]; // Maximum code per bit length
-        int      valOffset[17];
+        int      valOffset[17]; // Index into values for first symbol of each bit length
         bool     initialized;
 
         bool Build(const uint8_t *data);

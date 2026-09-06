@@ -1,5 +1,5 @@
 // JPEG Decoder - Reference implementation based on IJG jpeglib architecture
-// Implements baseline DCT JPEG decoding to BGRA pixel output
+// Implements baseline DCT JPEG decoding to RGBA pixel output
 
 #include "jpeg_decoder.h"
 #include <cstring>
@@ -44,7 +44,7 @@ uint32_t JpegDecoder::BitReader::ReadBits(int nbits)
             currentByte = data[bytePos++];
             if (currentByte == 0xFF)
             {
-                // Skip stuffing byte
+                // Handle byte stuffing: 0xFF 0x00 → 0xFF data byte
                 if (bytePos < dataSize && data[bytePos] == 0x00)
                 {
                     bytePos++;
@@ -123,11 +123,14 @@ bool JpegDecoder::HuffTable::Build(const uint8_t* data)
 {
     std::memset(bits, 0, sizeof(bits));
     std::memset(values, 0, sizeof(values));
-    std::memset(maxCode, 0, sizeof(maxCode));
-    std::memset(valOffset, 0, sizeof(valOffset));
+    for (int i = 0; i < 17; i++) {
+        minCode[i] = -1;
+        maxCode[i] = -1;
+        valOffset[i] = -1;
+    }
     initialized = false;
 
-    // Count symbols per bit length (Figure C.1)
+    // Count symbols per bit length
     int totalSymbols = 0;
     for (int i = 1; i <= 16; i++)
     {
@@ -140,50 +143,19 @@ bool JpegDecoder::HuffTable::Build(const uint8_t* data)
     // Copy symbol values
     std::memcpy(values, data + 16, totalSymbols);
 
-    // IJG approach: generate Huffman codes, then compute tables (Figure C.2 + F.15)
-    unsigned int huffcode[257];
-    char huffsize[257];
-    int p = 0;
-    for (int l = 1; l <= 16; l++)
-    {
-        for (int i = 0; i < bits[l]; i++)
-        {
-            huffsize[p++] = (char)l;
+    // Build Huffman code tables (same algorithm as reference decoder)
+    int code = 0;
+    int si = 0;
+    for (int i = 1; i <= 16; i++) {
+        if (bits[i] > 0) {
+            minCode[i] = code;
+            maxCode[i] = code + bits[i] - 1;
+            valOffset[i] = si;
         }
-    }
-    huffsize[p] = 0;
-    int numsymbols = p;
-
-    unsigned int code = 0;
-    int si = huffsize[0];
-    p = 0;
-    while (huffsize[p])
-    {
-        while (huffsize[p] == si)
-        {
-            huffcode[p++] = code;
-            code++;
-        }
+        code += bits[i];
+        si += bits[i];
         code <<= 1;
-        si++;
     }
-
-    // Figure F.15: generate decoding tables
-    p = 0;
-    for (int l = 1; l <= 16; l++)
-    {
-        if (bits[l])
-        {
-            valOffset[l] = p - huffcode[p];
-            maxCode[l] = huffcode[p - 1];
-            p += bits[l];
-        }
-        else
-        {
-            maxCode[l] = -1;
-        }
-    }
-    maxCode[17] = 0x7FFFFFFF;
 
     initialized = true;
     return true;
@@ -193,19 +165,16 @@ int JpegDecoder::HuffTable::Decode(BitReader& br) const
 {
     if (!initialized) return 0;
 
-    // IJG approach: read 8 bits first, then extend bit by bit
-    int l = 8;
-    int code = br.ReadBits(l);
-
-    while (code > maxCode[l])
-    {
+    // Read one bit at a time (handles 0xFF byte stuffing correctly)
+    int code = 0;
+    for (int bitsNeeded = 1; bitsNeeded <= 16; bitsNeeded++) {
         code = (code << 1) | br.ReadBits(1);
-        l++;
+        if (minCode[bitsNeeded] >= 0 && code <= maxCode[bitsNeeded]) {
+            return values[valOffset[bitsNeeded] + (code - minCode[bitsNeeded])];
+        }
     }
 
-    if (l > 16) return 0;
-
-    return values[valOffset[l] + (code - (maxCode[l] - (1 << l) + 1))];
+    return 0; // Error
 }
 
 // ============================================================
@@ -244,8 +213,8 @@ void JpegDecoder::IDCT(int16_t block[64], int16_t* output)
                 float cv = (v == 0) ? (1.0f / std::sqrt(2.0f)) : 1.0f;
                 sum += cv * tmp[row * 8 + v] * std::cos((2.0f * col + 1.0f) * v * 3.14159265f / 16.0f);
             }
-            int val = (int)std::round(sum / 2.0f) + 128;
-            output[row * 8 + col] = static_cast<int16_t>(std::max(0, std::min(255, val)));
+            int val = (int)std::round(sum / 2.0f);
+            output[row * 8 + col] = static_cast<int16_t>(std::max(-128, std::min(127, val)));
         }
     }
 }
@@ -281,6 +250,21 @@ bool JpegDecoder::ParseMarkers(const uint8_t* data, size_t size)
         if (marker == 0x00 || marker == 0xFF) continue; // Stuffing/padding
         if (marker == M_EOI) break;
         if (marker >= M_RST0 && marker <= M_RST7) continue; // RST markers
+        if (marker >= 0xE0 && marker <= 0xEF) // APP markers - skip
+        {
+            if (pos + 1 >= size) break;
+            uint16_t length = (data[pos] << 8) | data[pos + 1];
+            pos += length;
+            continue;
+        }
+        if (marker >= 0xC0 && marker <= 0xCF && marker != M_SOF0 && marker != M_SOF1 && marker != M_SOF2 && marker != M_DHT)
+        {
+            // Unsupported SOF variants or other markers in C0-CF range - skip
+            if (pos + 1 >= size) break;
+            uint16_t length = (data[pos] << 8) | data[pos + 1];
+            pos += length;
+            continue;
+        }
 
         // Read marker length
         if (pos + 1 >= size) break;
@@ -368,13 +352,16 @@ bool JpegDecoder::ReadSOF(const uint8_t* data, size_t dataSize)
 bool JpegDecoder::ReadDQT(const uint8_t* data, size_t dataSize)
 {
     size_t pos = 0;
-    while (pos < dataSize)
+    while (pos + 1 < dataSize) // Need at least 1 byte for info
     {
         uint8_t info = data[pos++];
         int tableIdx = info & 0x0F;
         int precision = (info >> 4) & 0x0F;
 
         if (tableIdx > 3) return false;
+
+        size_t tableSize = (precision == 0) ? 64 : 128;
+        if (pos + tableSize > dataSize) return false;
 
         for (int i = 0; i < 64; i++)
         {
@@ -395,7 +382,7 @@ bool JpegDecoder::ReadDQT(const uint8_t* data, size_t dataSize)
 bool JpegDecoder::ReadDHT(const uint8_t* data, size_t dataSize)
 {
     size_t pos = 0;
-    while (pos < dataSize)
+    while (pos + 17 <= dataSize) // Need at least 1 (info) + 16 (bits)
     {
         uint8_t info = data[pos++];
         int tableIdx = info & 0x0F;
@@ -408,6 +395,7 @@ bool JpegDecoder::ReadDHT(const uint8_t* data, size_t dataSize)
 
         int totalSymbols = 0;
         for (int i = 1; i <= 16; i++) totalSymbols += table.bits[i];
+        if (pos + 16 + totalSymbols > dataSize) return false;
         pos += 16 + totalSymbols;
     }
     return true;
@@ -553,7 +541,7 @@ bool JpegDecoder::Decode(const uint8_t* data, size_t dataSize,
         return false;
     }
 
-    // Allocate output (BGRA)
+    // Allocate output (RGBA)
     output.resize(width * height * 4);
 
     // Allocate working buffers for MCU blocks
@@ -564,13 +552,17 @@ bool JpegDecoder::Decode(const uint8_t* data, size_t dataSize,
 
     std::vector<int16_t> blockBuffer(64);
 
-    // Allocate component buffers (up to 4 components for YUVA)
-    int pixelCount = width * height;
-    fprintf(stderr, "DEBUG: width=%u, height=%u, numComponents=%d, pixelCount=%d\n",
-            width, height, m_numComponents, pixelCount);
+    // Allocate component buffers sized to actual component dimensions
+    int maxH = 0, maxV = 0;
+    for (int i = 0; i < m_numComponents && i < 4; i++) {
+        if (m_components[i].hSamp > maxH) maxH = m_components[i].hSamp;
+        if (m_components[i].vSamp > maxV) maxV = m_components[i].vSamp;
+    }
     std::vector<int16_t> compBuffers[4];
     for (int i = 0; i < m_numComponents && i < 4; i++) {
-        compBuffers[i].resize(pixelCount);
+        int compW = mcusX * m_components[i].hSamp * 8;
+        int compH = mcusY * m_components[i].vSamp * 8;
+        compBuffers[i].resize(compW * compH);
     }
 
     BitReader br;
@@ -595,13 +587,12 @@ bool JpegDecoder::Decode(const uint8_t* data, size_t dataSize,
                 if (restartCount >= m_restartInterval)
                 {
                     restartCount = 0;
-                    // Align to byte boundary and skip restart marker
-                    if (br.bitsLeft > 0)
-                    {
-                        br.SkipBits(br.bitsLeft);
+                    // Align to byte boundary
+                    br.bitsLeft = 0;
+                    // Skip restart marker (0xFF + 0xD0-0xD7) directly
+                    if (br.bytePos + 1 < br.dataSize) {
+                        br.bytePos += 2;
                     }
-                    br.SkipBits(8); // Skip marker byte
-                    br.SkipBits(8); // Skip marker code
 
                     for (int i = 0; i < m_numComponents; i++)
                     {
@@ -623,6 +614,7 @@ bool JpegDecoder::Decode(const uint8_t* data, size_t dataSize,
                         // Decode DC coefficient
                         int16_t dc = DecodeDC(br, comp);
 
+
                         // Decode AC coefficients
                         int16_t acBlock[64] = {};
                         DecodeAC(br, comp, acBlock);
@@ -641,27 +633,23 @@ bool JpegDecoder::Decode(const uint8_t* data, size_t dataSize,
                             blockBuffer[i] *= m_quantTables[quantIdx][i];
                         }
 
-                        // IDCT
+                        // IDCT (blockBuffer already in natural order from DecodeAC)
                         int16_t spatial[64];
                         IDCT(blockBuffer.data(), spatial);
 
                         // Place in component buffer
-                        int compWidth = mcusX * 8;
+                        int compBufW = mcusX * m_components[comp].hSamp * 8;
                         for (int sy = 0; sy < 8; sy++)
                         {
                             for (int sx = 0; sx < 8; sx++)
                             {
-                                int bx = mcx * mcuWidth + vx * 8 + sx;
-                                int by = mcy * mcuHeight + vy * 8 + sy;
-                                if (bx < width && by < height)
-                                {
-                                    int idx = by * width + bx;
-                                    if (comp < 4 && idx < pixelCount) {
-                                        compBuffers[comp][idx] = spatial[sy * 8 + sx];
-                                    } else {
-                                        fprintf(stderr, "DEBUG OOB: comp=%d, idx=%d, pixelCount=%d, bx=%d, by=%d\n",
-                                                comp, idx, pixelCount, bx, by);
-                                    }
+                                int bx = mcx * m_components[comp].hSamp + vx;
+                                int by = mcy * m_components[comp].vSamp + vy;
+                                int px = bx * 8 + sx;
+                                int py = by * 8 + sy;
+                                int idx = py * compBufW + px;
+                                if (comp < 4 && idx >= 0 && idx < (int)compBuffers[comp].size()) {
+                                    compBuffers[comp][idx] = spatial[sy * 8 + sx];
                                 }
                             }
                         }
@@ -671,48 +659,64 @@ bool JpegDecoder::Decode(const uint8_t* data, size_t dataSize,
         }
     }
 
-    // BLP1 JPEG with 4 components
-    // Try YUVA order (standard JPEG with alpha)
+    // BLP1 JPEG with 4 components (BGRA format)
+    // Component order: comp0=B, comp1=G, comp2=R, comp3=A
+    // No color conversion needed - just copy with level shift
     for (int y = 0; y < (int)height; y++)
     {
         for (int x = 0; x < (int)width; x++)
         {
-            int pixelIdx = y * width + x;  // Index for component buffers
-            int outIdx = pixelIdx * 4;      // Index for output buffer
+            int outIdx = (y * width + x) * 4;
 
             if (m_numComponents >= 4) {
-                // YUVA to BGRA conversion
-                int yVal = compBuffers[0][pixelIdx] + 128;
-                int uVal = compBuffers[1][pixelIdx] + 128;
-                int vVal = compBuffers[2][pixelIdx] + 128;
-                int aVal = compBuffers[3][pixelIdx] + 128;
-
-                // YUV to RGB conversion (BT.601)
-                int r = yVal + ((359 * (vVal - 128)) >> 8);
-                int g = yVal - ((88 * (uVal - 128)) >> 8) - ((183 * (vVal - 128)) >> 8);
-                int b = yVal + ((454 * (uVal - 128)) >> 8);
-
-                output[outIdx + 0] = static_cast<uint8_t>(std::max(0, std::min(255, b))); // B
-                output[outIdx + 1] = static_cast<uint8_t>(std::max(0, std::min(255, g))); // G
-                output[outIdx + 2] = static_cast<uint8_t>(std::max(0, std::min(255, r))); // R
-                output[outIdx + 3] = static_cast<uint8_t>(std::max(0, std::min(255, aVal))); // A
+                // BLP1 JPEG: raw BGRA channels (no YCbCr conversion)
+                // Use maxH/maxV to handle subsampling
+                int vals[4] = {};
+                for (int c = 0; c < 4; c++) {
+                    int compBufW = mcusX * m_components[c].hSamp * 8;
+                    int cRow = y * m_components[c].vSamp / maxV;
+                    int cCol = x * m_components[c].hSamp / maxH;
+                    int idx = cRow * compBufW + cCol;
+                    if (idx >= 0 && idx < (int)compBuffers[c].size()) {
+                        vals[c] = compBuffers[c][idx] + 128;
+                    }
+                }
+                output[outIdx + 0] = static_cast<uint8_t>(std::max(0, std::min(255, vals[2]))); // R
+                output[outIdx + 1] = static_cast<uint8_t>(std::max(0, std::min(255, vals[1]))); // G
+                output[outIdx + 2] = static_cast<uint8_t>(std::max(0, std::min(255, vals[0]))); // B
+                output[outIdx + 3] = static_cast<uint8_t>(std::max(0, std::min(255, vals[3]))); // A
             } else if (m_numComponents == 3) {
-                // Standard YCbCr to BGRA
-                int yVal = compBuffers[0][pixelIdx] + 128;
-                int uVal = compBuffers[1][pixelIdx] + 128;
-                int vVal = compBuffers[2][pixelIdx] + 128;
+                // Standard YCbCr to RGB
+                int compBufW0 = mcusX * m_components[0].hSamp * 8;
+                int compBufW1 = mcusX * m_components[1].hSamp * 8;
+                int compBufW2 = mcusX * m_components[2].hSamp * 8;
+
+                int yRow = y * m_components[0].vSamp / maxV;
+                int yCol = x * m_components[0].hSamp / maxH;
+                int yVal = compBuffers[0][yRow * compBufW0 + yCol] + 128;
+
+                int cbRow = y * m_components[1].vSamp / maxV;
+                int cbCol = x * m_components[1].hSamp / maxH;
+                int uVal = compBuffers[1][cbRow * compBufW1 + cbCol] + 128;
+
+                int crRow = y * m_components[2].vSamp / maxV;
+                int crCol = x * m_components[2].hSamp / maxH;
+                int vVal = compBuffers[2][crRow * compBufW2 + crCol] + 128;
 
                 int r = yVal + (int)(1.402 * (vVal - 128));
                 int g = yVal - (int)(0.344 * (uVal - 128)) - (int)(0.714 * (vVal - 128));
                 int b = yVal + (int)(1.772 * (uVal - 128));
 
-                output[outIdx + 0] = static_cast<uint8_t>(std::max(0, std::min(255, b))); // B
+                output[outIdx + 0] = static_cast<uint8_t>(std::max(0, std::min(255, r))); // R
                 output[outIdx + 1] = static_cast<uint8_t>(std::max(0, std::min(255, g))); // G
-                output[outIdx + 2] = static_cast<uint8_t>(std::max(0, std::min(255, r))); // R
+                output[outIdx + 2] = static_cast<uint8_t>(std::max(0, std::min(255, b))); // B
                 output[outIdx + 3] = 255; // A
             } else {
                 // Grayscale
-                int yVal = compBuffers[0][pixelIdx] + 128;
+                int compBufW = mcusX * m_components[0].hSamp * 8;
+                int gRow = y * m_components[0].vSamp / maxV;
+                int gCol = x * m_components[0].hSamp / maxH;
+                int yVal = compBuffers[0][gRow * compBufW + gCol] + 128;
                 output[outIdx + 0] = static_cast<uint8_t>(std::max(0, std::min(255, yVal)));
                 output[outIdx + 1] = static_cast<uint8_t>(std::max(0, std::min(255, yVal)));
                 output[outIdx + 2] = static_cast<uint8_t>(std::max(0, std::min(255, yVal)));
