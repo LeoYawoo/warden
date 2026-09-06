@@ -6,9 +6,15 @@
 #include <unordered_map>
 #include "../Base/CDataStore.h"
 
+// Forward declarations
+class CStatus;
+
 // FDFile - UI 框架定义文件解析器
 // 基于 IDA 反编译分析实现
 // FDF 格式: 自定义 Blizzard UI 定义语言 (非 XML)
+//
+// IDA 架构:
+// CFdScanner → HANDLERHASH → 调用处理函数
 
 // ============================================================
 // 枚举定义
@@ -30,7 +36,7 @@ enum FDF_NODE_TYPE {
     FDF_NODE_COMMENT,        // 注释: // 或 /* */
 };
 
-// FDF 帧类型 (IDA: FRAME, SPRITE, BACKDROP, LISTBOX, DIALOG, EDITBOX, CHECKBOX)
+// FDF 帧类型
 enum FDF_FRAME_TYPE {
     FDF_FRAME_UNKNOWN = 0,
     FDF_FRAME_FRAME,         // "FRAME"
@@ -51,23 +57,23 @@ enum FDF_FRAME_TYPE {
 // 数据结构
 // ============================================================
 
-// FDF 属性 (如 Width 0.1, File "path.blp")
+// FDF 属性
 struct FdfAttribute {
     std::string name;
     std::string value;
-    std::vector<std::string> args;  // 多参数: SetPoint TOPLEFT, "Parent", TOPLEFT, 0.1, 0.2
+    std::vector<std::string> args;
 };
 
-// FDF 节点 (帧定义或属性块)
+// FDF 节点
 struct FdfNode {
     FDF_NODE_TYPE type;
-    std::string name;           // 节点名称 (帧名称或属性名)
-    std::string frameType;      // 帧类型 ("FRAME", "TEXT", etc.)
-    std::string inheritsFrom;   // INHERITS 继承的模板名
-    std::string value;          // 属性值
+    std::string name;
+    std::string frameType;
+    std::string inheritsFrom;
+    std::string value;
     std::vector<FdfAttribute> attributes;
     std::vector<FdfNode*> children;
-    bool withChildren;          // INHERITS WITHCHILDREN 标志
+    bool withChildren;
 };
 
 // StringList 条目
@@ -76,9 +82,41 @@ struct StringEntry {
     std::string value;
 };
 
-// DEFFILENAMENODE - IDA 反编译中的文件名节点
-struct DefFileNameNode {
-    char name[260];  // MAX_PATH
+// ============================================================
+// CFdScanner - FDF 词法分析器
+// IDA 中的类 (10CFdScanner)
+// ============================================================
+class CFdScanner {
+public:
+    CFdScanner(CStatus* status, const char* content, int size);
+    ~CFdScanner();
+
+    // 读取下一个 token
+    std::string NextToken();
+
+    // 查看下一个 token (不消费)
+    std::string PeekToken();
+
+    // 跳过空白字符
+    void SkipWhitespace();
+
+    // 跳过注释
+    void SkipComment();
+
+    // 读取字符串字面量
+    std::string ReadStringLiteral();
+
+    // 是否还有更多 token
+    bool HasMore() const;
+
+    // 获取状态
+    CStatus* GetStatus() const { return m_status; }
+
+private:
+    CStatus* m_status;
+    const char* m_pos;
+    const char* m_end;
+    bool m_hasMore;
 };
 
 // ============================================================
@@ -88,37 +126,6 @@ class CNullFrameDefStatus {
 public:
     CNullFrameDefStatus();
     ~CNullFrameDefStatus();
-};
-
-// ============================================================
-// BASEFRAMEHASHNODE - IDA 反编译中的帧哈希节点
-// ============================================================
-struct BASEFRAMEHASHNODE {
-    // 链表指针 (TSLink)
-    BASEFRAMEHASHNODE* next;
-    BASEFRAMEHASHNODE* prev;
-
-    // 帧信息
-    int32_t nodeId;
-    char name[260];         // 帧名称
-    FdfNode* frameDef;      // 帧定义节点
-    bool isValid;
-    bool isInUse;           // IDA offset 48 检查
-};
-
-// ============================================================
-// STRINGHASHNODE - IDA 反编译中的字符串哈希节点
-// ============================================================
-struct STRINGHASHNODE {
-    // 链表指针
-    STRINGHASHNODE* next;
-    STRINGHASHNODE* prev;
-
-    // 字符串信息
-    int32_t nodeId;
-    char key[260];          // 字符串键
-    char value[1024];       // 字符串值
-    bool isInUse;           // IDA offset 24 检查
 };
 
 // ============================================================
@@ -172,47 +179,8 @@ public:
     bool ParseXML(const char* xmlContent);
 
 private:
-    // FDF 词法分析
-    struct FdfScanner {
-        const char* pos;
-        const char* end;
-        std::string currentToken;
-        bool hasMore;
-
-        FdfScanner(const char* content, size_t size);
-        std::string NextToken();
-        std::string PeekToken();
-        void SkipWhitespace();
-        void SkipComment();
-        bool HasMore() const { return hasMore; }
-    };
-
-    // 解析 FDF 内容
+    // IDA 架构: 核心解析循环 (sub_1F5440)
     bool ParseFDFContent(const char* content, size_t size);
-
-    // 解析顶层语句
-    bool ParseTopLevel(FdfScanner& scanner);
-
-    // 解析 Frame 定义
-    FdfNode* ParseFrame(FdfScanner& scanner);
-
-    // 解析 StringList
-    bool ParseStringList(FdfScanner& scanner);
-
-    // 解析 IncludeFile
-    bool ParseIncludeFile(FdfScanner& scanner, const std::string& path);
-
-    // 解析属性列表 (Frame 内部)
-    void ParseFrameBody(FdfScanner& scanner, FdfNode* frame);
-
-    // 解析单个属性
-    FdfAttribute ParseAttribute(FdfScanner& scanner);
-
-    // 匹配 token
-    bool MatchToken(FdfScanner& scanner, const std::string& expected);
-
-    // 读取字符串字面量
-    std::string ReadStringLiteral(FdfScanner& scanner);
 
     // 递归释放节点
     void FreeNode(FdfNode* node);
@@ -234,10 +202,4 @@ private:
 
     // 已包含的文件 (防止循环包含)
     std::vector<std::string> m_includedFiles;
-
-    // 全局帧哈希表 (IDA: dword_F6B418)
-    // BASEFRAMEHASHNODE* m_frameHash;
-
-    // 全局字符串哈希表
-    // STRINGHASHNODE* m_stringHash;
 };

@@ -1,9 +1,23 @@
 #include "FDFile.h"
+#include "Handlers/HandlerHash.h"
+#include "Handlers/FrameHandlers.h"
+#include "../Agile/CStatus.h"
 #include <fstream>
 #include <sstream>
-#include <algorithm>
 #include <cstring>
 #include <filesystem>
+
+// FDFile.cpp - FDF 文件解析器实现
+// 基于 IDA 反编译分析实现
+//
+// IDA 架构流程:
+// 1. LoadFrameDef (sub_1F5B56) - 加载 TOC 文件
+// 2. LoadFDFFile (sub_1F59A6) - 加载单个 FDF 文件
+// 3. ParseFDFContent (sub_1F5440) - 核心解析循环
+//    - 创建 CFdScanner
+//    - 循环: 读取 token → 查找处理器 → 调用处理器
+// 4. RegisterHandlers (sub_1F571E) - 注册处理器
+// 5. InitializeDefaultHandlers (sub_1F5634) - 初始化默认处理器
 
 // ============================================================
 // CNullFrameDefStatus 实现
@@ -15,110 +29,122 @@ CNullFrameDefStatus::~CNullFrameDefStatus() {
 }
 
 // ============================================================
-// FdfScanner 实现 - FDF 词法分析器
+// CFdScanner 实现 - IDA: 10CFdScanner
 // ============================================================
 
-FDFile::FdfScanner::FdfScanner(const char* content, size_t size)
-    : pos(content)
-    , end(content + size)
-    , hasMore(true) {
+CFdScanner::CFdScanner(CStatus* status, const char* content, int size)
+    : m_status(status)
+    , m_pos(content)
+    , m_end(content + size)
+    , m_hasMore(true) {
 }
 
-void FDFile::FdfScanner::SkipWhitespace() {
-    while (pos < end && (*pos == ' ' || *pos == '\t' || *pos == '\r' || *pos == '\n')) {
-        pos++;
+CFdScanner::~CFdScanner() {
+}
+
+void CFdScanner::SkipWhitespace() {
+    while (m_pos < m_end && (*m_pos == ' ' || *m_pos == '\t' || *m_pos == '\r' || *m_pos == '\n')) {
+        m_pos++;
     }
 }
 
-void FDFile::FdfScanner::SkipComment() {
-    if (pos + 1 < end) {
-        if (pos[0] == '/' && pos[1] == '/') {
+void CFdScanner::SkipComment() {
+    if (m_pos + 1 < m_end) {
+        if (m_pos[0] == '/' && m_pos[1] == '/') {
             // 单行注释
-            while (pos < end && *pos != '\n') {
-                pos++;
+            while (m_pos < m_end && *m_pos != '\n') {
+                m_pos++;
             }
-            pos++; // 跳过换行符
-        } else if (pos[0] == '/' && pos[1] == '*') {
+            m_pos++;
+        } else if (m_pos[0] == '/' && m_pos[1] == '*') {
             // 多行注释
-            pos += 2;
-            while (pos + 1 < end && !(pos[0] == '*' && pos[1] == '/')) {
-                pos++;
+            m_pos += 2;
+            while (m_pos + 1 < m_end && !(m_pos[0] == '*' && m_pos[1] == '/')) {
+                m_pos++;
             }
-            if (pos + 1 < end) {
-                pos += 2; // 跳过 */
+            if (m_pos + 1 < m_end) {
+                m_pos += 2;
             }
         }
     }
 }
 
-std::string FDFile::FdfScanner::NextToken() {
+std::string CFdScanner::NextToken() {
     SkipWhitespace();
     SkipComment();
     SkipWhitespace();
 
-    if (pos >= end) {
-        hasMore = false;
+    if (m_pos >= m_end) {
+        m_hasMore = false;
         return "";
     }
 
-    char c = *pos;
+    char c = *m_pos;
 
-    // 大括号
+    // 大括号和逗号
     if (c == '{' || c == '}' || c == ',') {
-        currentToken = std::string(1, c);
-        pos++;
-        return currentToken;
+        std::string token(1, c);
+        m_pos++;
+        return token;
     }
 
     // 字符串字面量
     if (c == '"') {
-        pos++; // 跳过开始引号
-        size_t start = 0;
-        std::string result;
-        while (pos < end && *pos != '"') {
-            if (*pos == '\\' && pos + 1 < end) {
-                pos++;
-                switch (*pos) {
-                    case 'n': result += '\n'; break;
-                    case 't': result += '\t'; break;
-                    case '\\': result += '\\'; break;
-                    case '"': result += '"'; break;
-                    default: result += *pos; break;
-                }
-            } else {
-                result += *pos;
-            }
-            pos++;
-        }
-        if (pos < end) {
-            pos++; // 跳过结束引号
-        }
-        return result;
+        return ReadStringLiteral();
     }
 
-    // 数字或标识符
-    const char* startPos = pos;
-
-    while (pos < end && *pos != ' ' && *pos != '\t' && *pos != '\r' &&
-           *pos != '\n' && *pos != '{' && *pos != '}' && *pos != ',' && *pos != '"') {
-        pos++;
+    // 标识符或数字
+    const char* startPos = m_pos;
+    while (m_pos < m_end && *m_pos != ' ' && *m_pos != '\t' && *m_pos != '\r' &&
+           *m_pos != '\n' && *m_pos != '{' && *m_pos != '}' && *m_pos != ',' && *m_pos != '"') {
+        m_pos++;
     }
 
-    return std::string(startPos, pos - startPos);
+    return std::string(startPos, m_pos - startPos);
 }
 
-std::string FDFile::FdfScanner::PeekToken() {
-    // 保存状态
-    const char* savedPos = pos;
-    bool savedHasMore = hasMore;
+std::string CFdScanner::PeekToken() {
+    const char* savedPos = m_pos;
+    bool savedHasMore = m_hasMore;
 
     std::string token = NextToken();
 
-    // 恢复状态
-    pos = savedPos;
-    hasMore = savedHasMore;
+    m_pos = savedPos;
+    m_hasMore = savedHasMore;
 
     return token;
+}
+
+std::string CFdScanner::ReadStringLiteral() {
+    if (m_pos >= m_end || *m_pos != '"') {
+        return "";
+    }
+
+    m_pos++; // 跳过开始引号
+    std::string result;
+    while (m_pos < m_end && *m_pos != '"') {
+        if (*m_pos == '\\' && m_pos + 1 < m_end) {
+            m_pos++;
+            switch (*m_pos) {
+                case 'n': result += '\n'; break;
+                case 't': result += '\t'; break;
+                case '\\': result += '\\'; break;
+                case '"': result += '"'; break;
+                default: result += *m_pos; break;
+            }
+        } else {
+            result += *m_pos;
+        }
+        m_pos++;
+    }
+    if (m_pos < m_end) {
+        m_pos++; // 跳过结束引号
+    }
+    return result;
+}
+
+bool CFdScanner::HasMore() const {
+    return m_hasMore && m_pos < m_end;
 }
 
 // ============================================================
@@ -141,7 +167,6 @@ bool FDFile::LoadFrameDef(const char* tocPath) {
         return false;
     }
 
-    // 读取 TOC 文件
     std::ifstream tocFile(tocPath, std::ios::binary);
     if (!tocFile.is_open()) {
         m_status = FRAMEDEF_STATUS_ERROR;
@@ -149,39 +174,27 @@ bool FDFile::LoadFrameDef(const char* tocPath) {
         return false;
     }
 
-    // 获取基础路径
     std::filesystem::path path(tocPath);
     m_basePath = path.parent_path().string();
 
-    // 读取 TOC 内容
     std::ostringstream ss;
     ss << tocFile.rdbuf();
     std::string tocContent = ss.str();
 
-    // 解析 TOC 文件 (每行一个文件路径)
     std::istringstream stream(tocContent);
     std::string line;
     bool anySuccess = false;
 
     while (std::getline(stream, line)) {
-        // 跳过空行和注释
         if (line.empty() || line[0] == '/' || line[0] == '#') {
             continue;
         }
-
-        // 去除行尾 \r
         if (!line.empty() && line.back() == '\r') {
             line.pop_back();
         }
+        if (line.empty()) continue;
 
-        if (line.empty()) {
-            continue;
-        }
-
-        // 构建完整路径
         std::string fullPath = m_basePath + "/" + line;
-
-        // 加载 FDF 文件
         if (LoadFDFFile(fullPath.c_str())) {
             anySuccess = true;
         }
@@ -192,31 +205,20 @@ bool FDFile::LoadFrameDef(const char* tocPath) {
 }
 
 bool FDFile::LoadFDFFile(const char* filePath) {
-    if (!filePath) {
-        return false;
-    }
+    if (!filePath) return false;
 
-    // 检查是否已包含 (防止循环包含)
     for (const auto& included : m_includedFiles) {
-        if (included == filePath) {
-            return true; // 已包含，跳过
-        }
+        if (included == filePath) return true;
     }
 
     std::ifstream file(filePath, std::ios::binary);
-    if (!file.is_open()) {
-        return false;
-    }
+    if (!file.is_open()) return false;
 
-    // 读取文件内容
     std::ostringstream ss;
     ss << file.rdbuf();
     std::string content = ss.str();
 
-    // 记录已包含
     m_includedFiles.push_back(filePath);
-
-    // 解析 FDF 内容
     return ParseFDFContent(content.c_str(), content.size());
 }
 
@@ -226,7 +228,6 @@ bool FDFile::LoadFromMemory(const char* content, size_t size) {
         m_errorMessage = "Invalid data";
         return false;
     }
-
     return ParseFDFContent(content, size);
 }
 
@@ -251,6 +252,10 @@ bool FDFile::LoadFromDataStore(CDataStore& dataStore) {
     return ParseFDFContent(reinterpret_cast<const char*>(data), size);
 }
 
+// ============================================================
+// 核心解析循环 - IDA: sub_1F5440
+// 使用 HANDLERHASH 分发架构
+// ============================================================
 bool FDFile::ParseFDFContent(const char* content, size_t size) {
     if (!content || size == 0) {
         m_status = FRAMEDEF_STATUS_ERROR;
@@ -258,22 +263,45 @@ bool FDFile::ParseFDFContent(const char* content, size_t size) {
         return false;
     }
 
-    FdfScanner scanner(content, size);
+    // IDA: CFdScanner::CFdScanner(v13, a4, v14, 1024)
+    CStatus status;
+    CFdScanner scanner(&status, content, static_cast<int>(size));
 
-    // 解析所有顶层语句
+    // IDA: sub_1F5634() - 初始化处理器
+    FrameHandlers::InitializeDefaultHandlers();
+
+    // IDA: sub_1F571E() - 注册处理器
+    FrameHandlers::RegisterAllHandlers();
+
+    // IDA 核心循环:
+    // do {
+    //     v10 = sub_5DF3D8(v13);  // 读取 token
+    //     if (!v10) break;
+    //     v8 = TSHashTable<HANDLERHASH>::Ptr(&dword_F33A00, v10);  // 查找处理器
+    //     if (!v8) break;
+    //     v9 = *(handler*)(v8 + 24);  // 获取处理函数
+    //     if (!v9) break;
+    // } while (v9(v13, a2, a3, a4));  // 调用处理函数
+
+    HandlerHash& handlerHash = GlobalHandlers::GetHandlerHash();
+
     while (scanner.HasMore()) {
         std::string token = scanner.PeekToken();
-        if (token.empty()) {
-            break;
+        if (token.empty()) break;
+
+        // 查找处理器
+        FdfHandlerFunc handler = handlerHash.Find(token);
+        if (!handler) {
+            // 未知 token，跳过
+            scanner.NextToken();
+            continue;
         }
 
-        if (!ParseTopLevel(scanner)) {
-            // 解析错误，但继续尝试
-            // 跳过到下一个语句
-            while (scanner.HasMore() && scanner.PeekToken() != "Frame" &&
-                   scanner.PeekToken() != "StringList" && scanner.PeekToken() != "IncludeFile") {
-                scanner.NextToken();
-            }
+        // 调用处理器
+        int result = handler(&scanner, 0, 0, &status);
+        if (result == 0) {
+            // 处理器返回 0，停止解析
+            break;
         }
     }
 
@@ -281,303 +309,24 @@ bool FDFile::ParseFDFContent(const char* content, size_t size) {
     return true;
 }
 
-bool FDFile::ParseTopLevel(FdfScanner& scanner) {
-    std::string token = scanner.NextToken();
-
-    if (token == "Frame") {
-        FdfNode* frame = ParseFrame(scanner);
-        if (frame) {
-            if (!m_rootNode) {
-                m_rootNode = frame;
-            }
-            // 注册到帧表
-            if (!frame->name.empty()) {
-                m_frames[frame->name] = frame;
-            }
-            return true;
-        }
-        return false;
-    }
-    else if (token == "StringList") {
-        return ParseStringList(scanner);
-    }
-    else if (token == "IncludeFile") {
-        std::string path = ReadStringLiteral(scanner);
-        if (!path.empty()) {
-            // 构建完整路径
-            std::string fullPath = m_basePath + "/" + path;
-            return ParseIncludeFile(scanner, fullPath);
-        }
-        return false;
-    }
-
-    return false;
-}
-
-FdfNode* FDFile::ParseFrame(FdfScanner& scanner) {
-    FdfNode* frame = new FdfNode();
-    frame->type = FDF_NODE_FRAME;
-
-    // 读取帧类型: "FRAME", "TEXT", "SPRITE", etc.
-    frame->frameType = ReadStringLiteral(scanner);
-
-    // 读取帧名称
-    frame->name = ReadStringLiteral(scanner);
-
-    // 检查 INHERITS
-    std::string token = scanner.PeekToken();
-    if (token == "INHERITS") {
-        scanner.NextToken(); // 消费 INHERITS
-
-        // 检查是否是 WITHCHILDREN
-        token = scanner.PeekToken();
-        if (token == "WITHCHILDREN") {
-            scanner.NextToken();
-            frame->withChildren = true;
-        }
-
-        // 读取继承的模板名
-        frame->inheritsFrom = ReadStringLiteral(scanner);
-    }
-
-    // 读取左大括号
-    token = scanner.NextToken();
-    if (token != "{") {
-        delete frame;
-        return nullptr;
-    }
-
-    // 解析 Frame 内部内容
-    ParseFrameBody(scanner, frame);
-
-    // 读取右大括号
-    token = scanner.NextToken();
-    if (token != "}") {
-        // 错误恢复
-    }
-
-    return frame;
-}
-
-bool FDFile::ParseStringList(FdfScanner& scanner) {
-    // 读取左大括号
-    std::string token = scanner.NextToken();
-    if (token != "{") {
-        return false;
-    }
-
-    // 解析字符串条目
-    while (scanner.HasMore()) {
-        token = scanner.PeekToken();
-        if (token == "}") {
-            scanner.NextToken(); // 消费 }
-            break;
-        }
-
-        // 读取键名
-        std::string key = scanner.NextToken();
-        if (key.empty()) {
-            break;
-        }
-
-        // 读取字符串值
-        std::string value = ReadStringLiteral(scanner);
-
-        // 存储字符串
-        m_strings[key] = value;
-
-        // 跳过逗号 (如果有)
-        token = scanner.PeekToken();
-        if (token == ",") {
-            scanner.NextToken();
-        }
-    }
-
-    return true;
-}
-
-bool FDFile::ParseIncludeFile(FdfScanner& scanner, const std::string& path) {
-    // 检查是否已包含
-    for (const auto& included : m_includedFiles) {
-        if (included == path) {
-            return true; // 防止循环包含
-        }
-    }
-
-    // 读取文件并解析
-    std::ifstream file(path, std::ios::binary);
-    if (!file.is_open()) {
-        return false;
-    }
-
-    std::ostringstream ss;
-    ss << file.rdbuf();
-    std::string content = ss.str();
-
-    // 记录已包含
-    m_includedFiles.push_back(path);
-
-    // 解析内容
-    FdfScanner includedScanner(content.c_str(), content.size());
-    while (includedScanner.HasMore()) {
-        std::string token = includedScanner.PeekToken();
-        if (token.empty()) {
-            break;
-        }
-        ParseTopLevel(includedScanner);
-    }
-
-    return true;
-}
-
-void FDFile::ParseFrameBody(FdfScanner& scanner, FdfNode* frame) {
-    while (scanner.HasMore()) {
-        std::string token = scanner.PeekToken();
-        if (token.empty() || token == "}") {
-            break;
-        }
-
-        // 检查是否是子 Frame
-        if (token == "Frame") {
-            scanner.NextToken(); // 消费 Frame
-            FdfNode* child = ParseFrame(scanner);
-            if (child) {
-                frame->children.push_back(child);
-            }
-        }
-        // 检查是否是 Texture 子节点 (简写形式)
-        else if (token == "Texture") {
-            scanner.NextToken(); // 消费 Texture
-            FdfNode* texture = new FdfNode();
-            texture->type = FDF_NODE_FRAME;
-            texture->frameType = "TEXTURE";
-
-            // 读取左大括号
-            token = scanner.NextToken();
-            if (token == "{") {
-                // 解析 Texture 属性
-                while (scanner.HasMore()) {
-                    token = scanner.PeekToken();
-                    if (token == "}") {
-                        scanner.NextToken();
-                        break;
-                    }
-                    FdfAttribute attr = ParseAttribute(scanner);
-                    texture->attributes.push_back(attr);
-                }
-            }
-
-            frame->children.push_back(texture);
-        }
-        // 检查其他关键字
-        else if (token == "IncludeFile") {
-            scanner.NextToken(); // 消费 IncludeFile
-            std::string path = ReadStringLiteral(scanner);
-            if (!path.empty()) {
-                std::string fullPath = m_basePath + "/" + path;
-                ParseIncludeFile(scanner, fullPath);
-            }
-        }
-        else {
-            // 普通属性
-            FdfAttribute attr = ParseAttribute(scanner);
-            frame->attributes.push_back(attr);
-        }
-    }
-}
-
-FdfAttribute FDFile::ParseAttribute(FdfScanner& scanner) {
-    FdfAttribute attr;
-
-    // 读取属性名
-    attr.name = scanner.NextToken();
-
-    // 读取属性值
-    std::string token = scanner.PeekToken();
-
-    // 检查是否是字符串字面量
-    if (!token.empty() && token[0] == '"') {
-        attr.value = ReadStringLiteral(scanner);
-    }
-    // 检查是否是数字
-    else if (!token.empty() && (isdigit(token[0]) || token[0] == '-' || token[0] == '.')) {
-        attr.value = scanner.NextToken();
-
-        // 检查是否是多参数属性 (如 SetPoint TOPLEFT, "Parent", TOPLEFT, 0.1, 0.2)
-        token = scanner.PeekToken();
-        while (!token.empty() && token != "," && token != "}" &&
-               token != "Frame" && token != "Texture" && token != "IncludeFile" &&
-               token != "StringList") {
-            attr.args.push_back(scanner.NextToken());
-            token = scanner.PeekToken();
-        }
-    }
-    // 检查是否是关键字 (如 SetAllPoints, DecorateFileNames)
-    else if (!token.empty() && token != "," && token != "}" &&
-             token != "Frame" && token != "Texture" && token != "IncludeFile" &&
-             token != "StringList") {
-        attr.value = scanner.NextToken();
-
-        // 继续读取参数
-        token = scanner.PeekToken();
-        while (!token.empty() && token != "," && token != "}" &&
-               token != "Frame" && token != "Texture" && token != "IncludeFile" &&
-               token != "StringList") {
-            attr.args.push_back(scanner.NextToken());
-            token = scanner.PeekToken();
-        }
-    }
-
-    // 跳过逗号
-    token = scanner.PeekToken();
-    if (token == ",") {
-        scanner.NextToken();
-    }
-
-    return attr;
-}
-
-std::string FDFile::ReadStringLiteral(FdfScanner& scanner) {
-    std::string token = scanner.NextToken();
-
-    // 如果已经是字符串内容 (不含引号)，直接返回
-    // Scanner 已经处理了引号
-    return token;
-}
-
-bool FDFile::MatchToken(FdfScanner& scanner, const std::string& expected) {
-    std::string token = scanner.NextToken();
-    return token == expected;
-}
-
 // ============================================================
 // 查询接口
 // ============================================================
 
 const FdfNode* FDFile::FindFrame(const char* name) const {
-    if (!name) {
-        return nullptr;
-    }
-
+    if (!name) return nullptr;
     auto it = m_frames.find(name);
-    if (it != m_frames.end()) {
-        return it->second;
-    }
-
+    if (it != m_frames.end()) return it->second;
     return nullptr;
 }
 
 bool FDFile::GetString(const char* key, std::string& value) const {
-    if (!key) {
-        return false;
-    }
-
+    if (!key) return false;
     auto it = m_strings.find(key);
     if (it != m_strings.end()) {
         value = it->second;
         return true;
     }
-
     return false;
 }
 
@@ -586,7 +335,6 @@ void FDFile::Clear() {
         FreeNode(m_rootNode);
         m_rootNode = nullptr;
     }
-
     m_strings.clear();
     m_frames.clear();
     m_includedFiles.clear();
@@ -595,14 +343,10 @@ void FDFile::Clear() {
 }
 
 void FDFile::FreeNode(FdfNode* node) {
-    if (!node) {
-        return;
-    }
-
+    if (!node) return;
     for (FdfNode* child : node->children) {
         FreeNode(child);
     }
-
     delete node;
 }
 
@@ -627,12 +371,10 @@ FDF_FRAME_TYPE FDFile::GetFrameType(const std::string& typeStr) const {
 // ============================================================
 
 bool FDFile::ParseXML(const char* xmlContent) {
-    // 旧接口兼容 - 实际调用 FDF 解析
     if (!xmlContent) {
         m_status = FRAMEDEF_STATUS_ERROR;
         m_errorMessage = "Invalid content";
         return false;
     }
-
     return ParseFDFContent(xmlContent, strlen(xmlContent));
 }

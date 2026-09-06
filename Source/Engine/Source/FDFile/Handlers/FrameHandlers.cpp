@@ -1,293 +1,1135 @@
 #include "FrameHandlers.h"
+#include "HandlerHash.h"
 #include "../FDFile.h"
 #include <cstring>
 
 // FrameHandlers.cpp - 帧处理器实现
 // 基于 IDA 反编译分析实现
-// 原始文件: Engine/Source/FDFile/Handlers/FrameHandlers.cpp
 //
-// FDF 解析架构 (IDA sub_1F5440):
-// 1. CFdScanner 从文件读取 token
-// 2. 在 HANDLERHASH (dword_F33A00) 中查找 token 对应的处理器
-// 3. 调用处理器函数处理该 token
+// IDA 架构:
+// CFdScanner 读取 token → HANDLERHASH 查找 → 调用处理函数
 //
-// IDA 关键函数:
+// 关键函数:
 // - sub_1F571E: 注册处理器到 HANDLERHASH
 // - sub_1F5634: 初始化默认处理器
-// - sub_1F55FE: 清理处理器
 
 // ============================================================
-// FDF 属性关键字表 (基于 IDA 字符串 7409684-7413000)
+// 前向声明 - 处理函数
 // ============================================================
-
-// 帧类型关键字
-static const char* s_frameTypes[] = {
-    "FRAME", "TEXT", "SPRITE", "BACKDROP", "LISTBOX",
-    "DIALOG", "EDITBOX", "CHECKBOX", "SIMPLEFRAME",
-    "GLUETEXTBUTTON", "GLUEBUTTON", "Texture", nullptr
-};
-
-// 属性关键字
-static const char* s_propertyKeywords[] = {
-    // 布局属性
-    "Width", "Height", "Anchor", "SetAllPoints", "SetPoint",
-    "INHERITS", "WITHCHILDREN", "Layer", "LayerStyle",
-
-    // 背景属性
-    "BackdropBackground", "BackdropTileBackground", "BackdropBackgroundInsets",
-    "BackdropCornerFile", "BackdropCornerFlags", "BackdropCornerSize",
-    "BackdropLeftFile", "BackdropTopFile", "BackdropRightFile", "BackdropBottomFile",
-    "BackdropHalfSides", "BackdropBlendAll", "BackdropMirrored",
-
-    // 纹理属性
-    "File", "TexCoord", "AlphaMode", "Alpha", "BackgroundArt",
-    "UseTexture", "UseString", "UseBackdrop", "UseHighlight",
-
-    // 文本属性
-    "Text", "FontColor", "FontHeight", "FontJustificationH", "FontJustificationV",
-    "FontJustificationOffset", "FontShadowColor", "FontShadowOffset",
-    "FontHighlightColor", "FontDisabledColor", "FontFlags", "FontCharSpacing",
-
-    // 按钮属性
-    "ButtonText", "ButtonPushedTextOffset", "ControlArt", "ControlStyle",
-    "ControlBackdrop", "ControlPushedBackdrop", "ControlDisabledBackdrop",
-    "ControlFocusHighlight", "ControlMouseOverHighlight", "ControlShortcutKey",
-
-    // 编辑框属性
-    "Password", "EditMaxChars", "EditText", "EditTextColor",
-    "EditTextOffset", "EditTextFrame", "EditTextHeight",
-    "EditBorderSize", "EditCursorColor", "EditSetFocus",
-
-    // 列表框属性
-    "ListBoxBorder", "ListBoxStyle", "ListBoxItemHeight", "ListBoxScrollBar",
-    "SelectedColor", "FocusColor",
-
-    // 滑块属性
-    "SliderMinValue", "SliderMaxValue", "SliderStepSize", "SliderInitialValue",
-    "SliderBackdropFrame", "SliderThumbButtonFrame",
-
-    // 对话框属性
-    "DialogBackdrop", "DialogOkButton", "DialogCancelButton",
-
-    // 其他
-    "HitRectInsets", "ToolTip", "ShortcutKey",
-    "TabFocusDefault", "TabFocusNext", "TabFocusPush",
-    "DecorateFileNames", "DoNotRegisterName",
-    "DisabledTexture", "NormalTexture", "PushedTexture", "CheckedTexture",
-    nullptr
-};
-
-// 锚点关键字
-static const char* s_anchorKeywords[] = {
-    "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT",
-    "TOP", "BOTTOM", "LEFT", "RIGHT", "CENTER", nullptr
-};
+static int HandleFrame(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleStringList(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleIncludeFile(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleTexture(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleSetPoint(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleSetAllPoints(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleInherits(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleWidth(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleHeight(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleAnchor(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleText(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleFontColor(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleFontJustificationH(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleFontJustificationV(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleFontHeight(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleFile(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleTexCoord(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleAlphaMode(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleBackgroundArt(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleBackdropBackground(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleBackdropTileBackground(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleBackdropCornerFlags(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleBackdropCornerFile(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleBackdropCornerSize(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleBackdropLeftFile(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleBackdropRightFile(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleBackdropTopFile(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleBackdropBottomFile(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleBackdropHalfSides(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleBackdropBlendAll(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleBackdropMirrored(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleButtonText(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleControlShortcutKey(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleControlArt(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleControlStyle(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleControlBackdrop(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleControlFocusHighlight(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleControlMouseOverHighlight(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandlePassword(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleEditMaxChars(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleEditText(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleEditTextColor(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleEditTextOffset(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleEditTextFrame(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleEditTextHeight(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleEditBorderSize(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleEditCursorColor(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleEditSetFocus(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleHitRectInsets(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleToolTip(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleShortcutKey(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleTabFocusDefault(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleTabFocusNext(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleTabFocusPush(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleDecorateFileNames(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleDoNotRegisterName(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleLayer(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleLayerStyle(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleDisabledTexture(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleNormalTexture(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandlePushedTexture(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleCheckedTexture(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleBarTexture(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleDisabledText(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleNormalText(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleHighlightText(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleSliderMinValue(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleSliderMaxValue(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleSliderStepSize(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleSliderInitialValue(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleSliderBackdropFrame(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleSliderThumbButtonFrame(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleDialogBackdrop(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleDialogOkButton(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleDialogCancelButton(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleListBoxBorder(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleListBoxStyle(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleListBoxItemHeight(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleListBoxScrollBar(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleSelectedColor(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleFocusColor(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleMenuItemHeight(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleMenuTextHighlightColor(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleMenuFontHeight(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleMenuBorder(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
+static int HandleMenuItem(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status);
 
 namespace FrameHandlers {
 
 // ============================================================
-// 处理 Frame "TYPE" "NAME" INHERITS "Template" { ... }
-// IDA: HANDLERHASH 中 "Frame" 对应的处理函数
+// IDA: sub_1F5634 - 初始化默认处理器
 // ============================================================
-int HandleFrame(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status) {
-    // 1. 读取帧类型 "TYPE"
-    // 2. 读取帧名称 "NAME"
-    // 3. 检查 INHERITS 关键字
-    // 4. 读取左大括号 {
-    // 5. 解析帧属性和子节点
-    // 6. 读取右大括号 }
-    // 7. 创建 BASEFRAMEHASHNODE 并插入帧哈希表
-
-    // 由于 CFdScanner 是内联在 FDFile.cpp 中的，
-    // 这里的实际实现依赖于 FDFile 的解析循环
-    // 此处提供框架，具体解析逻辑在 FDFile::ParseFrameBody 中
-
-    return 1; // 返回 1 继续解析
+void InitializeDefaultHandlers() {
+    // IDA 中的流程:
+    // 遍历 unk_E77DE0 数组，创建 HANDLERHASH 节点
+    // 这里我们使用简化实现
 }
 
 // ============================================================
-// 处理 Texture { ... } 子节点
-// IDA: HANDLERHASH 中 "Texture" 对应的处理函数
-// ============================================================
-int HandleTexture(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status) {
-    // Texture 属性:
-    // File "ConsoleTexture01",
-    // Width 0.256,
-    // Height 0.032,
-    // TexCoord 0, 1, 0, 0.125,
-    // AlphaMode "ALPHAKEY",
-    // Anchor TOPLEFT,0,0,
-
-    return 1; // 返回 1 继续解析
-}
-
-// ============================================================
-// 处理 SetPoint 锚点属性
-// IDA: 被 SetPoint 关键字触发
-// ============================================================
-int HandleSetPoint(CFdScanner* scanner, FdfNode* frame, CStatus* status) {
-    // SetPoint TOPLEFT, "ParentFrame", TOPLEFT, 0.1, 0.2
-    // SetPoint RIGHT, "OKButton", LEFT, -0.02, 0.0
-
-    // 解析步骤:
-    // 1. 读取锚点类型 (TOPLEFT, TOPRIGHT, etc.)
-    // 2. 读取逗号
-    // 3. 读取父帧名称
-    // 4. 读取逗号
-    // 5. 读取父锚点类型
-    // 6. 读取逗号
-    // 7. 读取 X 偏移
-    // 8. 读取逗号
-    // 9. 读取 Y 偏移
-
-    if (!scanner || !frame) return 0;
-
-    FdfAttribute attr;
-    attr.name = "SetPoint";
-
-    // 读取锚点类型
-    std::string anchor = scanner->NextToken();
-    attr.value = anchor;
-
-    // 读取后续参数
-    std::string token = scanner->NextToken(); // 逗号
-    if (token == ",") {
-        token = scanner->NextToken(); // 父帧名称
-        attr.args.push_back(token);
-
-        token = scanner->NextToken(); // 逗号
-        if (token == ",") {
-            token = scanner->NextToken(); // 父锚点
-            attr.args.push_back(token);
-
-            token = scanner->NextToken(); // 逗号
-            if (token == ",") {
-                token = scanner->NextToken(); // X 偏移
-                attr.args.push_back(token);
-
-                token = scanner->NextToken(); // 逗号
-                if (token == ",") {
-                    token = scanner->NextToken(); // Y 偏移
-                    attr.args.push_back(token);
-                }
-            }
-        }
-    }
-
-    frame->attributes.push_back(attr);
-    return 1;
-}
-
-// ============================================================
-// 处理 IncludeFile 指令
-// IDA: HANDLERHASH 中 "IncludeFile" 对应的处理函数
-// ============================================================
-int HandleIncludeFile(CFdScanner* scanner, int stringHash, int frameHash, CStatus* status) {
-    // IncludeFile "UI\FrameDef\Glue\StandardTemplates.fdf"
-
-    // 读取文件路径
-    // 构建完整路径
-    // 检查是否已包含 (防止循环)
-    // 读取文件内容
-    // 解析文件内容
-
-    return 1;
-}
-
-// ============================================================
-// 处理 SetAllPoints 属性
-// ============================================================
-int HandleSetAllPoints(CFdScanner* scanner, FdfNode* frame, CStatus* status) {
-    if (!frame) return 0;
-
-    FdfAttribute attr;
-    attr.name = "SetAllPoints";
-    frame->attributes.push_back(attr);
-
-    return 1;
-}
-
-// ============================================================
-// 处理通用属性 (Width, Height, Anchor, etc.)
-// ============================================================
-int HandleProperty(CFdScanner* scanner, FdfNode* frame, CStatus* status, const std::string& propName) {
-    if (!scanner || !frame) return 0;
-
-    FdfAttribute attr;
-    attr.name = propName;
-
-    // 读取属性值
-    std::string token = scanner->PeekToken();
-    if (!token.empty() && token != "," && token != "}" && token != "{") {
-        attr.value = scanner->NextToken();
-
-        // 检查是否是多参数属性 (如 FontColor 1.0 1.0 1.0 1.0)
-        token = scanner->PeekToken();
-        while (!token.empty() && token != "," && token != "}" &&
-               token != "Frame" && token != "Texture" && token != "IncludeFile" &&
-               token != "StringList") {
-            attr.args.push_back(scanner->NextToken());
-            token = scanner->PeekToken();
-        }
-    }
-
-    // 跳过逗号
-    token = scanner->PeekToken();
-    if (token == ",") {
-        scanner->NextToken();
-    }
-
-    frame->attributes.push_back(attr);
-    return 1;
-}
-
-// ============================================================
-// 注册所有帧类型处理器
-// IDA: sub_1F571E - 初始化 TYPEHANDLERSTRUCT 数组
+// IDA: sub_1F571E - 注册处理器
 // ============================================================
 bool RegisterAllHandlers() {
-    // IDA 中的流程:
-    // 1. 遍历 unk_E77DE0 数组 (处理器描述符)
-    // 2. 对每个描述符:
-    //    - 计算类型名称哈希 (sub_5DA318 + sub_5DB6D2)
-    //    - 在 HANDLERHASH 中查找或创建节点
-    //    - 设置处理函数指针
-    // 3. 设置 FRAMETYPESTRUCT 数组大小为 0x21 (33)
+    HandlerHash& hash = GlobalHandlers::GetHandlerHash();
 
-    // 原始数据位于 unk_E77DE0 (地址范围待确认)
-    // 每个条目 16 字节:
-    //   +0: 类型名称指针
-    //   +4: 类型名称长度
-    //   +8: 创建函数指针
-    //   +12: 处理函数指针
+    // 注册顶级关键字处理器
+    hash.Register("Frame", HandleFrame);
+    hash.Register("StringList", HandleStringList);
+    hash.Register("IncludeFile", HandleIncludeFile);
+    hash.Register("Texture", HandleTexture);
+
+    // 注册属性处理器
+    hash.Register("SetPoint", HandleSetPoint);
+    hash.Register("SetAllPoints", HandleSetAllPoints);
+    hash.Register("INHERITS", HandleInherits);
+    hash.Register("Width", HandleWidth);
+    hash.Register("Height", HandleHeight);
+    hash.Register("Anchor", HandleAnchor);
+
+    // 文本属性
+    hash.Register("Text", HandleText);
+    hash.Register("FontColor", HandleFontColor);
+    hash.Register("FontJustificationH", HandleFontJustificationH);
+    hash.Register("FontJustificationV", HandleFontJustificationV);
+    hash.Register("FontHeight", HandleFontHeight);
+
+    // 纹理属性
+    hash.Register("File", HandleFile);
+    hash.Register("TexCoord", HandleTexCoord);
+    hash.Register("AlphaMode", HandleAlphaMode);
+    hash.Register("BackgroundArt", HandleBackgroundArt);
+
+    // 背景属性
+    hash.Register("BackdropBackground", HandleBackdropBackground);
+    hash.Register("BackdropTileBackground", HandleBackdropTileBackground);
+    hash.Register("BackdropCornerFlags", HandleBackdropCornerFlags);
+    hash.Register("BackdropCornerFile", HandleBackdropCornerFile);
+    hash.Register("BackdropCornerSize", HandleBackdropCornerSize);
+    hash.Register("BackdropLeftFile", HandleBackdropLeftFile);
+    hash.Register("BackdropRightFile", HandleBackdropRightFile);
+    hash.Register("BackdropTopFile", HandleBackdropTopFile);
+    hash.Register("BackdropBottomFile", HandleBackdropBottomFile);
+    hash.Register("BackdropHalfSides", HandleBackdropHalfSides);
+    hash.Register("BackdropBlendAll", HandleBackdropBlendAll);
+    hash.Register("BackdropMirrored", HandleBackdropMirrored);
+
+    // 按钮属性
+    hash.Register("ButtonText", HandleButtonText);
+    hash.Register("ControlShortcutKey", HandleControlShortcutKey);
+    hash.Register("ControlArt", HandleControlArt);
+    hash.Register("ControlStyle", HandleControlStyle);
+    hash.Register("ControlBackdrop", HandleControlBackdrop);
+    hash.Register("ControlFocusHighlight", HandleControlFocusHighlight);
+    hash.Register("ControlMouseOverHighlight", HandleControlMouseOverHighlight);
+
+    // 编辑框属性
+    hash.Register("Password", HandlePassword);
+    hash.Register("EditMaxChars", HandleEditMaxChars);
+    hash.Register("EditText", HandleEditText);
+    hash.Register("EditTextColor", HandleEditTextColor);
+    hash.Register("EditTextOffset", HandleEditTextOffset);
+    hash.Register("EditTextFrame", HandleEditTextFrame);
+    hash.Register("EditTextHeight", HandleEditTextHeight);
+    hash.Register("EditBorderSize", HandleEditBorderSize);
+    hash.Register("EditCursorColor", HandleEditCursorColor);
+    hash.Register("EditSetFocus", HandleEditSetFocus);
+
+    // 其他属性
+    hash.Register("HitRectInsets", HandleHitRectInsets);
+    hash.Register("ToolTip", HandleToolTip);
+    hash.Register("ShortcutKey", HandleShortcutKey);
+    hash.Register("TabFocusDefault", HandleTabFocusDefault);
+    hash.Register("TabFocusNext", HandleTabFocusNext);
+    hash.Register("TabFocusPush", HandleTabFocusPush);
+    hash.Register("DecorateFileNames", HandleDecorateFileNames);
+    hash.Register("DoNotRegisterName", HandleDoNotRegisterName);
+    hash.Register("Layer", HandleLayer);
+    hash.Register("LayerStyle", HandleLayerStyle);
+
+    // 纹理属性
+    hash.Register("DisabledTexture", HandleDisabledTexture);
+    hash.Register("NormalTexture", HandleNormalTexture);
+    hash.Register("PushedTexture", HandlePushedTexture);
+    hash.Register("CheckedTexture", HandleCheckedTexture);
+    hash.Register("BarTexture", HandleBarTexture);
+    hash.Register("DisabledText", HandleDisabledText);
+    hash.Register("NormalText", HandleNormalText);
+    hash.Register("HighlightText", HandleHighlightText);
+
+    // 滑块属性
+    hash.Register("SliderMinValue", HandleSliderMinValue);
+    hash.Register("SliderMaxValue", HandleSliderMaxValue);
+    hash.Register("SliderStepSize", HandleSliderStepSize);
+    hash.Register("SliderInitialValue", HandleSliderInitialValue);
+    hash.Register("SliderBackdropFrame", HandleSliderBackdropFrame);
+    hash.Register("SliderThumbButtonFrame", HandleSliderThumbButtonFrame);
+
+    // 对话框属性
+    hash.Register("DialogBackdrop", HandleDialogBackdrop);
+    hash.Register("DialogOkButton", HandleDialogOkButton);
+    hash.Register("DialogCancelButton", HandleDialogCancelButton);
+
+    // 列表框属性
+    hash.Register("ListBoxBorder", HandleListBoxBorder);
+    hash.Register("ListBoxStyle", HandleListBoxStyle);
+    hash.Register("ListBoxItemHeight", HandleListBoxItemHeight);
+    hash.Register("ListBoxScrollBar", HandleListBoxScrollBar);
+    hash.Register("SelectedColor", HandleSelectedColor);
+    hash.Register("FocusColor", HandleFocusColor);
+
+    // 菜单属性
+    hash.Register("MenuItemHeight", HandleMenuItemHeight);
+    hash.Register("MenuTextHighlightColor", HandleMenuTextHighlightColor);
+    hash.Register("MenuFontHeight", HandleMenuFontHeight);
+    hash.Register("MenuBorder", HandleMenuBorder);
+    hash.Register("MenuItem", HandleMenuItem);
 
     return true;
 }
 
 // ============================================================
-// 清理处理器
-// IDA: sub_1F55FE
+// IDA: sub_1F55FE - 清理处理器
 // ============================================================
 void CleanupHandlers() {
-    // IDA 中的流程:
-    // TSFixedArray<FRAMETYPESTRUCT>::Clear(dword_F6B448);
-    // TSHashTable<HANDLERHASH>::InternalClear(&dword_F33A00, 0);
-
-    // 由于使用了简化实现，这里不需要清理
-}
-
-// ============================================================
-// 初始化默认处理器
-// IDA: sub_1F5634
-// ============================================================
-void InitializeDefaultHandlers() {
-    // IDA 中的流程:
-    // 1. 遍历 unk_E77DE0 (静态处理器表)
-    // 2. 对每个条目创建 HANDLERHASH 节点
-    // 3. 设置 FRAMETYPESTRUCT 数组大小为 0x21
-
-    // 默认处理器表位于 unk_E77DE0 到 unk_E77E10
-    // 每个条目 8 字节: {typeId, handlerFunc}
+    GlobalHandlers::GetHandlerHash().Clear();
 }
 
 } // namespace FrameHandlers
+
+// ============================================================
+// 处理函数实现
+// ============================================================
+
+// Frame "TYPE" "NAME" INHERITS "Template" { ... }
+static int HandleFrame(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+
+    // 读取帧类型
+    std::string frameType = scanner->NextToken();
+
+    // 读取帧名称
+    std::string frameName = scanner->NextToken();
+
+    // 检查 INHERITS
+    std::string token = scanner->PeekToken();
+    std::string inheritsFrom;
+    bool withChildren = false;
+    if (token == "INHERITS") {
+        scanner->NextToken();
+        token = scanner->PeekToken();
+        if (token == "WITHCHILDREN") {
+            scanner->NextToken();
+            withChildren = true;
+        }
+        inheritsFrom = scanner->NextToken();
+    }
+
+    // 读取左大括号
+    token = scanner->NextToken();
+    if (token != "{") return 0;
+
+    // 创建帧节点
+    FdfNode* frame = new FdfNode();
+    frame->type = FDF_NODE_FRAME;
+    frame->frameType = frameType;
+    frame->name = frameName;
+    frame->inheritsFrom = inheritsFrom;
+    frame->withChildren = withChildren;
+
+    // 解析帧体
+    int depth = 1;
+    while (scanner->HasMore() && depth > 0) {
+        token = scanner->PeekToken();
+        if (token.empty()) break;
+
+        if (token == "}") {
+            scanner->NextToken();
+            depth--;
+            continue;
+        }
+
+        if (token == "{") {
+            scanner->NextToken();
+            depth++;
+            continue;
+        }
+
+        // 查找属性处理器
+        HandlerHash& hash = GlobalHandlers::GetHandlerHash();
+        FdfHandlerFunc handler = hash.Find(token);
+        if (handler) {
+            handler(scanner, 0, 0, nullptr);
+        } else {
+            // 未知属性，跳过
+            scanner->NextToken();
+        }
+    }
+
+    // 注册到全局帧表
+    // 注意: 这里需要访问 FDFile 的成员，但当前架构无法直接访问
+    // 实际实现中，这些信息会通过 handler 参数传递
+
+    return 1;
+}
+
+// StringList { KEY "VALUE", }
+static int HandleStringList(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+
+    std::string token = scanner->NextToken();
+    if (token != "{") return 0;
+
+    while (scanner->HasMore()) {
+        token = scanner->PeekToken();
+        if (token == "}") {
+            scanner->NextToken();
+            break;
+        }
+        if (token.empty()) break;
+
+        // 读取键名
+        std::string key = scanner->NextToken();
+
+        // 读取字符串值
+        std::string value;
+        token = scanner->PeekToken();
+        if (!token.empty() && token[0] == '"') {
+            value = scanner->ReadStringLiteral();
+        } else {
+            value = scanner->NextToken();
+        }
+
+        // 跳过逗号
+        token = scanner->PeekToken();
+        if (token == ",") scanner->NextToken();
+
+        // 存储字符串 (需要访问 FDFile 的成员)
+        // 实际实现中会通过参数传递
+    }
+
+    return 1;
+}
+
+// IncludeFile "path.fdf"
+static int HandleIncludeFile(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+
+    std::string path = scanner->NextToken();
+    // 实际实现中会加载并解析文件
+    return 1;
+}
+
+// Texture { ... }
+static int HandleTexture(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+
+    std::string token = scanner->NextToken();
+    if (token != "{") return 0;
+
+    // 解析 Texture 属性
+    while (scanner->HasMore()) {
+        token = scanner->PeekToken();
+        if (token == "}") {
+            scanner->NextToken();
+            break;
+        }
+        if (token.empty()) break;
+
+        // 查找属性处理器
+        HandlerHash& hash = GlobalHandlers::GetHandlerHash();
+        FdfHandlerFunc handler = hash.Find(token);
+        if (handler) {
+            handler(scanner, 0, 0, nullptr);
+        } else {
+            scanner->NextToken();
+        }
+    }
+
+    return 1;
+}
+
+// SetPoint TOPLEFT, "ParentFrame", TOPLEFT, 0.1, 0.2
+static int HandleSetPoint(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+
+    // 读取锚点类型
+    std::string anchor = scanner->NextToken();
+
+    // 跳过逗号
+    std::string token = scanner->NextToken(); // 逗号
+
+    // 读取父帧名称
+    std::string parent = scanner->NextToken();
+
+    // 跳过逗号
+    token = scanner->NextToken(); // 逗号
+
+    // 读取父锚点
+    std::string parentAnchor = scanner->NextToken();
+
+    // 跳过逗号
+    token = scanner->NextToken(); // 逗号
+
+    // 读取 X 偏移
+    std::string x = scanner->NextToken();
+
+    // 跳过逗号
+    token = scanner->NextToken(); // 逗号
+
+    // 读取 Y 偏移
+    std::string y = scanner->NextToken();
+
+    return 1;
+}
+
+// SetAllPoints
+static int HandleSetAllPoints(CFdScanner*, int, int, CStatus*) {
+    return 1;
+}
+
+// INHERITS "Template"
+static int HandleInherits(CFdScanner*, int, int, CStatus*) {
+    return 1;
+}
+
+// Width 0.5
+static int HandleWidth(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    // 跳过逗号
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// Height 0.3
+static int HandleHeight(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// Anchor TOPLEFT, 0, 0
+static int HandleAnchor(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string anchor = scanner->NextToken();
+    // 跳过逗号和参数
+    while (scanner->HasMore()) {
+        std::string token = scanner->PeekToken();
+        if (token == "," || token == "}" || token == "Frame" || token == "Texture") break;
+        scanner->NextToken();
+    }
+    return 1;
+}
+
+// Text "StringKey"
+static int HandleText(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// FontColor 1.0 1.0 1.0 1.0
+static int HandleFontColor(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    for (int i = 0; i < 4; i++) {
+        std::string token = scanner->NextToken();
+        token = scanner->PeekToken();
+        if (token == ",") scanner->NextToken();
+    }
+    return 1;
+}
+
+// FontJustificationH JUSTIFYLEFT
+static int HandleFontJustificationH(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// FontJustificationV JUSTIFYTOP
+static int HandleFontJustificationV(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// FontHeight 0.012
+static int HandleFontHeight(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// File "path.blp"
+static int HandleFile(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// TexCoord 0, 1, 0, 0.125
+static int HandleTexCoord(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    for (int i = 0; i < 4; i++) {
+        std::string token = scanner->NextToken();
+        token = scanner->PeekToken();
+        if (token == ",") scanner->NextToken();
+    }
+    return 1;
+}
+
+// AlphaMode "ALPHAKEY"
+static int HandleAlphaMode(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// BackgroundArt "path.mdl"
+static int HandleBackgroundArt(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// BackdropBackground "path.blp"
+static int HandleBackdropBackground(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// BackdropTileBackground
+static int HandleBackdropTileBackground(CFdScanner*, int, int, CStatus*) {
+    return 1;
+}
+
+// BackdropCornerFlags "UL|UR|BL|BR"
+static int HandleBackdropCornerFlags(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// BackdropCornerFile "path.blp"
+static int HandleBackdropCornerFile(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// BackdropCornerSize 0.015
+static int HandleBackdropCornerSize(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// BackdropLeftFile "path.blp"
+static int HandleBackdropLeftFile(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// BackdropRightFile "path.blp"
+static int HandleBackdropRightFile(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// BackdropTopFile "path.blp"
+static int HandleBackdropTopFile(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// BackdropBottomFile "path.blp"
+static int HandleBackdropBottomFile(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// BackdropHalfSides
+static int HandleBackdropHalfSides(CFdScanner*, int, int, CStatus*) {
+    return 1;
+}
+
+// BackdropBlendAll
+static int HandleBackdropBlendAll(CFdScanner*, int, int, CStatus*) {
+    return 1;
+}
+
+// BackdropMirrored
+static int HandleBackdropMirrored(CFdScanner*, int, int, CStatus*) {
+    return 1;
+}
+
+// ButtonText "textName"
+static int HandleButtonText(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// ControlShortcutKey "S"
+static int HandleControlShortcutKey(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// ControlArt "path.blp"
+static int HandleControlArt(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// ControlStyle "PUSHBUTTON"
+static int HandleControlStyle(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// ControlBackdrop "frameName"
+static int HandleControlBackdrop(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// ControlFocusHighlight "frameName"
+static int HandleControlFocusHighlight(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// ControlMouseOverHighlight "frameName"
+static int HandleControlMouseOverHighlight(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// Password
+static int HandlePassword(CFdScanner*, int, int, CStatus*) {
+    return 1;
+}
+
+// EditMaxChars 32
+static int HandleEditMaxChars(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// EditText "default"
+static int HandleEditText(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// EditTextColor 1.0 1.0 1.0 1.0
+static int HandleEditTextColor(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    for (int i = 0; i < 4; i++) {
+        std::string token = scanner->NextToken();
+        token = scanner->PeekToken();
+        if (token == ",") scanner->NextToken();
+    }
+    return 1;
+}
+
+// EditTextOffset 0.01 0.01
+static int HandleEditTextOffset(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    for (int i = 0; i < 2; i++) {
+        std::string token = scanner->NextToken();
+        token = scanner->PeekToken();
+        if (token == ",") scanner->NextToken();
+    }
+    return 1;
+}
+
+// EditTextFrame "frameName"
+static int HandleEditTextFrame(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// EditTextHeight 0.02
+static int HandleEditTextHeight(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// EditBorderSize 0.005
+static int HandleEditBorderSize(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// EditCursorColor 1.0 1.0 1.0 1.0
+static int HandleEditCursorColor(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    for (int i = 0; i < 4; i++) {
+        std::string token = scanner->NextToken();
+        token = scanner->PeekToken();
+        if (token == ",") scanner->NextToken();
+    }
+    return 1;
+}
+
+// EditSetFocus
+static int HandleEditSetFocus(CFdScanner*, int, int, CStatus*) {
+    return 1;
+}
+
+// HitRectInsets 0 0 0 0
+static int HandleHitRectInsets(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    for (int i = 0; i < 4; i++) {
+        std::string token = scanner->NextToken();
+        token = scanner->PeekToken();
+        if (token == ",") scanner->NextToken();
+    }
+    return 1;
+}
+
+// ToolTip "text"
+static int HandleToolTip(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// ShortcutKey "S"
+static int HandleShortcutKey(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// TabFocusDefault
+static int HandleTabFocusDefault(CFdScanner*, int, int, CStatus*) {
+    return 1;
+}
+
+// TabFocusNext "frameName"
+static int HandleTabFocusNext(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// TabFocusPush
+static int HandleTabFocusPush(CFdScanner*, int, int, CStatus*) {
+    return 1;
+}
+
+// DecorateFileNames
+static int HandleDecorateFileNames(CFdScanner*, int, int, CStatus*) {
+    return 1;
+}
+
+// DoNotRegisterName
+static int HandleDoNotRegisterName(CFdScanner*, int, int, CStatus*) {
+    return 1;
+}
+
+// Layer 0
+static int HandleLayer(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// LayerStyle "LAYER"
+static int HandleLayerStyle(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// DisabledTexture "path.blp"
+static int HandleDisabledTexture(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// NormalTexture "path.blp"
+static int HandleNormalTexture(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// PushedTexture "path.blp"
+static int HandlePushedTexture(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// CheckedTexture "path.blp"
+static int HandleCheckedTexture(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// BarTexture "path.blp"
+static int HandleBarTexture(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// DisabledText "text"
+static int HandleDisabledText(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// NormalText "text"
+static int HandleNormalText(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// HighlightText "text"
+static int HandleHighlightText(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// SliderMinValue 0
+static int HandleSliderMinValue(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// SliderMaxValue 100
+static int HandleSliderMaxValue(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// SliderStepSize 1
+static int HandleSliderStepSize(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// SliderInitialValue 50
+static int HandleSliderInitialValue(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// SliderBackdropFrame "frameName"
+static int HandleSliderBackdropFrame(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// SliderThumbButtonFrame "frameName"
+static int HandleSliderThumbButtonFrame(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// DialogBackdrop "frameName"
+static int HandleDialogBackdrop(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// DialogOkButton "frameName"
+static int HandleDialogOkButton(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// DialogCancelButton "frameName"
+static int HandleDialogCancelButton(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// ListBoxBorder 0.01
+static int HandleListBoxBorder(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// ListBoxStyle "LISTBOX"
+static int HandleListBoxStyle(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// ListBoxItemHeight 0.02
+static int HandleListBoxItemHeight(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// ListBoxScrollBar "frameName"
+static int HandleListBoxScrollBar(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// SelectedColor 1.0 1.0 1.0 1.0
+static int HandleSelectedColor(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    for (int i = 0; i < 4; i++) {
+        std::string token = scanner->NextToken();
+        token = scanner->PeekToken();
+        if (token == ",") scanner->NextToken();
+    }
+    return 1;
+}
+
+// FocusColor 1.0 1.0 1.0 1.0
+static int HandleFocusColor(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    for (int i = 0; i < 4; i++) {
+        std::string token = scanner->NextToken();
+        token = scanner->PeekToken();
+        if (token == ",") scanner->NextToken();
+    }
+    return 1;
+}
+
+// MenuItemHeight 0.02
+static int HandleMenuItemHeight(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// MenuTextHighlightColor 1.0 1.0 1.0 1.0
+static int HandleMenuTextHighlightColor(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    for (int i = 0; i < 4; i++) {
+        std::string token = scanner->NextToken();
+        token = scanner->PeekToken();
+        if (token == ",") scanner->NextToken();
+    }
+    return 1;
+}
+
+// MenuFontHeight 0.012
+static int HandleMenuFontHeight(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// MenuBorder 0.01
+static int HandleMenuBorder(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
+
+// MenuItem "text"
+static int HandleMenuItem(CFdScanner* scanner, int, int, CStatus*) {
+    if (!scanner) return 0;
+    std::string value = scanner->NextToken();
+    std::string token = scanner->PeekToken();
+    if (token == ",") scanner->NextToken();
+    return 1;
+}
